@@ -100,10 +100,45 @@
 
 
         /* ========================================
+           USERNAME
+           ======================================== */
+
+        #usernameInput {
+
+            width: 100%;
+
+            padding: 13px;
+
+            box-sizing: border-box;
+
+            background-color: #222222;
+
+            color: #ffffff;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            font-size: 18px;
+
+            text-align: center;
+
+            outline: none;
+        }
+
+
+        #usernameInput:focus {
+
+            border-color: #BEFF8F;
+        }
+
+
+        /* ========================================
            MESSAGE CODE
            ======================================== */
 
         #codeBox {
+
             width: 100%;
 
             padding: 18px;
@@ -113,11 +148,13 @@
             background-color: #222222;
 
             border: 2px solid #555555;
+
             border-radius: 8px;
 
             text-align: center;
 
             font-size: 28px;
+
             font-weight: bold;
 
             letter-spacing: 4px;
@@ -127,6 +164,7 @@
 
 
         #copyCodeButton {
+
             width: 100%;
 
             padding: 10px;
@@ -134,12 +172,15 @@
             box-sizing: border-box;
 
             background-color: #444444;
+
             color: #ffffff;
 
             border: 2px solid #666666;
+
             border-radius: 8px;
 
             font-size: 15px;
+
             font-weight: bold;
 
             cursor: pointer;
@@ -147,6 +188,7 @@
 
 
         #copyCodeButton:hover {
+
             background-color: #555555;
         }
 
@@ -172,6 +214,7 @@
             cursor: pointer;
 
             background-color: #BEFF8F;
+
             color: #000000;
 
             border: 2px solid #000000;
@@ -179,6 +222,7 @@
 
 
         #generateButton:hover {
+
             background-color: #8FFF3D;
         }
 
@@ -188,6 +232,7 @@
            ======================================== */
 
         #divider {
+
             width: 100%;
 
             height: 1px;
@@ -199,10 +244,11 @@
 
 
         /* ========================================
-           JOIN INPUT
+           CODE INPUT
            ======================================== */
 
         #codeInput {
+
             width: 100%;
 
             padding: 13px;
@@ -210,9 +256,11 @@
             box-sizing: border-box;
 
             background-color: #222222;
+
             color: #ffffff;
 
             border: 2px solid #555555;
+
             border-radius: 8px;
 
             font-size: 18px;
@@ -224,6 +272,7 @@
 
 
         #codeInput:focus {
+
             border-color: #BEFF8F;
         }
 
@@ -249,6 +298,7 @@
             cursor: pointer;
 
             background-color: #444444;
+
             color: #ffffff;
 
             border: 2px solid #666666;
@@ -256,6 +306,7 @@
 
 
         #joinButton:hover {
+
             background-color: #555555;
         }
 
@@ -293,7 +344,7 @@
 
 
         /* ========================================
-           MESSAGES
+           MESSAGES BOX
            ======================================== */
 
         #messages {
@@ -322,6 +373,10 @@
         }
 
 
+        /* ========================================
+           MESSAGE
+           ======================================== */
+
         .message {
 
             max-width: 70%;
@@ -335,7 +390,7 @@
 
 
         /* ========================================
-           YOUR MESSAGES
+           YOUR MESSAGE
            ======================================== */
 
         .messageMine {
@@ -349,7 +404,7 @@
 
 
         /* ========================================
-           OTHER PERSON'S MESSAGES
+           OTHER MESSAGE
            ======================================== */
 
         .messageOther {
@@ -363,7 +418,7 @@
 
 
         /* ========================================
-           MESSAGE INPUT
+           MESSAGE ROW
            ======================================== */
 
         #messageRow {
@@ -376,6 +431,10 @@
         }
 
 
+        /* ========================================
+           MESSAGE INPUT
+           ======================================== */
+
         #messageInput {
 
             flex: 1;
@@ -385,6 +444,7 @@
             box-sizing: border-box;
 
             background-color: #222222;
+
             color: #ffffff;
 
             border: 2px solid #555555;
@@ -458,6 +518,19 @@
 
 
             <!-- ========================================
+                 USERNAME
+                 ======================================== -->
+
+            <input
+                id="usernameInput"
+                type="text"
+                placeholder="Enter a username"
+                maxlength="5"
+                autocomplete="off"
+            >
+
+
+            <!-- ========================================
                  GENERATED CODE
                  ======================================== -->
 
@@ -488,19 +561,11 @@
                  ======================================== -->
 
             <input
-                id="usernameInput"
-                type="text"
-                placeholder="Enter a username"
-                maxlength="5"
-                autocomplete="off"
-            >
-            
-            
-            <input
                 id="codeInput"
                 type="text"
                 placeholder="Enter Message Code"
                 maxlength="9"
+                autocomplete="off"
             >
 
 
@@ -527,6 +592,7 @@
                         id="messageInput"
                         type="text"
                         placeholder="Type a message..."
+                        autocomplete="off"
                     >
 
 
@@ -552,330 +618,10 @@
 
 
     <!-- ========================================
-         JAVASCRIPT
+         YOUR JAVASCRIPT
          ======================================== -->
 
-    <script>
-
-        const socket = io();
-
-
-        const codeBox =
-            document.getElementById("codeBox");
-
-        const copyCodeButton =
-            document.getElementById("copyCodeButton");
-
-        const generateButton =
-            document.getElementById("generateButton");
-
-        const usernameInput =
-            document.getElementById("usernameInput");
-        
-        const codeInput =
-            document.getElementById("codeInput");
-
-        const joinButton =
-            document.getElementById("joinButton");
-
-        const status =
-            document.getElementById("status");
-
-        const chat =
-            document.getElementById("chat");
-
-        const messageInput =
-            document.getElementById("messageInput");
-
-        const sendButton =
-            document.getElementById("sendButton");
-
-        const messages =
-            document.getElementById("messages");
-
-
-        /* ========================================
-           GENERATE CODE
-           ======================================== */
-
-        function generateCode() {
-
-            const characters =
-                "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-            let code = "";
-
-
-            for (let i = 0; i < 8; i++) {
-
-                code +=
-                    characters[
-                        Math.floor(
-                            Math.random() *
-                            characters.length
-                        )
-                    ];
-
-            }
-
-
-            return (
-                code.substring(0, 4)
-                + "-"
-                + code.substring(4)
-            );
-
-        }
-
-
-        generateButton.addEventListener(
-            "click",
-            function() {
-
-                const code =
-                    generateCode();
-
-
-                codeBox.textContent =
-                    code;
-
-
-                codeInput.value =
-                    code;
-
-
-                status.textContent =
-                    "Code generated.";
-
-            }
-        );
-
-
-        /* ========================================
-           COPY CODE
-           ======================================== */
-
-        copyCodeButton.addEventListener(
-            "click",
-            async function() {
-
-                const code =
-                    codeBox.textContent;
-
-
-                if (code === "----") {
-                    return;
-                }
-
-
-                await navigator.clipboard.writeText(
-                    code
-                );
-
-
-                copyCodeButton.textContent =
-                    "COPIED!";
-
-
-                setTimeout(
-                    function() {
-
-                        copyCodeButton.textContent =
-                            "COPY CODE";
-
-                    },
-                    1000
-                );
-
-            }
-        );
-
-
-        /* ========================================
-           JOIN ROOM
-           ======================================== */
-
-        joinButton.addEventListener(
-            "click",
-            function() {
-        
-                const username =
-                    usernameInput.value
-                        .trim();
-        
-                const code =
-                    codeInput.value
-                        .trim()
-                        .toUpperCase();
-        
-        
-                // Username is required
-        
-                if (username.length === 0) {
-        
-                    status.textContent =
-                        "Please enter a username.";
-        
-                    usernameInput.focus();
-        
-                    return;
-                }
-        
-        
-                // Message Code is required
-        
-                if (code.length === 0) {
-        
-                    status.textContent =
-                        "Enter a Message Code.";
-        
-                    codeInput.focus();
-        
-                    return;
-                }
-        
-        
-                status.textContent =
-                    "Joining " + code + "...";
-        
-        
-                socket.emit(
-                    "joinRoom",
-                    {
-                        code: code,
-                        username: username
-                    }
-                );
-        
-            }
-        );
-
-        /* ========================================
-           SUCCESSFULLY JOINED ROOM
-           ======================================== */
-
-        socket.on(
-            "joinedRoom",
-            function(code) {
-
-                status.textContent =
-                    "Connected to " + code;
-
-
-                chat.style.display =
-                    "flex";
-
-
-                messageInput.focus();
-
-            }
-        );
-
-
-        /* ========================================
-           SEND MESSAGE
-           ======================================== */
-
-        function sendMessage() {
-
-            const text =
-                messageInput.value.trim();
-
-
-            if (text.length === 0) {
-                return;
-            }
-
-
-            socket.emit(
-                "sendMessage",
-                text
-            );
-
-
-            messageInput.value = "";
-
-        }
-
-
-        sendButton.addEventListener(
-            "click",
-            sendMessage
-        );
-
-
-        messageInput.addEventListener(
-            "keydown",
-            function(event) {
-
-                if (event.key === "Enter") {
-
-                    sendMessage();
-
-                }
-
-            }
-        );
-
-
-        /* ========================================
-           RECEIVE MESSAGE
-           ======================================== */
-
-        socket.on(
-            "receiveMessage",
-            function(data) {
-
-                const message =
-                    document.createElement("div");
-
-
-                message.classList.add(
-                    "message"
-                );
-
-
-                /*
-                   Check who sent the message.
-
-                   If the sender's socket ID
-                   matches our socket ID,
-                   it's OUR message.
-                */
-
-                if (
-                    data.sender === socket.id
-                ) {
-
-                    message.classList.add(
-                        "messageMine"
-                    );
-
-                } else {
-
-                    message.classList.add(
-                        "messageOther"
-                    );
-
-                }
-
-
-                message.textContent =
-                    data.text;
-
-
-                messages.appendChild(
-                    message
-                );
-
-
-                messages.scrollTop =
-                    messages.scrollHeight;
-
-            }
-        );
-
-    </script>
+    <script src="script.js"></script>
 
 </body>
 
