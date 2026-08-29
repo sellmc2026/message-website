@@ -349,3 +349,27 @@ socket.on(
 
     }
 );
+
+socket.on(
+    "userJoined",
+    function(username) {
+
+        const message =
+            document.createElement("div");
+
+        message.classList.add(
+            "systemMessage"
+        );
+
+        message.textContent =
+            username + " joined the room.";
+
+        messages.appendChild(
+            message
+        );
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+    }
+);
