@@ -41,37 +41,63 @@ io.on("connection", (socket) => {
     // JOIN MESSAGE CODE
     // ========================================
 
-    socket.on("joinRoom", (code) => {
+    socket.on("joinRoom", (data) => {
 
-        code = code.trim().toUpperCase();
-
-        if (!code) {
+        if (!data || typeof data !== "object") {
             return;
         }
-
-
+    
+    
+        let code =
+            typeof data.code === "string"
+                ? data.code.trim().toUpperCase()
+                : "";
+    
+    
+        let username =
+            typeof data.username === "string"
+                ? data.username.trim()
+                : "";
+    
+    
+        if (!code || !username) {
+            return;
+        }
+    
+    
         // Leave any previous room
-
+    
         if (socket.currentRoom) {
             socket.leave(socket.currentRoom);
         }
-
-
+    
+    
+        // Store username on this connection
+    
+        socket.username =
+            username;
+    
+    
         // Join the new room
-
+    
         socket.join(code);
-
-        socket.currentRoom = code;
-
+    
+        socket.currentRoom =
+            code;
+    
+    
         console.log(
-            `Someone joined room ${code}`
+            `${username} joined room ${code}`
         );
-
-
+    
+    
         // Tell the person they successfully joined
-
-        socket.emit("joinedRoom", code);
-
+    
+        socket.emit(
+            "joinedRoom",
+            code
+        );
+    
     });
 
 
