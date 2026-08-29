@@ -90,7 +90,11 @@ function generateCode() {
     let code = "";
 
 
-    for (let i = 0; i < 8; i++) {
+    for (
+        let i = 0;
+        i < 8;
+        i++
+    ) {
 
         code +=
             characters[
@@ -147,7 +151,9 @@ copyCodeButton.addEventListener(
             codeBox.textContent;
 
 
-        if (code === "----") {
+        if (
+            code === "----"
+        ) {
             return;
         }
 
@@ -186,13 +192,18 @@ joinButton.addEventListener(
         const username =
             usernameInput.value.trim();
 
+
         const code =
             codeInput.value
                 .trim()
                 .toUpperCase();
 
 
-        if (username.length === 0) {
+        /* Username required */
+
+        if (
+            username.length === 0
+        ) {
 
             status.textContent =
                 "Please enter a username.";
@@ -203,7 +214,11 @@ joinButton.addEventListener(
         }
 
 
-        if (username.length > 5) {
+        /* Username maximum length */
+
+        if (
+            username.length > 5
+        ) {
 
             status.textContent =
                 "Username must be 5 characters or less.";
@@ -214,7 +229,11 @@ joinButton.addEventListener(
         }
 
 
-        if (code.length === 0) {
+        /* Message Code required */
+
+        if (
+            code.length === 0
+        ) {
 
             status.textContent =
                 "Enter a Message Code.";
@@ -232,8 +251,11 @@ joinButton.addEventListener(
         socket.emit(
             "joinRoom",
             {
-                code: code,
-                username: username
+                code:
+                    code,
+
+                username:
+                    username
             }
         );
 
@@ -242,12 +264,260 @@ joinButton.addEventListener(
 
 
 /* ========================================
+   BROWSER PUSH NOTIFICATIONS
+   ======================================== */
+
+function urlBase64ToUint8Array(
+    base64String
+) {
+
+    const padding =
+        "=".repeat(
+            (4 -
+                base64String.length % 4
+            ) % 4
+        );
+
+
+    const base64 =
+        (
+            base64String +
+            padding
+        )
+        .replace(
+            /-/g,
+            "+"
+        )
+        .replace(
+            /_/g,
+            "/"
+        );
+
+
+    const rawData =
+        window.atob(base64);
+
+
+    const outputArray =
+        new Uint8Array(
+            rawData.length
+        );
+
+
+    for (
+        let i = 0;
+        i < rawData.length;
+        ++i
+    ) {
+
+        outputArray[i] =
+            rawData.charCodeAt(i);
+
+    }
+
+
+    return outputArray;
+
+}
+
+
+async function registerNotificationSystem(
+    roomCode
+) {
+
+    if (
+        !("serviceWorker" in navigator)
+    ) {
+
+        console.log(
+            "Service workers are not supported."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !("PushManager" in window)
+    ) {
+
+        console.log(
+            "Push notifications are not supported."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /* Register service worker */
+
+        const registration =
+            await navigator.serviceWorker.register(
+                "/sw.js"
+            );
+
+
+        console.log(
+            "Service worker registered."
+        );
+
+
+        /* Ask permission */
+
+        const permission =
+            await Notification.requestPermission();
+
+
+        if (
+            permission !== "granted"
+        ) {
+
+            console.log(
+                "Notification permission was not granted."
+            );
+
+            return;
+
+        }
+
+
+        /* Get VAPID public key */
+
+        const keyResponse =
+            await fetch(
+                "/api/vapid-public-key"
+            );
+
+
+        if (
+            !keyResponse.ok
+        ) {
+
+            throw new Error(
+                "Could not get VAPID public key."
+            );
+
+        }
+
+
+        const publicKey =
+            await keyResponse.text();
+
+
+        if (
+            !publicKey
+        ) {
+
+            throw new Error(
+                "VAPID public key is empty."
+            );
+
+        }
+
+
+        /* Check existing subscription */
+
+        let subscription =
+            await registration
+                .pushManager
+                .getSubscription();
+
+
+        /* Create subscription */
+
+        if (
+            !subscription
+        ) {
+
+            subscription =
+                await registration
+                    .pushManager
+                    .subscribe(
+                        {
+                            userVisibleOnly:
+                                true,
+
+                            applicationServerKey:
+                                urlBase64ToUint8Array(
+                                    publicKey
+                                )
+                        }
+                    );
+
+        }
+
+
+        /* Save subscription */
+
+        const saveResponse =
+            await fetch(
+                "/api/save-subscription",
+                {
+                    method:
+                        "POST",
+
+                    headers:
+                        {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                    body:
+                        JSON.stringify(
+                            {
+                                subscription:
+                                    subscription,
+
+                                socketId:
+                                    socket.id,
+
+                                room:
+                                    roomCode
+                            }
+                        )
+                }
+            );
+
+
+        if (
+            !saveResponse.ok
+        ) {
+
+            throw new Error(
+                "Server rejected push subscription."
+            );
+
+        }
+
+
+        console.log(
+            "Push notifications enabled!"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Notification setup failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ========================================
    SUCCESSFULLY JOINED ROOM
    ======================================== */
 
 socket.on(
     "joinedRoom",
-    function(code) {
+    async function(code) {
 
         status.textContent =
             "Connected to " + code;
@@ -258,6 +528,16 @@ socket.on(
 
 
         messageInput.focus();
+
+
+        /*
+           Now that we know the room,
+           register the push subscription.
+        */
+
+        await registerNotificationSystem(
+            code
+        );
 
     }
 );
@@ -273,7 +553,9 @@ function sendMessage() {
         messageInput.value.trim();
 
 
-    if (text.length === 0) {
+    if (
+        text.length === 0
+    ) {
         return;
     }
 
@@ -284,7 +566,8 @@ function sendMessage() {
     );
 
 
-    messageInput.value = "";
+    messageInput.value =
+        "";
 
 }
 
@@ -303,7 +586,9 @@ messageInput.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key === "Enter") {
+        if (
+            event.key === "Enter"
+        ) {
 
             event.preventDefault();
 
@@ -336,7 +621,9 @@ socket.on(
            YOUR MESSAGE
            ======================================== */
 
-        if (data.sender === socket.id) {
+        if (
+            data.sender === socket.id
+        ) {
 
             message.classList.add(
                 "messageMine"
@@ -370,13 +657,15 @@ socket.on(
                 "]";
 
 
-            /* ========================================
-               MESSAGE SOUND
-               ======================================== */
+            /* Message sound */
 
-            if (!muted) {
+            if (
+                !muted
+            ) {
 
-                audio.currentTime = 0;
+                audio.currentTime =
+                    0;
+
 
                 audio.play().catch(
                     function() {}
@@ -417,7 +706,8 @@ socket.on(
 
 
         message.textContent =
-            username + " joined the room.";
+            username +
+            " joined the room.";
 
 
         messages.appendChild(
@@ -430,121 +720,6 @@ socket.on(
 
     }
 );
-
-
-/* ========================================
-   BROWSER NOTIFICATIONS
-   ======================================== */
-
-async function registerNotificationSystem() {
-
-    if (
-        !("serviceWorker" in navigator) ||
-        !("PushManager" in window)
-    ) {
-
-        console.log(
-            "Push notifications are not supported."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        /* Register sw.js */
-
-        const registration =
-            await navigator.serviceWorker.register(
-                "sw.js"
-            );
-
-
-        console.log(
-            "Notification service worker registered."
-        );
-
-
-        /* Ask for notification permission */
-
-        const permission =
-            await Notification.requestPermission();
-
-
-        if (permission !== "granted") {
-
-            console.log(
-                "Notification permission was not granted."
-            );
-
-            return;
-
-        }
-
-
-        /* Check if already subscribed */
-
-        let subscription =
-            await registration.pushManager.getSubscription();
-
-
-        /* Create subscription if needed */
-
-        if (!subscription) {
-
-            subscription =
-                await registration.pushManager.subscribe({
-
-                    userVisibleOnly: true,
-
-                    applicationServerKey:
-                        "YOUR_PUBLIC_VAPID_KEY"
-
-                });
-
-        }
-
-
-        /* Send subscription to server */
-
-        await fetch(
-            "/api/save-subscription",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(subscription)
-
-            }
-        );
-
-
-        console.log(
-            "Push notifications enabled."
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Notification setup failed:",
-            error
-        );
-
-    }
-
-}
-
-
-registerNotificationSystem();
-
 
 
 
