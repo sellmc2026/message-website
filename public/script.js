@@ -38,6 +38,45 @@ const sendButton =
 const messages =
     document.getElementById("messages");
 
+const muteButton =
+    document.getElementById("muteButton");
+
+const muteIcon =
+    document.getElementById("muteIcon");
+
+
+/* ========================================
+   MUTE / UNMUTE
+   ======================================== */
+
+let muted = false;
+
+const audio =
+    new Audio("chatSound.mp3");
+
+
+muteButton.addEventListener(
+    "click",
+    function() {
+
+        muted = !muted;
+
+
+        if (muted) {
+
+            muteIcon.src =
+                "mute.png";
+
+        } else {
+
+            muteIcon.src =
+                "unmute.png";
+
+        }
+
+    }
+);
+
 
 /* ========================================
    GENERATE MESSAGE CODE
@@ -336,6 +375,21 @@ socket.on(
                 data.text +
                 "]";
 
+
+            /* ========================================
+               MESSAGE SOUND
+               ======================================== */
+
+            if (!muted) {
+
+                audio.currentTime = 0;
+
+                audio.play().catch(
+                    function() {}
+                );
+
+            }
+
         }
 
 
@@ -349,6 +403,11 @@ socket.on(
 
     }
 );
+
+
+/* ========================================
+   USER JOINED
+   ======================================== */
 
 socket.on(
     "userJoined",
