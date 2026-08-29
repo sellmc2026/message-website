@@ -104,10 +104,12 @@ io.on("connection", (socket) => {
 
         io.to(socket.currentRoom).emit(
             "receiveMessage",
-            message
+            {
+                sender: socket.id,
+                text: message
+            }
         );
-
-    });
+    );
 
 
     // ========================================
