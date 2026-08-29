@@ -1,0 +1,12 @@
+{
+  "name": "message-website",
+  "version": "1.0.0",
+  "description": "Simple two-person text messaging system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
+}
