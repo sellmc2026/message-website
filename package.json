@@ -8,5 +8,6 @@
   },
   "dependencies": {
     "socket.io": "^4.8.1"
+    "web-push": "^3.6.7"
   }
 }
