@@ -7,73 +7,43 @@ self.addEventListener(
             text: "You received a new message."
         };
 
-
         try {
-
             if (event.data) {
-
-                data =
-                    event.data.json();
-
+                data = event.data.json();
             }
-
         } catch (error) {
-
-            console.log(
-                "Could not read push data."
+            console.error(
+                "Could not read push data:",
+                error
             );
-
         }
 
-
         const title =
-            data.username +
-            " sent a message";
-
+            data.username + " sent a message";
 
         const options = {
-
-            body:
-                data.text,
-
-            icon:
-                "/images/icon.png",
-
-            badge:
-                "/images/icon.png",
-
-            tag:
-                "chat-message",
-
-            renotify:
-                true
-
+            body: data.text,
+            icon: "/icon.png",
+            badge: "/icon.png",
+            tag: "chat-message",
+            renotify: true
         };
 
-
         event.waitUntil(
-
             self.registration.showNotification(
                 title,
                 options
             )
-
         );
-
     }
 );
 
-
-/* ========================================
-   NOTIFICATION CLICK
-   ======================================== */
 
 self.addEventListener(
     "notificationclick",
     function(event) {
 
         event.notification.close();
-
 
         event.waitUntil(
 
@@ -82,36 +52,23 @@ self.addEventListener(
                 includeUncontrolled: true
             })
 
-            .then(
-                function(clientList) {
+            .then(function(clientList) {
 
-                    for (
-                        const client of clientList
-                    ) {
+                for (
+                    const client of clientList
+                ) {
 
-                        if (
-                            "focus" in client
-                        ) {
-
-                            return client.focus();
-
-                        }
-
-                    }
-
-
-                    if (
-                        clients.openWindow
-                    ) {
-
-                        return clients.openWindow(
-                            "/"
-                        );
-
+                    if ("focus" in client) {
+                        return client.focus();
                     }
 
                 }
-            )
+
+                if (clients.openWindow) {
+                    return clients.openWindow("/");
+                }
+
+            })
 
         );
 
