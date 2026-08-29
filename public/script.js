@@ -192,8 +192,6 @@ joinButton.addEventListener(
                 .toUpperCase();
 
 
-        /* Username required */
-
         if (username.length === 0) {
 
             status.textContent =
@@ -205,8 +203,6 @@ joinButton.addEventListener(
         }
 
 
-        /* Username maximum length */
-
         if (username.length > 5) {
 
             status.textContent =
@@ -217,8 +213,6 @@ joinButton.addEventListener(
             return;
         }
 
-
-        /* Message Code required */
 
         if (code.length === 0) {
 
@@ -416,19 +410,147 @@ socket.on(
         const message =
             document.createElement("div");
 
+
         message.classList.add(
             "systemMessage"
         );
 
+
         message.textContent =
             username + " joined the room.";
+
 
         messages.appendChild(
             message
         );
+
 
         messages.scrollTop =
             messages.scrollHeight;
 
     }
 );
+
+
+/* ========================================
+   BROWSER NOTIFICATIONS
+   ======================================== */
+
+async function registerNotificationSystem() {
+
+    if (
+        !("serviceWorker" in navigator) ||
+        !("PushManager" in window)
+    ) {
+
+        console.log(
+            "Push notifications are not supported."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /* Register sw.js */
+
+        const registration =
+            await navigator.serviceWorker.register(
+                "sw.js"
+            );
+
+
+        console.log(
+            "Notification service worker registered."
+        );
+
+
+        /* Ask for notification permission */
+
+        const permission =
+            await Notification.requestPermission();
+
+
+        if (permission !== "granted") {
+
+            console.log(
+                "Notification permission was not granted."
+            );
+
+            return;
+
+        }
+
+
+        /* Check if already subscribed */
+
+        let subscription =
+            await registration.pushManager.getSubscription();
+
+
+        /* Create subscription if needed */
+
+        if (!subscription) {
+
+            subscription =
+                await registration.pushManager.subscribe({
+
+                    userVisibleOnly: true,
+
+                    applicationServerKey:
+                        "YOUR_PUBLIC_VAPID_KEY"
+
+                });
+
+        }
+
+
+        /* Send subscription to server */
+
+        await fetch(
+            "/api/save-subscription",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(subscription)
+
+            }
+        );
+
+
+        console.log(
+            "Push notifications enabled."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Notification setup failed:",
+            error
+        );
+
+    }
+
+}
+
+
+registerNotificationSystem();
+
+
+
+
+
+
+
+
+
+
