@@ -7,7 +7,7 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <link
@@ -21,20 +21,24 @@
 
     <style>
 
-        /* Join */
+        /* ========================================
+           JOIN MESSAGE
+           ======================================== */
+
         .systemMessage {
             align-self: flex-start;
-        
+
             color: #000000;
 
             background-color: #FFE658;
-        
+
             font-size: 13px;
 
-            padding: 15px
-        
+            padding: 15px;
+
             margin: 5px 0;
         }
+
 
         html,
         body {
@@ -237,10 +241,12 @@
             background-color: #8FFF3D;
         }
 
-        /* =================================
-           MUTE/UNMUTE BUTTON
-           ================================= */
-         #muteButton {
+
+        /* ========================================
+           MUTE / UNMUTE BUTTON
+           ======================================== */
+
+        #muteButton {
 
             width: 130%;
 
@@ -267,7 +273,20 @@
         #muteButton:hover {
 
             background-color: #808080;
+
             color: #000000;
+        }
+
+
+        #muteButton img {
+
+            width: 25px;
+
+            height: 25px;
+
+            display: block;
+
+            margin: auto;
         }
 
 
@@ -592,8 +611,19 @@
                 GENERATE MESSAGE CODE
             </button>
 
+
+            <!-- ========================================
+                 MUTE BUTTON
+                 ======================================== -->
+
             <button id="muteButton">
-                <img src="mute.png" alt="Mute">
+
+                <img
+                    id="muteIcon"
+                    src="unmute.png"
+                    alt="Mute"
+                >
+
             </button>
 
 
@@ -664,23 +694,13 @@
 
     <script src="/socket.io/socket.io.js"></script>
 
-    <script>
-        
-        let muted = false;
 
-        muteButton.addEventListener("click", () => {
-            muted = !muted;
-        
-            if (muted) {
-                muteIcon.src = "mute.png";
-            } else {
-                muteIcon.src = "unmute.png";
-            }
-        });
-        
-    </script>
+    <!-- ========================================
+         YOUR JAVASCRIPT
+         ======================================== -->
 
     <script src="script.js"></script>
+
 
 </body>
 
