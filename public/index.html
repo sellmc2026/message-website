@@ -152,6 +152,38 @@
 
 
         /* ========================================
+           GENERATE BUTTON
+           ======================================== */
+
+        #generateButton {
+
+            width: 100%;
+
+            padding: 12px;
+
+            box-sizing: border-box;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background-color: #BEFF8F;
+            color: #000000;
+
+            border: 2px solid #000000;
+        }
+
+
+        #generateButton:hover {
+            background-color: #8FFF3D;
+        }
+
+
+        /* ========================================
            DIVIDER
            ======================================== */
 
@@ -167,7 +199,7 @@
 
 
         /* ========================================
-           INPUT
+           JOIN INPUT
            ======================================== */
 
         #codeInput {
@@ -197,10 +229,9 @@
 
 
         /* ========================================
-           BUTTONS
+           JOIN BUTTON
            ======================================== */
 
-        #generateButton,
         #joinButton {
 
             width: 100%;
@@ -216,25 +247,6 @@
             font-weight: bold;
 
             cursor: pointer;
-        }
-
-
-        #generateButton {
-
-            background-color: #BEFF8F;
-            color: #000000;
-
-            border: 2px solid #000000;
-        }
-
-
-        #generateButton:hover {
-
-            background-color: #8FFF3D;
-        }
-
-
-        #joinButton {
 
             background-color: #444444;
             color: #ffffff;
@@ -244,7 +256,6 @@
 
 
         #joinButton:hover {
-
             background-color: #555555;
         }
 
@@ -270,48 +281,90 @@
            ======================================== */
 
         #chat {
+
             display: none;
-        
-            width: 60%;
-        
+
+            width: 100%;
+
             flex-direction: column;
-        
+
             gap: 10px;
         }
-        
-        
+
+
+        /* ========================================
+           MESSAGES
+           ======================================== */
+
+        #messages {
+
+            width: 100%;
+
+            height: 300px;
+
+            box-sizing: border-box;
+
+            padding: 12px;
+
+            overflow-y: auto;
+
+            background-color: #181818;
+
+            border: 2px solid #444444;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
         .message {
+
             max-width: 70%;
-        
+
             padding: 10px 14px;
-        
+
             border-radius: 12px;
-        
+
             word-wrap: break-word;
         }
-        
-        
-        /* YOUR messages */
-        
+
+
+        /* ========================================
+           YOUR MESSAGES
+           ======================================== */
+
         .messageMine {
+
             align-self: flex-end;
-        
+
             background-color: #8EFF3B;
-        
+
             color: #000000;
         }
-        
-        
-        /* OTHER person's messages */
-        
+
+
+        /* ========================================
+           OTHER PERSON'S MESSAGES
+           ======================================== */
+
         .messageOther {
+
             align-self: flex-start;
-        
+
             background-color: #444444;
-        
+
             color: #ffffff;
         }
 
+
+        /* ========================================
+           MESSAGE INPUT
+           ======================================== */
 
         #messageRow {
 
@@ -335,6 +388,7 @@
             color: #ffffff;
 
             border: 2px solid #555555;
+
             border-radius: 8px;
 
             outline: none;
@@ -343,14 +397,26 @@
         }
 
 
+        #messageInput:focus {
+
+            border-color: #BEFF8F;
+        }
+
+
+        /* ========================================
+           SEND BUTTON
+           ======================================== */
+
         #sendButton {
 
             padding: 11px 18px;
 
             background-color: #BEFF8F;
+
             color: #000000;
 
             border: 2px solid #000000;
+
             border-radius: 8px;
 
             font-weight: bold;
@@ -470,14 +536,21 @@
 
 
     <!-- ========================================
-         JAVASCRIPT
+         SOCKET.IO
          ======================================== -->
 
     <script src="/socket.io/socket.io.js"></script>
+
+
+    <!-- ========================================
+         JAVASCRIPT
+         ======================================== -->
+
     <script>
-        
+
         const socket = io();
-        
+
+
         const codeBox =
             document.getElementById("codeBox");
 
@@ -520,6 +593,7 @@
 
             let code = "";
 
+
             for (let i = 0; i < 8; i++) {
 
                 code +=
@@ -532,9 +606,12 @@
 
             }
 
-            return code.substring(0, 4)
+
+            return (
+                code.substring(0, 4)
                 + "-"
-                + code.substring(4);
+                + code.substring(4)
+            );
 
         }
 
@@ -546,11 +623,14 @@
                 const code =
                     generateCode();
 
+
                 codeBox.textContent =
                     code;
 
+
                 codeInput.value =
                     code;
+
 
                 status.textContent =
                     "Code generated.";
@@ -570,16 +650,20 @@
                 const code =
                     codeBox.textContent;
 
+
                 if (code === "----") {
                     return;
                 }
+
 
                 await navigator.clipboard.writeText(
                     code
                 );
 
+
                 copyCodeButton.textContent =
                     "COPIED!";
+
 
                 setTimeout(
                     function() {
@@ -596,51 +680,60 @@
 
 
         /* ========================================
-           JOIN
+           JOIN ROOM
            ======================================== */
 
         joinButton.addEventListener(
             "click",
             function() {
-        
+
                 const code =
                     codeInput.value
                         .trim()
                         .toUpperCase();
-        
+
+
                 if (code.length === 0) {
-        
+
                     status.textContent =
                         "Enter a Message Code.";
-        
+
                     return;
+
                 }
 
-                socket.on(
-                    "joinedRoom",
-                    function(code) {
-                
-                        status.textContent =
-                            "Connected to " + code;
-                
-                        chat.style.display =
-                            "flex";
-                
-                        messageInput.focus();
-                
-                    }
-                );
-        
-        
+
                 status.textContent =
                     "Joining " + code + "...";
-        
-        
+
+
                 socket.emit(
                     "joinRoom",
                     code
                 );
-        
+
+            }
+        );
+
+
+        /* ========================================
+           SUCCESSFULLY JOINED ROOM
+           ======================================== */
+
+        socket.on(
+            "joinedRoom",
+            function(code) {
+
+                status.textContent =
+                    "Connected to " + code;
+
+
+                chat.style.display =
+                    "flex";
+
+
+                messageInput.focus();
+
             }
         );
 
@@ -653,45 +746,22 @@
 
             const text =
                 messageInput.value.trim();
-        
+
+
             if (text.length === 0) {
                 return;
             }
-        
-        
+
+
             socket.emit(
                 "sendMessage",
                 text
             );
-        
-        
-            messageInput.value = "";
-        
-        }
 
-        socket.on(
-            "receiveMessage",
-            function(text) {
-        
-                const message =
-                    document.createElement("div");
-        
-                message.className =
-                    "message";
-        
-                message.textContent =
-                    text;
-        
-                messages.appendChild(
-                    message
-                );
-        
-        
-                messages.scrollTop =
-                    messages.scrollHeight;
-        
-            }
-        );
+
+            messageInput.value = "";
+
+        }
 
 
         sendButton.addEventListener(
@@ -709,6 +779,64 @@
                     sendMessage();
 
                 }
+
+            }
+        );
+
+
+        /* ========================================
+           RECEIVE MESSAGE
+           ======================================== */
+
+        socket.on(
+            "receiveMessage",
+            function(data) {
+
+                const message =
+                    document.createElement("div");
+
+
+                message.classList.add(
+                    "message"
+                );
+
+
+                /*
+                   Check who sent the message.
+
+                   If the sender's socket ID
+                   matches our socket ID,
+                   it's OUR message.
+                */
+
+                if (
+                    data.sender === socket.id
+                ) {
+
+                    message.classList.add(
+                        "messageMine"
+                    );
+
+                } else {
+
+                    message.classList.add(
+                        "messageOther"
+                    );
+
+                }
+
+
+                message.textContent =
+                    data.text;
+
+
+                messages.appendChild(
+                    message
+                );
+
+
+                messages.scrollTop =
+                    messages.scrollHeight;
 
             }
         );
