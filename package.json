@@ -1,7 +1,7 @@
 {
   "name": "message-website",
   "version": "1.0.0",
-  "description": "Simple two-person text messaging system.",
+  "description": "Simple two-person text messaging system",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
