@@ -592,6 +592,10 @@
                 GENERATE MESSAGE CODE
             </button>
 
+            <button id="muteButton">
+                <img src="mute.png" alt="Mute">
+            </button>
+
 
             <!-- ========================================
                  DIVIDER
@@ -660,10 +664,21 @@
 
     <script src="/socket.io/socket.io.js"></script>
 
+    <script>
+        
+        let muted = false;
 
-    <!-- ========================================
-         YOUR JAVASCRIPT
-         ======================================== -->
+        muteButton.addEventListener("click", () => {
+            muted = !muted;
+        
+            if (muted) {
+                muteIcon.src = "mute.png";
+            } else {
+                muteIcon.src = "unmute.png";
+            }
+        });
+        
+    </script>
 
     <script src="script.js"></script>
 
