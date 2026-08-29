@@ -47,43 +47,42 @@ io.on("connection", (socket) => {
             return;
         }
     
-    
         let code =
             typeof data.code === "string"
                 ? data.code.trim().toUpperCase()
                 : "";
-    
     
         let username =
             typeof data.username === "string"
                 ? data.username.trim()
                 : "";
     
-    
         if (!code || !username) {
             return;
         }
     
+        if (username.length > 5) {
+            return;
+        }
     
-        // Leave any previous room
+    
+        // Leave previous room
     
         if (socket.currentRoom) {
             socket.leave(socket.currentRoom);
         }
     
     
-        // Store username on this connection
+        // SAVE USERNAME
     
-        socket.username =
-            username;
+        socket.username = username;
     
     
-        // Join the new room
+        // Join room
     
         socket.join(code);
     
-        socket.currentRoom =
-            code;
+        socket.currentRoom = code;
     
     
         console.log(
@@ -91,15 +90,12 @@ io.on("connection", (socket) => {
         );
     
     
-        // Tell the person they successfully joined
-    
         socket.emit(
             "joinedRoom",
             code
         );
     
     });
-
 
     // ========================================
     // SEND MESSAGE
@@ -110,32 +106,27 @@ io.on("connection", (socket) => {
         if (!socket.currentRoom) {
             return;
         }
-
-
+    
         if (typeof message !== "string") {
             return;
         }
-
-
+    
         message = message.trim();
-
-
+    
         if (!message) {
             return;
         }
-
-
-        // Send the message to everyone
-        // in the same Message Code room
-
+    
+    
         io.to(socket.currentRoom).emit(
             "receiveMessage",
             {
                 sender: socket.id,
+                username: socket.username,
                 text: message
             }
         );
-
+    
     });
 
 
