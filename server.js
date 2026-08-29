@@ -83,6 +83,8 @@ io.on("connection", (socket) => {
         socket.join(code);
     
         socket.currentRoom = code;
+
+        io.to(code).emit("userJoined", username);
     
     
         console.log(
