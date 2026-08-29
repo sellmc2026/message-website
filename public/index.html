@@ -488,6 +488,15 @@
                  ======================================== -->
 
             <input
+                id="usernameInput"
+                type="text"
+                placeholder="Enter a username"
+                maxlength="20"
+                autocomplete="off"
+            >
+            
+            
+            <input
                 id="codeInput"
                 type="text"
                 placeholder="Enter Message Code"
@@ -560,6 +569,9 @@
         const generateButton =
             document.getElementById("generateButton");
 
+        const usernameInput =
+            document.getElementById("usernameInput");
+        
         const codeInput =
             document.getElementById("codeInput");
 
@@ -686,35 +698,57 @@
         joinButton.addEventListener(
             "click",
             function() {
-
+        
+                const username =
+                    usernameInput.value
+                        .trim();
+        
                 const code =
                     codeInput.value
                         .trim()
                         .toUpperCase();
-
-
+        
+        
+                // Username is required
+        
+                if (username.length === 0) {
+        
+                    status.textContent =
+                        "Please enter a username.";
+        
+                    usernameInput.focus();
+        
+                    return;
+                }
+        
+        
+                // Message Code is required
+        
                 if (code.length === 0) {
-
+        
                     status.textContent =
                         "Enter a Message Code.";
-
+        
+                    codeInput.focus();
+        
                     return;
-
                 }
-
-
+        
+        
                 status.textContent =
                     "Joining " + code + "...";
-
-
+        
+        
                 socket.emit(
                     "joinRoom",
-                    code
+                    {
+                        code: code,
+                        username: username
+                    }
                 );
-
+        
             }
         );
-
 
         /* ========================================
            SUCCESSFULLY JOINED ROOM
