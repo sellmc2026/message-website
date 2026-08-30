@@ -630,40 +630,89 @@
            ID BUTTON
            ======================================== */
 
-        #idButton {
-
+        #topButtons {
             position: fixed;
-
+        
             top: 20px;
             right: 70px;
-
+        
+            display: flex;
+        
+            align-items: center;
+        
+            gap: 15px;
+        }
+        
+        
+        #idButton {
             padding: 11px 18px;
-
+        
             background-color: #545454;
-
+        
             color: #ffffff;
-
+        
             border: 4px solid #000000;
-
+        
             border-radius: 8px;
-
+        
             font-weight: bold;
-
+        
             cursor: pointer;
         }
-
-
+        
+        
         #idButton:hover {
-
             background-color: #212121;
         }
-
-
+        
+        
         .idRevealed {
-
             background-color: #ffffff;
-
             color: #000000;
+        }
+        
+        
+        /* ========================================
+           PROFILE BUTTON
+           ======================================== */
+        
+        #profileButton {
+        
+            width: 48px;
+            height: 48px;
+        
+            padding: 5px;
+        
+            background-color: #545454;
+        
+            border: 4px solid #000000;
+        
+            border-radius: 50%;
+        
+            cursor: pointer;
+        
+            display: flex;
+        
+            align-items: center;
+            justify-content: center;
+        
+            overflow: hidden;
+        }
+        
+        
+        #profileButton:hover {
+            background-color: #212121;
+        }
+        
+        
+        #profileButton img {
+        
+            width: 36px;
+            height: 36px;
+        
+            object-fit: contain;
+        
+            display: block;
         }
 
     </style>
