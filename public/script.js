@@ -50,22 +50,45 @@ const imageInput =
 const imageButton =
     document.getElementById("imageButton");
 
+const profileButton =
+    document.getElementById("profileButton");
+
+
+/* ========================================
+   SAVED USERNAME
+   ======================================== */
+
 const savedUsername =
     localStorage.getItem("messagrUsername");
 
 if (savedUsername) {
-    usernameInput.value = savedUsername;
+
+    usernameInput.value =
+        savedUsername;
+
 }
 
-const profileButton =
-    document.getElementById("profileButton");
+
+/* ========================================
+   IMAGE UPLOAD STATE
+   ======================================== */
+
+let imageUploadInProgress =
+    false;
+
+let imageUploadTimeout =
+    null;
+
+let currentImageLoadingMessage =
+    null;
 
 
 /* ========================================
    MUTE / UNMUTE
    ======================================== */
 
-let muted = false;
+let muted =
+    false;
 
 
 const audio =
@@ -96,10 +119,23 @@ muteButton.addEventListener(
 );
 
 
-profileButton.addEventListener("click", function() {
+/* ========================================
+   PROFILE BUTTON
+   ======================================== */
 
-    window.location.href = "https://messagr.uk/index.html";
-});
+if (profileButton) {
+
+    profileButton.addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}
 
 
 /* ========================================
@@ -111,7 +147,8 @@ function generateCode() {
     const characters =
         "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-    let code = "";
+    let code =
+        "";
 
 
     for (
@@ -279,6 +316,12 @@ joinButton.addEventListener(
 
         status.textContent =
             "Joining " + code + "...";
+
+
+        localStorage.setItem(
+            "messagrUsername",
+            username
+        );
 
 
         socket.emit(
@@ -566,6 +609,15 @@ socket.on(
 
 function sendMessage() {
 
+    if (
+        imageUploadInProgress
+    ) {
+
+        return;
+
+    }
+
+
     const text =
         messageInput.value.trim();
 
@@ -639,6 +691,15 @@ imageButton.addEventListener(
     "click",
     function() {
 
+        if (
+            imageUploadInProgress
+        ) {
+
+            return;
+
+        }
+
+
         imageInput.click();
 
     }
@@ -649,13 +710,6 @@ imageButton.addEventListener(
    IMAGE SELECTED
    ======================================== */
 
-let imageUploadInProgress = false;
-
-let imageUploadTimeout = null;
-
-let currentImageLoadingMessage = null;
-
-
 imageInput.addEventListener(
     "change",
     function() {
@@ -665,7 +719,9 @@ imageInput.addEventListener(
 
 
         if (!file) {
+
             return;
+
         }
 
 
@@ -681,7 +737,8 @@ imageInput.addEventListener(
                 "Please select an image."
             );
 
-            imageInput.value = "";
+            imageInput.value =
+                "";
 
             return;
 
@@ -701,7 +758,8 @@ imageInput.addEventListener(
                 "Image must be 4 MB or smaller."
             );
 
-            imageInput.value = "";
+            imageInput.value =
+                "";
 
             return;
 
@@ -720,7 +778,8 @@ imageInput.addEventListener(
                 "You are not connected to a room."
             );
 
-            imageInput.value = "";
+            imageInput.value =
+                "";
 
             return;
 
@@ -736,22 +795,26 @@ imageInput.addEventListener(
         }
 
 
-        imageUploadInProgress = true;
+        imageUploadInProgress =
+            true;
 
 
         /* ========================================
            DISABLE CHAT
            ======================================== */
 
-        messageInput.disabled = true;
+        messageInput.disabled =
+            true;
 
-        sendButton.disabled = true;
+        sendButton.disabled =
+            true;
 
-        imageButton.disabled = true;
+        imageButton.disabled =
+            true;
 
 
         /* ========================================
-           CREATE IMAGE PREVIEW SIZE
+           CREATE IMAGE PREVIEW
            ======================================== */
 
         const preview =
@@ -768,15 +831,11 @@ imageInput.addEventListener(
                     preview.naturalHeight;
 
 
-                /*
-                   Keep the same maximum
-                   dimensions as the actual
-                   image message.
-                */
+                const maxWidth =
+                    250;
 
-                const maxWidth = 250;
-
-                const maxHeight = 250;
+                const maxHeight =
+                    250;
 
 
                 if (
@@ -821,6 +880,7 @@ imageInput.addEventListener(
 
                 loadingMessage.classList.add(
                     "message",
+                    "messageMine",
                     "imageLoadingMessage"
                 );
 
@@ -833,6 +893,30 @@ imageInput.addEventListener(
                     height + "px";
 
 
+                loadingMessage.style.backgroundColor =
+                    "#555555";
+
+
+                loadingMessage.style.display =
+                    "flex";
+
+
+                loadingMessage.style.alignItems =
+                    "center";
+
+
+                loadingMessage.style.justifyContent =
+                    "center";
+
+
+                loadingMessage.style.padding =
+                    "0";
+
+
+                /* ========================================
+                   SPINNER
+                   ======================================== */
+
                 const spinner =
                     document.createElement("div");
 
@@ -840,6 +924,26 @@ imageInput.addEventListener(
                 spinner.classList.add(
                     "imageLoadingSpinner"
                 );
+
+
+                spinner.textContent =
+                    "⟳";
+
+
+                spinner.style.color =
+                    "#ffffff";
+
+
+                spinner.style.fontSize =
+                    "40px";
+
+
+                spinner.style.lineHeight =
+                    "1";
+
+
+                spinner.style.animation =
+                    "imageSpinner 1s linear infinite";
 
 
                 loadingMessage.appendChild(
@@ -861,7 +965,7 @@ imageInput.addEventListener(
 
 
                 /* ========================================
-                   START 7 SECOND TIMEOUT
+                   7 SECOND TIMEOUT
                    ======================================== */
 
                 imageUploadTimeout =
@@ -925,6 +1029,15 @@ imageInput.addEventListener(
                 reader.onload =
                     function() {
 
+                        if (
+                            !imageUploadInProgress
+                        ) {
+
+                            return;
+
+                        }
+
+
                         socket.emit(
                             "sendImage",
                             {
@@ -942,9 +1055,18 @@ imageInput.addEventListener(
                 reader.onerror =
                     function() {
 
-                        clearTimeout(
+                        if (
                             imageUploadTimeout
-                        );
+                        ) {
+
+                            clearTimeout(
+                                imageUploadTimeout
+                            );
+
+                            imageUploadTimeout =
+                                null;
+
+                        }
 
 
                         imageUploadInProgress =
@@ -985,11 +1107,16 @@ imageInput.addEventListener(
             };
 
 
+        /* ========================================
+           IMAGE PREVIEW ERROR
+           ======================================== */
+
         preview.onerror =
             function() {
 
                 imageUploadInProgress =
                     false;
+
 
                 messageInput.disabled =
                     false;
@@ -1000,6 +1127,7 @@ imageInput.addEventListener(
                 imageButton.disabled =
                     false;
 
+
                 showUploadError();
 
             };
@@ -1009,7 +1137,8 @@ imageInput.addEventListener(
             URL.createObjectURL(file);
 
 
-        imageInput.value = "";
+        imageInput.value =
+            "";
 
     }
 );
@@ -1061,6 +1190,7 @@ function showUploadError() {
     );
 
 }
+
 
 /* ========================================
    RECEIVE TEXT MESSAGE
@@ -1141,10 +1271,6 @@ socket.on(
    RECEIVE IMAGE
    ======================================== */
 
-/* ========================================
-   RECEIVE IMAGE
-   ======================================== */
-
 socket.on(
     "receiveImage",
     function(data) {
@@ -1167,7 +1293,9 @@ socket.on(
             data.sender === socket.id
         ) {
 
-            if (imageUploadTimeout) {
+            if (
+                imageUploadTimeout
+            ) {
 
                 clearTimeout(
                     imageUploadTimeout
@@ -1322,6 +1450,7 @@ socket.on(
     }
 );
 
+
 /* ========================================
    USER JOINED
    ======================================== */
@@ -1380,6 +1509,57 @@ socket.on(
         console.log(
             "Disconnected from server."
         );
+
+
+        /*
+           If the connection dies while
+           uploading, clean up the loading UI.
+        */
+
+        if (
+            imageUploadInProgress
+        ) {
+
+            if (
+                imageUploadTimeout
+            ) {
+
+                clearTimeout(
+                    imageUploadTimeout
+                );
+
+                imageUploadTimeout =
+                    null;
+
+            }
+
+
+            imageUploadInProgress =
+                false;
+
+
+            if (
+                currentImageLoadingMessage
+            ) {
+
+                currentImageLoadingMessage.remove();
+
+                currentImageLoadingMessage =
+                    null;
+
+            }
+
+
+            messageInput.disabled =
+                false;
+
+            sendButton.disabled =
+                false;
+
+            imageButton.disabled =
+                false;
+
+        }
 
     }
 );
