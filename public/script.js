@@ -1,17 +1,6 @@
 const socket = io();
 
 
-const usernameInput =
-    document.getElementById("usernameInput");
-
-const savedUsername =
-    localStorage.getItem("messagrUsername");
-
-if (savedUsername) {
-    usernameInput.value = savedUsername;
-}
-
-
 /* ========================================
    ELEMENTS
    ======================================== */
@@ -60,6 +49,13 @@ const imageInput =
 
 const imageButton =
     document.getElementById("imageButton");
+
+const savedUsername =
+    localStorage.getItem("messagrUsername");
+
+if (savedUsername) {
+    usernameInput.value = savedUsername;
+}
 
 
 /* ========================================
