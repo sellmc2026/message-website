@@ -1,1027 +1,875 @@
-const socket = io();
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const { Server } = require("socket.io");
+const webpush = require("web-push");
 
 
 /* ========================================
-   ELEMENTS
+   WEB PUSH
    ======================================== */
 
-const codeBox =
-    document.getElementById("codeBox");
+const VAPID_PUBLIC_KEY =
+    process.env.VAPID_PUBLIC_KEY;
 
-const copyCodeButton =
-    document.getElementById("copyCodeButton");
-
-const generateButton =
-    document.getElementById("generateButton");
-
-const usernameInput =
-    document.getElementById("usernameInput");
-
-const codeInput =
-    document.getElementById("codeInput");
-
-const joinButton =
-    document.getElementById("joinButton");
-
-const status =
-    document.getElementById("status");
-
-const chat =
-    document.getElementById("chat");
-
-const messageInput =
-    document.getElementById("messageInput");
-
-const sendButton =
-    document.getElementById("sendButton");
-
-const messages =
-    document.getElementById("messages");
-
-const muteButton =
-    document.getElementById("muteButton");
-
-const muteIcon =
-    document.getElementById("muteIcon");
-
-const imageInput =
-    document.getElementById("imageInput");
-
-const imageButton =
-    document.getElementById("imageButton");
+const VAPID_PRIVATE_KEY =
+    process.env.VAPID_PRIVATE_KEY;
 
 
-/* ========================================
-   MUTE / UNMUTE
-   ======================================== */
+if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
 
-let muted = false;
+    console.error(
+        "ERROR: VAPID keys are missing."
+    );
 
+} else {
 
-const audio =
-    new Audio("chatSound.mp3");
-
-
-muteButton.addEventListener(
-    "click",
-    function() {
-
-        muted =
-            !muted;
-
-
-        if (muted) {
-
-            muteIcon.src =
-                "mute.png";
-
-        } else {
-
-            muteIcon.src =
-                "unmute.png";
-
-        }
-
-    }
-);
-
-
-/* ========================================
-   GENERATE MESSAGE CODE
-   ======================================== */
-
-function generateCode() {
-
-    const characters =
-        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-    let code = "";
-
-
-    for (
-        let i = 0;
-        i < 8;
-        i++
-    ) {
-
-        code +=
-            characters[
-                Math.floor(
-                    Math.random() *
-                    characters.length
-                )
-            ];
-
-    }
-
-
-    return (
-        code.substring(0, 4)
-        + "-"
-        + code.substring(4)
+    webpush.setVapidDetails(
+        "mailto:notifications@example.com",
+        VAPID_PUBLIC_KEY,
+        VAPID_PRIVATE_KEY
     );
 
 }
 
 
-generateButton.addEventListener(
-    "click",
-    function() {
+/* ========================================
+   PUSH SUBSCRIPTIONS
+   ======================================== */
 
-        const code =
-            generateCode();
+/*
+   endpoint ->
+   {
+       subscription,
+       room,
+       socketId
+   }
+*/
 
-
-        codeBox.textContent =
-            code;
-
-
-        codeInput.value =
-            code;
-
-
-        status.textContent =
-            "Code generated.";
-
-    }
-);
+const pushSubscriptions =
+    new Map();
 
 
 /* ========================================
-   COPY MESSAGE CODE
+   HTTP SERVER
    ======================================== */
 
-copyCodeButton.addEventListener(
-    "click",
-    async function() {
-
-        const code =
-            codeBox.textContent;
-
-
-        if (
-            code === "----"
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            await navigator.clipboard.writeText(
-                code
-            );
-
-
-            copyCodeButton.textContent =
-                "COPIED!";
-
-
-            setTimeout(
-                function() {
-
-                    copyCodeButton.textContent =
-                        "COPY ROOM CODE";
-
-                },
-                1000
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Could not copy code:",
-                error
-            );
-
-        }
-
-    }
-);
-
-
-/* ========================================
-   JOIN ROOM
-   ======================================== */
-
-joinButton.addEventListener(
-    "click",
-    function() {
-
-        const username =
-            usernameInput.value.trim();
-
-        const code =
-            codeInput.value
-                .trim()
-                .toUpperCase();
-
-
-        if (
-            username.length === 0
-        ) {
-
-            status.textContent =
-                "Please enter a username.";
-
-            usernameInput.focus();
-
-            return;
-
-        }
-
-
-        if (
-            username.length > 5
-        ) {
-
-            status.textContent =
-                "Username must be 5 characters or less.";
-
-            usernameInput.focus();
-
-            return;
-
-        }
-
-
-        if (
-            code.length === 0
-        ) {
-
-            status.textContent =
-                "Enter a Message Code.";
-
-            codeInput.focus();
-
-            return;
-
-        }
-
-
-        status.textContent =
-            "Joining " + code + "...";
-
-
-        socket.emit(
-            "joinRoom",
-            {
-                code:
-                    code,
-
-                username:
-                    username
-            }
-        );
-
-    }
-);
-
-
-/* ========================================
-   BROWSER PUSH NOTIFICATIONS
-   ======================================== */
-
-function urlBase64ToUint8Array(
-    base64String
-) {
-
-    const padding =
-        "=".repeat(
-            (
-                4 -
-                base64String.length % 4
-            ) % 4
-        );
-
-
-    const base64 =
-        (
-            base64String +
-            padding
-        )
-        .replace(
-            /-/g,
-            "+"
-        )
-        .replace(
-            /_/g,
-            "/"
-        );
-
-
-    const rawData =
-        window.atob(base64);
-
-
-    const outputArray =
-        new Uint8Array(
-            rawData.length
-        );
-
-
-    for (
-        let i = 0;
-        i < rawData.length;
-        ++i
-    ) {
-
-        outputArray[i] =
-            rawData.charCodeAt(i);
-
-    }
-
-
-    return outputArray;
-
-}
-
-
-async function registerNotificationSystem(
-    roomCode
-) {
-
-    if (
-        !("serviceWorker" in navigator)
-    ) {
-
-        console.log(
-            "Service workers are not supported."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !("PushManager" in window)
-    ) {
-
-        console.log(
-            "Push notifications are not supported."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const registration =
-            await navigator.serviceWorker.register(
-                "/sw.js"
-            );
-
-
-        console.log(
-            "Service worker registered."
-        );
-
-
-        const permission =
-            await Notification.requestPermission();
-
-
-        if (
-            permission !== "granted"
-        ) {
-
-            console.log(
-                "Notification permission was not granted."
-            );
-
-            return;
-
-        }
-
-
-        const keyResponse =
-            await fetch(
+const server =
+    http.createServer(
+        async (request, response) => {
+
+            /* ========================================
+               VAPID PUBLIC KEY
+               ======================================== */
+
+            if (
+                request.url ===
                 "/api/vapid-public-key"
-            );
+            ) {
 
-
-        if (
-            !keyResponse.ok
-        ) {
-
-            throw new Error(
-                "Could not get VAPID public key."
-            );
-
-        }
-
-
-        const publicKey =
-            await keyResponse.text();
-
-
-        if (
-            !publicKey
-        ) {
-
-            throw new Error(
-                "VAPID public key is empty."
-            );
-
-        }
-
-
-        let subscription =
-            await registration
-                .pushManager
-                .getSubscription();
-
-
-        if (
-            !subscription
-        ) {
-
-            subscription =
-                await registration
-                    .pushManager
-                    .subscribe(
-                        {
-                            userVisibleOnly:
-                                true,
-
-                            applicationServerKey:
-                                urlBase64ToUint8Array(
-                                    publicKey
-                                )
-                        }
-                    );
-
-        }
-
-
-        const saveResponse =
-            await fetch(
-                "/api/save-subscription",
-                {
-                    method:
-                        "POST",
-
-                    headers:
-                        {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                    body:
-                        JSON.stringify(
-                            {
-                                subscription:
-                                    subscription,
-
-                                socketId:
-                                    socket.id,
-
-                                room:
-                                    roomCode
-                            }
-                        )
-                }
-            );
-
-
-        if (
-            !saveResponse.ok
-        ) {
-
-            throw new Error(
-                "Server rejected push subscription."
-            );
-
-        }
-
-
-        console.log(
-            "Push notifications enabled!"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Notification setup failed:",
-            error
-        );
-
-    }
-
-}
-
-
-/* ========================================
-   SUCCESSFULLY JOINED ROOM
-   ======================================== */
-
-socket.on(
-    "joinedRoom",
-    async function(code) {
-
-        status.textContent =
-            "Connected to " + code;
-
-
-        chat.style.display =
-            "flex";
-
-
-        messageInput.focus();
-
-
-        await registerNotificationSystem(
-            code
-        );
-
-    }
-);
-
-
-/* ========================================
-   SEND TEXT MESSAGE
-   ======================================== */
-
-function sendMessage() {
-
-    const text =
-        messageInput.value.trim();
-
-
-    if (
-        text.length === 0
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        !socket.connected
-    ) {
-
-        status.textContent =
-            "Not connected to server.";
-
-        return;
-
-    }
-
-
-    socket.emit(
-        "sendMessage",
-        text
-    );
-
-
-    messageInput.value =
-        "";
-
-}
-
-
-sendButton.addEventListener(
-    "click",
-    sendMessage
-);
-
-
-/* ========================================
-   ENTER TO SEND
-   ======================================== */
-
-messageInput.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Enter"
-        ) {
-
-            event.preventDefault();
-
-            sendMessage();
-
-        }
-
-    }
-);
-
-
-/* ========================================
-   IMAGE BUTTON
-   ======================================== */
-
-imageButton.addEventListener(
-    "click",
-    function() {
-
-        imageInput.click();
-
-    }
-);
-
-
-/* ========================================
-   IMAGE SELECTED
-   ======================================== */
-
-imageInput.addEventListener(
-    "change",
-    function() {
-
-        const file =
-            imageInput.files[0];
-
-
-        if (!file) {
-
-            return;
-
-        }
-
-
-        /* ========================================
-           CHECK FILE TYPE
-           ======================================== */
-
-        if (
-            !file.type.startsWith("image/")
-        ) {
-
-            alert(
-                "Please select an image."
-            );
-
-            imageInput.value =
-                "";
-
-            return;
-
-        }
-
-
-        /* ========================================
-           CHECK FILE SIZE
-           ======================================== */
-
-        if (
-            file.size >
-            5 * 1024 * 1024
-        ) {
-
-            alert(
-                "Image must be smaller than 5 MB."
-            );
-
-            imageInput.value =
-                "";
-
-            return;
-
-        }
-
-
-        /* ========================================
-           MAKE SURE USER IS IN A ROOM
-           ======================================== */
-
-        if (
-            !socket.connected
-        ) {
-
-            alert(
-                "You are not connected to a room."
-            );
-
-            imageInput.value =
-                "";
-
-            return;
-
-        }
-
-
-        /* ========================================
-           CONVERT IMAGE
-           ======================================== */
-
-        const reader =
-            new FileReader();
-
-
-        reader.onload =
-            function() {
-
-                socket.emit(
-                    "sendImage",
+                response.writeHead(
+                    200,
                     {
-                        image:
-                            reader.result,
-
-                        type:
-                            file.type
+                        "Content-Type":
+                            "text/plain"
                     }
                 );
 
-            };
-
-
-        reader.onerror =
-            function() {
-
-                alert(
-                    "Could not read the image."
+                response.end(
+                    VAPID_PUBLIC_KEY || ""
                 );
 
-            };
+                return;
+            }
 
 
-        reader.readAsDataURL(
-            file
-        );
+            /* ========================================
+               SAVE PUSH SUBSCRIPTION
+               ======================================== */
+
+            if (
+                request.url ===
+                    "/api/save-subscription" &&
+                request.method === "POST"
+            ) {
+
+                let body = "";
 
 
-        /* ========================================
-           RESET FILE INPUT
-           ======================================== */
+                request.on(
+                    "data",
+                    chunk => {
 
-        imageInput.value =
-            "";
+                        body += chunk;
 
-    }
-);
-
-
-/* ========================================
-   RECEIVE TEXT MESSAGE
-   ======================================== */
-
-socket.on(
-    "receiveMessage",
-    function(data) {
-
-        const message =
-            document.createElement("div");
+                    }
+                );
 
 
-        message.classList.add(
-            "message"
-        );
+                request.on(
+                    "end",
+                    () => {
+
+                        try {
+
+                            const data =
+                                JSON.parse(body);
 
 
-        if (
-            data.sender === socket.id
-        ) {
+                            const subscription =
+                                data.subscription;
 
-            message.classList.add(
-                "messageMine"
-            );
+                            const socketId =
+                                data.socketId;
 
-
-            message.textContent =
-                "[" +
-                data.text +
-                "]";
-
-        } else {
-
-            message.classList.add(
-                "messageOther"
-            );
+                            const room =
+                                typeof data.room ===
+                                "string"
+                                    ? data.room
+                                    : "";
 
 
-            message.textContent =
-                "[" +
-                data.username +
-                ": " +
-                data.text +
-                "]";
+                            if (
+                                !subscription ||
+                                !subscription.endpoint ||
+                                !socketId ||
+                                !room
+                            ) {
+
+                                response.writeHead(
+                                    400,
+                                    {
+                                        "Content-Type":
+                                            "application/json"
+                                    }
+                                );
+
+                                response.end(
+                                    JSON.stringify({
+                                        success: false
+                                    })
+                                );
+
+                                return;
+                            }
+
+
+                            /*
+                               Make sure this socket
+                               really belongs to this room.
+                            */
+
+                            const socket =
+                                io.sockets.sockets.get(
+                                    socketId
+                                );
+
+
+                            if (
+                                !socket ||
+                                socket.currentRoom !== room
+                            ) {
+
+                                response.writeHead(
+                                    403,
+                                    {
+                                        "Content-Type":
+                                            "application/json"
+                                    }
+                                );
+
+                                response.end(
+                                    JSON.stringify({
+                                        success: false
+                                    })
+                                );
+
+                                return;
+                            }
+
+
+                            pushSubscriptions.set(
+                                subscription.endpoint,
+                                {
+                                    subscription:
+                                        subscription,
+
+                                    room:
+                                        room,
+
+                                    socketId:
+                                        socketId
+                                }
+                            );
+
+
+                            console.log(
+                                "Push subscription saved for room " +
+                                room
+                            );
+
+
+                            response.writeHead(
+                                201,
+                                {
+                                    "Content-Type":
+                                        "application/json"
+                                }
+                            );
+
+                            response.end(
+                                JSON.stringify({
+                                    success: true
+                                })
+                            );
+
+
+                        } catch (error) {
+
+                            console.error(
+                                "Subscription error:",
+                                error
+                            );
+
+
+                            response.writeHead(
+                                400,
+                                {
+                                    "Content-Type":
+                                        "application/json"
+                                }
+                            );
+
+                            response.end(
+                                JSON.stringify({
+                                    success: false
+                                })
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                return;
+            }
+
+
+            /* ========================================
+               NORMAL WEBSITE FILES
+               ======================================== */
+
+            let requestedPath =
+                request.url.split("?")[0];
 
 
             if (
-                !muted
+                requestedPath === "/"
             ) {
 
-                audio.currentTime =
-                    0;
-
-
-                audio.play().catch(
-                    function() {}
-                );
+                requestedPath =
+                    "/index.html";
 
             }
 
+
+            /*
+               Prevent paths such as ../
+            */
+
+            const safePath =
+                path.normalize(
+                    requestedPath
+                );
+
+
+            if (
+                safePath.includes("..")
+            ) {
+
+                response.writeHead(
+                    403
+                );
+
+                response.end(
+                    "403 - Forbidden"
+                );
+
+                return;
+            }
+
+
+            const filePath =
+                path.join(
+                    __dirname,
+                    "public",
+                    safePath
+                );
+
+
+            fs.readFile(
+                filePath,
+                (error, data) => {
+
+                    if (error) {
+
+                        response.writeHead(
+                            404
+                        );
+
+                        response.end(
+                            "404 - Page not found"
+                        );
+
+                        return;
+                    }
+
+
+                    let contentType =
+                        "text/html";
+
+
+                    if (
+                        requestedPath.endsWith(
+                            ".js"
+                        )
+                    ) {
+
+                        contentType =
+                            "application/javascript";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".css"
+                        )
+                    ) {
+
+                        contentType =
+                            "text/css";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".png"
+                        )
+                    ) {
+
+                        contentType =
+                            "image/png";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".jpg"
+                        ) ||
+                        requestedPath.endsWith(
+                            ".jpeg"
+                        )
+                    ) {
+
+                        contentType =
+                            "image/jpeg";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".gif"
+                        )
+                    ) {
+
+                        contentType =
+                            "image/gif";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".webp"
+                        )
+                    ) {
+
+                        contentType =
+                            "image/webp";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".mp3"
+                        )
+                    ) {
+
+                        contentType =
+                            "audio/mpeg";
+
+                    } else if (
+                        requestedPath.endsWith(
+                            ".ico"
+                        )
+                    ) {
+
+                        contentType =
+                            "image/x-icon";
+
+                    }
+
+
+                    response.writeHead(
+                        200,
+                        {
+                            "Content-Type":
+                                contentType
+                        }
+                    );
+
+
+                    response.end(
+                        data
+                    );
+
+                }
+            );
+
         }
-
-
-        messages.appendChild(
-            message
-        );
-
-
-        messages.scrollTop =
-            messages.scrollHeight;
-
-    }
-);
+    );
 
 
 /* ========================================
-   RECEIVE IMAGE
+   SOCKET.IO
    ======================================== */
 
-socket.on(
-    "receiveImage",
-    function(data) {
-
-        if (
-            !data ||
-            !data.image
-        ) {
-
-            return;
-
-        }
-
-
-        const message =
-            document.createElement("div");
-
-
-        message.classList.add(
-            "message"
-        );
-
-
-        if (
-            data.sender === socket.id
-        ) {
-
-            message.classList.add(
-                "messageMine"
-            );
-
-        } else {
-
-            message.classList.add(
-                "messageOther"
-            );
-
-        }
-
-
-        /* ========================================
-           CREATE IMAGE
-           ======================================== */
-
-        const image =
-            document.createElement("img");
-
-
-        image.src =
-            data.image;
-
-
-        image.alt =
-            "Image sent by " +
-            (data.username || "user");
-
-
-        image.style.maxWidth =
-            "250px";
-
-
-        image.style.maxHeight =
-            "250px";
-
-
-        image.style.width =
-            "auto";
-
-
-        image.style.height =
-            "auto";
-
-
-        image.style.borderRadius =
-            "8px";
-
-
-        image.style.display =
-            "block";
-
-
-        image.style.objectFit =
-            "contain";
-
-
-        /* ========================================
-           ADD IMAGE TO MESSAGE
-           ======================================== */
-
-        message.appendChild(
-            image
-        );
-
-
-        messages.appendChild(
-            message
-        );
-
-
-        messages.scrollTop =
-            messages.scrollHeight;
-
-
-        /* ========================================
-           PLAY MESSAGE SOUND
-           ======================================== */
-
-        if (
-            data.sender !== socket.id &&
-            !muted
-        ) {
-
-            audio.currentTime =
-                0;
-
-
-            audio.play().catch(
-                function() {}
-            );
-
-        }
-
-    }
-);
+const io =
+    new Server(server);
 
 
 /* ========================================
-   USER JOINED
+   SOCKET CONNECTION
    ======================================== */
 
-socket.on(
-    "userJoined",
-    function(username) {
-
-        const message =
-            document.createElement("div");
-
-
-        message.classList.add(
-            "systemMessage"
-        );
-
-
-        message.textContent =
-            username +
-            " joined the room.";
-
-
-        messages.appendChild(
-            message
-        );
-
-
-        messages.scrollTop =
-            messages.scrollHeight;
-
-    }
-);
-
-
-/* ========================================
-   CONNECTION STATUS
-   ======================================== */
-
-socket.on(
-    "connect",
-    function() {
+io.on(
+    "connection",
+    (socket) => {
 
         console.log(
-            "Connected to server:",
-            socket.id
+            "Someone connected!"
+        );
+
+
+        /* ========================================
+           JOIN MESSAGE CODE
+           ======================================== */
+
+        socket.on(
+            "joinRoom",
+            (data) => {
+
+                if (
+                    !data ||
+                    typeof data !== "object"
+                ) {
+
+                    return;
+
+                }
+
+
+                let code =
+                    typeof data.code ===
+                    "string"
+                        ? data.code
+                            .trim()
+                            .toUpperCase()
+                        : "";
+
+
+                let username =
+                    typeof data.username ===
+                    "string"
+                        ? data.username.trim()
+                        : "";
+
+
+                if (
+                    !code ||
+                    !username
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    username.length > 5
+                ) {
+
+                    return;
+
+                }
+
+
+                /* ========================================
+                   LEAVE PREVIOUS ROOM
+                   ======================================== */
+
+                if (
+                    socket.currentRoom
+                ) {
+
+                    socket.leave(
+                        socket.currentRoom
+                    );
+
+                }
+
+
+                /* ========================================
+                   SAVE USERNAME
+                   ======================================== */
+
+                socket.username =
+                    username;
+
+
+                /* ========================================
+                   JOIN ROOM
+                   ======================================== */
+
+                socket.join(
+                    code
+                );
+
+
+                socket.currentRoom =
+                    code;
+
+
+                /* ========================================
+                   TELL EVERYONE SOMEONE JOINED
+                   ======================================== */
+
+                io.to(code).emit(
+                    "userJoined",
+                    username
+                );
+
+
+                console.log(
+                    `${username} joined room ${code}`
+                );
+
+
+                /* ========================================
+                   TELL PERSON WHO JOINED
+                   ======================================== */
+
+                socket.emit(
+                    "joinedRoom",
+                    code
+                );
+
+            }
+        );
+
+
+        /* ========================================
+           SEND TEXT MESSAGE
+           ======================================== */
+
+        socket.on(
+            "sendMessage",
+            async (message) => {
+
+                if (
+                    !socket.currentRoom
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    typeof message !==
+                    "string"
+                ) {
+
+                    return;
+
+                }
+
+
+                message =
+                    message.trim();
+
+
+                if (
+                    !message
+                ) {
+
+                    return;
+
+                }
+
+
+                /* ========================================
+                   NORMAL CHAT MESSAGE
+                   ======================================== */
+
+                io.to(
+                    socket.currentRoom
+                ).emit(
+                    "receiveMessage",
+                    {
+                        sender:
+                            socket.id,
+
+                        username:
+                            socket.username,
+
+                        text:
+                            message
+                    }
+                );
+
+
+                /* ========================================
+                   PUSH NOTIFICATIONS
+                   ======================================== */
+
+                if (
+                    !VAPID_PUBLIC_KEY ||
+                    !VAPID_PRIVATE_KEY
+                ) {
+
+                    return;
+
+                }
+
+
+                for (
+                    const [
+                        endpoint,
+                        saved
+                    ]
+                    of pushSubscriptions
+                ) {
+
+                    /*
+                       Only notify people
+                       in the same room.
+                    */
+
+                    if (
+                        saved.room !==
+                        socket.currentRoom
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    /*
+                       Don't notify the
+                       person who sent it.
+                    */
+
+                    if (
+                        saved.socketId ===
+                        socket.id
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    try {
+
+                        await webpush.sendNotification(
+                            saved.subscription,
+
+                            JSON.stringify({
+                                username:
+                                    socket.username,
+
+                                text:
+                                    message
+                            })
+                        );
+
+
+                        console.log(
+                            "Push notification sent."
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Push notification failed:",
+                            error.statusCode,
+                            error.message
+                        );
+
+
+                        /*
+                           404 / 410 usually means
+                           the subscription is no
+                           longer valid.
+                        */
+
+                        if (
+                            error.statusCode ===
+                                404 ||
+                            error.statusCode ===
+                                410
+                        ) {
+
+                            pushSubscriptions.delete(
+                                endpoint
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /* ========================================
+           SEND IMAGE
+           ======================================== */
+
+        socket.on(
+            "sendImage",
+            (data) => {
+
+                /* ========================================
+                   MAKE SURE USER IS IN A ROOM
+                   ======================================== */
+
+                if (
+                    !socket.currentRoom
+                ) {
+
+                    return;
+
+                }
+
+
+                /* ========================================
+                   VALIDATE DATA
+                   ======================================== */
+
+                if (
+                    !data ||
+                    typeof data !== "object"
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    !data.image ||
+                    !data.type
+                ) {
+
+                    return;
+
+                }
+
+
+                /* ========================================
+                   ONLY ALLOW IMAGES
+                   ======================================== */
+
+                if (
+                    typeof data.type !==
+                        "string" ||
+                    !data.type.startsWith(
+                        "image/"
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                /* ========================================
+                   SEND IMAGE TO ROOM
+                   ======================================== */
+
+                io.to(
+                    socket.currentRoom
+                ).emit(
+                    "receiveImage",
+                    {
+                        sender:
+                            socket.id,
+
+                        username:
+                            socket.username,
+
+                        image:
+                            data.image,
+
+                        type:
+                            data.type
+                    }
+                );
+
+
+                console.log(
+                    `${socket.username} sent an image in room ${socket.currentRoom}`
+                );
+
+            }
+        );
+
+
+        /* ========================================
+           DISCONNECT
+           ======================================== */
+
+        socket.on(
+            "disconnect",
+            () => {
+
+                console.log(
+                    "Someone disconnected."
+                );
+
+
+                /*
+                   IMPORTANT:
+                   We do NOT delete the push
+                   subscription here.
+
+                   This allows notifications
+                   to work when the user closes
+                   the webpage.
+                */
+
+            }
         );
 
     }
 );
 
 
-socket.on(
-    "disconnect",
-    function() {
+/* ========================================
+   START SERVER
+   ======================================== */
+
+server.listen(
+    process.env.PORT || 3000,
+    "0.0.0.0",
+    () => {
 
         console.log(
-            "Disconnected from server."
+            "Message server is running"
         );
 
     }
