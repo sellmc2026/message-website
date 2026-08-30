@@ -57,6 +57,7 @@ const imageButton =
 
 let muted = false;
 
+
 const audio =
     new Audio("chatSound.mp3");
 
@@ -65,7 +66,8 @@ muteButton.addEventListener(
     "click",
     function() {
 
-        muted = !muted;
+        muted =
+            !muted;
 
 
         if (muted) {
@@ -133,8 +135,10 @@ generateButton.addEventListener(
         codeBox.textContent =
             code;
 
+
         codeInput.value =
             code;
+
 
         status.textContent =
             "Code generated.";
@@ -164,24 +168,35 @@ copyCodeButton.addEventListener(
         }
 
 
-        await navigator.clipboard.writeText(
-            code
-        );
+        try {
+
+            await navigator.clipboard.writeText(
+                code
+            );
 
 
-        copyCodeButton.textContent =
-            "COPIED!";
+            copyCodeButton.textContent =
+                "COPIED!";
 
 
-        setTimeout(
-            function() {
+            setTimeout(
+                function() {
 
-                copyCodeButton.textContent =
-                    "COPY CODE";
+                    copyCodeButton.textContent =
+                        "COPY ROOM CODE";
 
-            },
-            1000
-        );
+                },
+                1000
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Could not copy code:",
+                error
+            );
+
+        }
 
     }
 );
@@ -204,8 +219,6 @@ joinButton.addEventListener(
                 .toUpperCase();
 
 
-        /* Username required */
-
         if (
             username.length === 0
         ) {
@@ -220,8 +233,6 @@ joinButton.addEventListener(
         }
 
 
-        /* Username maximum length */
-
         if (
             username.length > 5
         ) {
@@ -235,8 +246,6 @@ joinButton.addEventListener(
 
         }
 
-
-        /* Message Code required */
 
         if (
             code.length === 0
@@ -362,8 +371,6 @@ async function registerNotificationSystem(
 
     try {
 
-        /* Register service worker */
-
         const registration =
             await navigator.serviceWorker.register(
                 "/sw.js"
@@ -374,8 +381,6 @@ async function registerNotificationSystem(
             "Service worker registered."
         );
 
-
-        /* Ask permission */
 
         const permission =
             await Notification.requestPermission();
@@ -393,8 +398,6 @@ async function registerNotificationSystem(
 
         }
 
-
-        /* Get VAPID public key */
 
         const keyResponse =
             await fetch(
@@ -428,15 +431,11 @@ async function registerNotificationSystem(
         }
 
 
-        /* Check existing subscription */
-
         let subscription =
             await registration
                 .pushManager
                 .getSubscription();
 
-
-        /* Create subscription */
 
         if (
             !subscription
@@ -459,8 +458,6 @@ async function registerNotificationSystem(
 
         }
 
-
-        /* Save subscription */
 
         const saveResponse =
             await fetch(
@@ -539,11 +536,6 @@ socket.on(
         messageInput.focus();
 
 
-        /*
-           Now that we know the room,
-           register the push subscription.
-        */
-
         await registerNotificationSystem(
             code
         );
@@ -553,7 +545,7 @@ socket.on(
 
 
 /* ========================================
-   SEND MESSAGE
+   SEND TEXT MESSAGE
    ======================================== */
 
 function sendMessage() {
@@ -565,6 +557,18 @@ function sendMessage() {
     if (
         text.length === 0
     ) {
+
+        return;
+
+    }
+
+
+    if (
+        !socket.connected
+    ) {
+
+        status.textContent =
+            "Not connected to server.";
 
         return;
 
@@ -612,7 +616,7 @@ messageInput.addEventListener(
 
 
 /* ========================================
-   IMAGE UPLOAD BUTTON
+   IMAGE BUTTON
    ======================================== */
 
 imageButton.addEventListener(
@@ -644,7 +648,9 @@ imageInput.addEventListener(
         }
 
 
-        /* Make sure it is an image */
+        /* ========================================
+           CHECK FILE TYPE
+           ======================================== */
 
         if (
             !file.type.startsWith("image/")
@@ -662,7 +668,9 @@ imageInput.addEventListener(
         }
 
 
-        /* 5 MB limit */
+        /* ========================================
+           CHECK FILE SIZE
+           ======================================== */
 
         if (
             file.size >
@@ -681,11 +689,29 @@ imageInput.addEventListener(
         }
 
 
-        /*
-           Convert the image into a
-           data URL so Socket.IO can
-           send it.
-        */
+        /* ========================================
+           MAKE SURE USER IS IN A ROOM
+           ======================================== */
+
+        if (
+            !socket.connected
+        ) {
+
+            alert(
+                "You are not connected to a room."
+            );
+
+            imageInput.value =
+                "";
+
+            return;
+
+        }
+
+
+        /* ========================================
+           CONVERT IMAGE
+           ======================================== */
 
         const reader =
             new FileReader();
@@ -708,15 +734,24 @@ imageInput.addEventListener(
             };
 
 
+        reader.onerror =
+            function() {
+
+                alert(
+                    "Could not read the image."
+                );
+
+            };
+
+
         reader.readAsDataURL(
             file
         );
 
 
-        /*
-           Allows the user to select
-           the same image again later.
-        */
+        /* ========================================
+           RESET FILE INPUT
+           ======================================== */
 
         imageInput.value =
             "";
@@ -726,7 +761,7 @@ imageInput.addEventListener(
 
 
 /* ========================================
-   RECEIVE MESSAGE
+   RECEIVE TEXT MESSAGE
    ======================================== */
 
 socket.on(
@@ -742,115 +777,6 @@ socket.on(
         );
 
 
-        /* ========================================
-           IMAGE MESSAGE
-           ======================================== */
-
-        if (
-            data.type === "image"
-        ) {
-
-            /*
-               Give images the same
-               left/right alignment
-               as normal messages.
-            */
-
-            if (
-                data.sender === socket.id
-            ) {
-
-                message.classList.add(
-                    "messageMine"
-                );
-
-            } else {
-
-                message.classList.add(
-                    "messageOther"
-                );
-
-            }
-
-
-            const image =
-                document.createElement("img");
-
-
-            image.src =
-                data.image;
-
-
-            image.alt =
-                "Image sent by " +
-                data.username;
-
-
-            image.style.maxWidth =
-                "250px";
-
-            image.style.maxHeight =
-                "250px";
-
-            image.style.borderRadius =
-                "8px";
-
-            image.style.display =
-                "block";
-
-
-            /*
-               Prevent the image from
-               overflowing the message.
-            */
-
-            image.style.objectFit =
-                "contain";
-
-
-            message.appendChild(
-                image
-            );
-
-
-            messages.appendChild(
-                message
-            );
-
-
-            messages.scrollTop =
-                messages.scrollHeight;
-
-
-            /*
-               Play sound for images
-               from other users.
-            */
-
-            if (
-                data.sender !== socket.id &&
-                !muted
-            ) {
-
-                audio.currentTime =
-                    0;
-
-                audio.play().catch(
-                    function() {}
-                );
-
-            }
-
-
-            return;
-
-        }
-
-
-        /* ========================================
-           YOUR TEXT MESSAGE
-           ======================================== */
-
         if (
             data.sender === socket.id
         ) {
@@ -865,14 +791,7 @@ socket.on(
                 data.text +
                 "]";
 
-        }
-
-
-        /* ========================================
-           OTHER PERSON'S TEXT MESSAGE
-           ======================================== */
-
-        else {
+        } else {
 
             message.classList.add(
                 "messageOther"
@@ -886,8 +805,6 @@ socket.on(
                 data.text +
                 "]";
 
-
-            /* Message sound */
 
             if (
                 !muted
@@ -913,6 +830,136 @@ socket.on(
 
         messages.scrollTop =
             messages.scrollHeight;
+
+    }
+);
+
+
+/* ========================================
+   RECEIVE IMAGE
+   ======================================== */
+
+socket.on(
+    "receiveImage",
+    function(data) {
+
+        if (
+            !data ||
+            !data.image
+        ) {
+
+            return;
+
+        }
+
+
+        const message =
+            document.createElement("div");
+
+
+        message.classList.add(
+            "message"
+        );
+
+
+        if (
+            data.sender === socket.id
+        ) {
+
+            message.classList.add(
+                "messageMine"
+            );
+
+        } else {
+
+            message.classList.add(
+                "messageOther"
+            );
+
+        }
+
+
+        /* ========================================
+           CREATE IMAGE
+           ======================================== */
+
+        const image =
+            document.createElement("img");
+
+
+        image.src =
+            data.image;
+
+
+        image.alt =
+            "Image sent by " +
+            (data.username || "user");
+
+
+        image.style.maxWidth =
+            "250px";
+
+
+        image.style.maxHeight =
+            "250px";
+
+
+        image.style.width =
+            "auto";
+
+
+        image.style.height =
+            "auto";
+
+
+        image.style.borderRadius =
+            "8px";
+
+
+        image.style.display =
+            "block";
+
+
+        image.style.objectFit =
+            "contain";
+
+
+        /* ========================================
+           ADD IMAGE TO MESSAGE
+           ======================================== */
+
+        message.appendChild(
+            image
+        );
+
+
+        messages.appendChild(
+            message
+        );
+
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+
+        /* ========================================
+           PLAY MESSAGE SOUND
+           ======================================== */
+
+        if (
+            data.sender !== socket.id &&
+            !muted
+        ) {
+
+            audio.currentTime =
+                0;
+
+
+            audio.play().catch(
+                function() {}
+            );
+
+        }
 
     }
 );
@@ -952,6 +999,30 @@ socket.on(
 );
 
 
+/* ========================================
+   CONNECTION STATUS
+   ======================================== */
+
+socket.on(
+    "connect",
+    function() {
+
+        console.log(
+            "Connected to server:",
+            socket.id
+        );
+
+    }
+);
 
 
+socket.on(
+    "disconnect",
+    function() {
 
+        console.log(
+            "Disconnected from server."
+        );
+
+    }
+);
