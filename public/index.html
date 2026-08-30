@@ -19,344 +19,414 @@
         content="Messagr is a simple private messaging website. Create a room, share the code, and start chatting."
     >
 
-    
-
     <style>
 
         * {
             box-sizing: border-box;
         }
 
+
         html,
         body {
+
             margin: 0;
             padding: 0;
+
             width: 100%;
             height: 100%;
+
             font-family: Arial, sans-serif;
+
             background: #ffffff;
             color: #111111;
         }
 
+
         body {
+
             display: flex;
+
             justify-content: center;
             align-items: center;
         }
 
+
+        /* ========================================
+           WELCOME
+           ======================================== */
+
         .welcome {
+
             width: 90%;
+
             max-width: 430px;
+
             text-align: center;
         }
 
+
+        /* ========================================
+           LOGO
+           ======================================== */
+
         .logo {
+
             font-size: 42px;
+
             font-weight: 700;
+
             margin-bottom: 10px;
         }
 
+
+        /* ========================================
+           SUBTITLE
+           ======================================== */
+
         .subtitle {
+
             font-size: 17px;
+
             color: #555555;
+
             line-height: 1.5;
+
             margin-bottom: 35px;
         }
 
+
+        /* ========================================
+           IDENTITY BOX
+           ======================================== */
+
         .identityBox {
+
             border: 1px solid #dddddd;
+
             border-radius: 14px;
+
             padding: 25px;
+
             background: #fafafa;
         }
 
+
+        /* ========================================
+           TITLE
+           ======================================== */
+
         .identityTitle {
+
             font-size: 20px;
+
             font-weight: 600;
+
             margin-bottom: 10px;
         }
 
+
+        /* ========================================
+           DESCRIPTION
+           ======================================== */
+
         .identityText {
+
             font-size: 14px;
+
             color: #666666;
+
             line-height: 1.5;
+
             margin-bottom: 20px;
         }
 
-        .messagrID {
-            font-size: 25px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 15px;
-            background: #ffffff;
-            border: 1px solid #dddddd;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            user-select: all;
-        }
 
-        .copyButton {
+        /* ========================================
+           USERNAME INPUT
+           ======================================== */
+
+        .usernameInput {
+
             width: 100%;
+
             padding: 13px;
-            border: none;
+
+            background-color: #ffffff;
+
+            color: #111111;
+
+            border: 1px solid #dddddd;
+
             border-radius: 9px;
-            background: #111111;
-            color: #ffffff;
-            font-size: 15px;
-            cursor: pointer;
+
+            font-size: 16px;
+
+            text-align: center;
+
+            outline: none;
+
+            margin-bottom: 10px;
         }
 
-        .copyButton:hover {
-            opacity: 0.85;
+
+        .usernameInput:focus {
+
+            border-color: #111111;
         }
+
+
+        /* ========================================
+           CONTINUE BUTTON
+           ======================================== */
 
         .continueButton {
+
             width: 100%;
+
             padding: 13px;
+
             margin-top: 10px;
+
             border: 1px solid #dddddd;
+
             border-radius: 9px;
+
             background: #ffffff;
+
             color: #111111;
+
             font-size: 15px;
+
             cursor: pointer;
         }
 
+
         .continueButton:hover {
+
             background: #f2f2f2;
         }
 
-        .warning {
-            font-size: 12px;
-            color: #777777;
-            margin-top: 18px;
-            line-height: 1.4;
-        }
 
-        .usernameInput {
-            width: 100%;
-        
-            padding: 13px;
-        
-            box-sizing: border-box;
-        
-            background-color: #ffffff;
-            color: #111111;
-        
-            border: 1px solid #dddddd;
-        
-            border-radius: 9px;
-        
-            font-size: 16px;
-        
-            text-align: center;
-        
-            outline: none;
-        
-            margin-bottom: 10px;
-        }
-        
-        .usernameInput:focus {
-            border-color: #111111;
+        /* ========================================
+           WARNING
+           ======================================== */
+
+        .warning {
+
+            font-size: 12px;
+
+            color: #777777;
+
+            margin-top: 18px;
+
+            line-height: 1.4;
         }
 
     </style>
 
 </head>
 
+
 <body>
-    <input
-        type="file"
-        id="imageInput"
-        accept="image/png, image/jpeg, image/gif, image/webp"
-        hidden
-    >
+
 
     <main class="welcome">
 
+
+        <!-- ========================================
+             LOGO
+             ======================================== -->
+
         <div class="logo">
+
             Messagr
+
         </div>
 
+
+        <!-- ========================================
+             SUBTITLE
+             ======================================== -->
+
         <div class="subtitle">
+
             Simple messaging without the unnecessary stuff.
+
         </div>
+
+
+        <!-- ========================================
+             IDENTITY BOX
+             ======================================== -->
 
         <div class="identityBox">
 
+
             <div class="identityTitle">
+
                 Welcome to Messagr 👋
+
             </div>
-        
+
+
             <div class="identityText">
+
                 Choose a username to use when messaging.
+
             </div>
-        
+
+
+            <!-- ========================================
+                 USERNAME
+                 ======================================== -->
+
             <input
                 class="usernameInput"
                 id="welcomeUsername"
                 type="text"
                 placeholder="Choose a username"
-                maxlength="5"
+                maxlength="10"
                 autocomplete="off"
             >
-        
+
+
+            <!-- ========================================
+                 CONTINUE
+                 ======================================== -->
+
             <button
                 class="continueButton"
                 id="continueButton"
             >
+
                 Continue
+
             </button>
-        
+
+
+            <!-- ========================================
+                 WARNING
+                 ======================================== -->
+
             <div class="warning">
+
                 Your username can be changed later.
+
             </div>
-        
+
+
         </div>
+
 
     </main>
 
+
+    <!-- ========================================
+         JAVASCRIPT
+         ======================================== -->
+
     <script>
 
-        
         const welcomeUsername =
-            document.getElementById("welcomeUsername");
-        
+            document.getElementById(
+                "welcomeUsername"
+            );
+
+
+        const continueButton =
+            document.getElementById(
+                "continueButton"
+            );
+
+
+        /* ========================================
+           LOAD SAVED USERNAME
+           ======================================== */
+
         const savedUsername =
-            localStorage.getItem("messagrUsername");
-        
+            localStorage.getItem(
+                "messagrUsername"
+            );
+
+
         if (savedUsername) {
-            welcomeUsername.value = savedUsername;
+
+            welcomeUsername.value =
+                savedUsername;
+
         }
-        
-        
-        document.getElementById("continueButton")
-            .addEventListener("click", () => {
-        
+
+
+        /* ========================================
+           CONTINUE
+           ======================================== */
+
+        continueButton.addEventListener(
+            "click",
+            () => {
+
                 const username =
                     welcomeUsername.value.trim();
-        
+
+
                 if (!username) {
-                    alert("Please choose a username.");
+
+                    alert(
+                        "Please choose a username."
+                    );
+
                     return;
                 }
-        
+
+
                 if (username.length > 10) {
-                    alert("Username must be 10 characters or less.");
+
+                    alert(
+                        "Username must be 10 characters or less."
+                    );
+
                     return;
                 }
-        
+
+
+                /* Save username */
+
                 localStorage.setItem(
                     "messagrUsername",
                     username
                 );
-        
+
+
+                /* Go to main Messagr page */
+
                 window.location.href =
                     "messagr.html";
-        
-            });
-        
-        
-        const imageInput = document.getElementById("imageInput");
-        const imageButton = document.getElementById("imageButton");
-        
-        imageButton.addEventListener("click", () => {
-            imageInput.click();
-        });
-        
-        imageInput.addEventListener("change", () => {
-        
-            const file = imageInput.files[0];
-        
-            if (!file) {
-                return;
-            }
-        
-            console.log("Selected image:", file.name);
-        });
-        
-        function generateMessagrID() {
-
-            const chars =
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-            function part() {
-
-                let result = "";
-
-                for (let i = 0; i < 4; i++) {
-
-                    result +=
-                        chars[Math.floor(Math.random() * chars.length)];
-
-                }
-
-                return result;
-
-            }
-
-            return `${part()}-${part()}`;
-
-        }
-
-
-        let messagrID =
-            localStorage.getItem("messagrID");
-
-
-        if (!messagrID) {
-
-            messagrID =
-                generateMessagrID();
-
-            localStorage.setItem(
-                "messagrID",
-                messagrID
-            );
-
-        }
-
-
-        document.getElementById("messagrID").textContent =
-            messagrID;
-
-
-        document.getElementById("copyButton").addEventListener(
-            "click",
-            async () => {
-
-                await navigator.clipboard.writeText(
-                    messagrID
-                );
-
-                document.getElementById("copyButton").textContent =
-                    "Copied!";
-
-                setTimeout(() => {
-
-                    document.getElementById("copyButton").textContent =
-                        "Copy Messagr ID";
-
-                }, 1500);
 
             }
         );
 
 
-        document.getElementById("continueButton").addEventListener(
-            "click",
-            () => {
+        /* ========================================
+           ENTER KEY
+           ======================================== */
 
-                // Change this to whatever your main
-                // Messagr page is called.
+        welcomeUsername.addEventListener(
+            "keydown",
+            (event) => {
 
-                window.location.href =
-                    "messagr.html";
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    continueButton.click();
+
+                }
 
             }
         );
 
     </script>
+
 
 </body>
 
