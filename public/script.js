@@ -1141,6 +1141,10 @@ socket.on(
    RECEIVE IMAGE
    ======================================== */
 
+/* ========================================
+   RECEIVE IMAGE
+   ======================================== */
+
 socket.on(
     "receiveImage",
     function(data) {
@@ -1154,6 +1158,58 @@ socket.on(
 
         }
 
+
+        /* ========================================
+           IMAGE UPLOAD SUCCESS
+           ======================================== */
+
+        if (
+            data.sender === socket.id
+        ) {
+
+            if (imageUploadTimeout) {
+
+                clearTimeout(
+                    imageUploadTimeout
+                );
+
+                imageUploadTimeout =
+                    null;
+
+            }
+
+
+            imageUploadInProgress =
+                false;
+
+
+            if (
+                currentImageLoadingMessage
+            ) {
+
+                currentImageLoadingMessage.remove();
+
+                currentImageLoadingMessage =
+                    null;
+
+            }
+
+
+            messageInput.disabled =
+                false;
+
+            sendButton.disabled =
+                false;
+
+            imageButton.disabled =
+                false;
+
+        }
+
+
+        /* ========================================
+           CREATE MESSAGE
+           ======================================== */
 
         const message =
             document.createElement("div");
@@ -1227,7 +1283,7 @@ socket.on(
 
 
         /* ========================================
-           ADD IMAGE TO MESSAGE
+           ADD IMAGE
            ======================================== */
 
         message.appendChild(
@@ -1265,7 +1321,6 @@ socket.on(
 
     }
 );
-
 
 /* ========================================
    USER JOINED
