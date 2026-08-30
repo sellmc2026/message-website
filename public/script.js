@@ -649,6 +649,13 @@ imageButton.addEventListener(
    IMAGE SELECTED
    ======================================== */
 
+let imageUploadInProgress = false;
+
+let imageUploadTimeout = null;
+
+let currentImageLoadingMessage = null;
+
+
 imageInput.addEventListener(
     "change",
     function() {
@@ -658,9 +665,7 @@ imageInput.addEventListener(
 
 
         if (!file) {
-
             return;
-
         }
 
 
@@ -676,8 +681,7 @@ imageInput.addEventListener(
                 "Please select an image."
             );
 
-            imageInput.value =
-                "";
+            imageInput.value = "";
 
             return;
 
@@ -690,15 +694,14 @@ imageInput.addEventListener(
 
         if (
             file.size >
-            5 * 1024 * 1024
+            4 * 1024 * 1024
         ) {
 
             alert(
-                "Image must be smaller than 5 MB."
+                "Image must be 4 MB or smaller."
             );
 
-            imageInput.value =
-                "";
+            imageInput.value = "";
 
             return;
 
@@ -706,7 +709,7 @@ imageInput.addEventListener(
 
 
         /* ========================================
-           MAKE SURE USER IS IN A ROOM
+           CHECK ROOM
            ======================================== */
 
         if (
@@ -717,64 +720,347 @@ imageInput.addEventListener(
                 "You are not connected to a room."
             );
 
-            imageInput.value =
-                "";
+            imageInput.value = "";
 
             return;
 
         }
 
 
+        if (
+            imageUploadInProgress
+        ) {
+
+            return;
+
+        }
+
+
+        imageUploadInProgress = true;
+
+
         /* ========================================
-           CONVERT IMAGE
+           DISABLE CHAT
            ======================================== */
 
-        const reader =
-            new FileReader();
+        messageInput.disabled = true;
+
+        sendButton.disabled = true;
+
+        imageButton.disabled = true;
 
 
-        reader.onload =
+        /* ========================================
+           CREATE IMAGE PREVIEW SIZE
+           ======================================== */
+
+        const preview =
+            new Image();
+
+
+        preview.onload =
             function() {
 
-                socket.emit(
-                    "sendImage",
-                    {
-                        image:
-                            reader.result,
+                let width =
+                    preview.naturalWidth;
 
-                        type:
-                            file.type
-                    }
+                let height =
+                    preview.naturalHeight;
+
+
+                /*
+                   Keep the same maximum
+                   dimensions as the actual
+                   image message.
+                */
+
+                const maxWidth = 250;
+
+                const maxHeight = 250;
+
+
+                if (
+                    width > maxWidth
+                ) {
+
+                    const ratio =
+                        maxWidth / width;
+
+                    width =
+                        maxWidth;
+
+                    height =
+                        height * ratio;
+
+                }
+
+
+                if (
+                    height > maxHeight
+                ) {
+
+                    const ratio =
+                        maxHeight / height;
+
+                    height =
+                        maxHeight;
+
+                    width =
+                        width * ratio;
+
+                }
+
+
+                /* ========================================
+                   CREATE LOADING MESSAGE
+                   ======================================== */
+
+                const loadingMessage =
+                    document.createElement("div");
+
+
+                loadingMessage.classList.add(
+                    "message",
+                    "imageLoadingMessage"
+                );
+
+
+                loadingMessage.style.width =
+                    width + "px";
+
+
+                loadingMessage.style.height =
+                    height + "px";
+
+
+                const spinner =
+                    document.createElement("div");
+
+
+                spinner.classList.add(
+                    "imageLoadingSpinner"
+                );
+
+
+                loadingMessage.appendChild(
+                    spinner
+                );
+
+
+                messages.appendChild(
+                    loadingMessage
+                );
+
+
+                messages.scrollTop =
+                    messages.scrollHeight;
+
+
+                currentImageLoadingMessage =
+                    loadingMessage;
+
+
+                /* ========================================
+                   START 7 SECOND TIMEOUT
+                   ======================================== */
+
+                imageUploadTimeout =
+                    setTimeout(
+                        function() {
+
+                            if (
+                                !imageUploadInProgress
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            imageUploadInProgress =
+                                false;
+
+
+                            if (
+                                currentImageLoadingMessage
+                            ) {
+
+                                currentImageLoadingMessage.remove();
+
+                                currentImageLoadingMessage =
+                                    null;
+
+                            }
+
+
+                            messageInput.disabled =
+                                false;
+
+                            sendButton.disabled =
+                                false;
+
+                            imageButton.disabled =
+                                false;
+
+
+                            showUploadError();
+
+
+                            imageInput.value =
+                                "";
+
+                        },
+                        7000
+                    );
+
+
+                /* ========================================
+                   READ IMAGE
+                   ======================================== */
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function() {
+
+                        socket.emit(
+                            "sendImage",
+                            {
+                                image:
+                                    reader.result,
+
+                                type:
+                                    file.type
+                            }
+                        );
+
+                    };
+
+
+                reader.onerror =
+                    function() {
+
+                        clearTimeout(
+                            imageUploadTimeout
+                        );
+
+
+                        imageUploadInProgress =
+                            false;
+
+
+                        if (
+                            currentImageLoadingMessage
+                        ) {
+
+                            currentImageLoadingMessage.remove();
+
+                            currentImageLoadingMessage =
+                                null;
+
+                        }
+
+
+                        messageInput.disabled =
+                            false;
+
+                        sendButton.disabled =
+                            false;
+
+                        imageButton.disabled =
+                            false;
+
+
+                        showUploadError();
+
+                    };
+
+
+                reader.readAsDataURL(
+                    file
                 );
 
             };
 
 
-        reader.onerror =
+        preview.onerror =
             function() {
 
-                alert(
-                    "Could not read the image."
-                );
+                imageUploadInProgress =
+                    false;
+
+                messageInput.disabled =
+                    false;
+
+                sendButton.disabled =
+                    false;
+
+                imageButton.disabled =
+                    false;
+
+                showUploadError();
 
             };
 
 
-        reader.readAsDataURL(
-            file
-        );
+        preview.src =
+            URL.createObjectURL(file);
 
 
-        /* ========================================
-           RESET FILE INPUT
-           ======================================== */
-
-        imageInput.value =
-            "";
+        imageInput.value = "";
 
     }
 );
 
+
+/* ========================================
+   UPLOAD ERROR
+   ======================================== */
+
+function showUploadError() {
+
+    const error =
+        document.createElement("div");
+
+
+    error.classList.add(
+        "uploadError"
+    );
+
+
+    error.textContent =
+        "Error: Could not send file";
+
+
+    document.body.appendChild(
+        error
+    );
+
+
+    setTimeout(
+        function() {
+
+            error.classList.add(
+                "hide"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    error.remove();
+
+                },
+                300
+            );
+
+        },
+        3000
+    );
+
+}
 
 /* ========================================
    RECEIVE TEXT MESSAGE
