@@ -57,6 +57,9 @@ if (savedUsername) {
     usernameInput.value = savedUsername;
 }
 
+const profileButton =
+    document.getElementById("profileButton");
+
 
 /* ========================================
    MUTE / UNMUTE
@@ -91,6 +94,12 @@ muteButton.addEventListener(
 
     }
 );
+
+
+profileButton.addEventListener("click", function() {
+
+    window.location.href = "https://messagr.uk/index.html";
+});
 
 
 /* ========================================
