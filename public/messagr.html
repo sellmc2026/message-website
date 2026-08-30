@@ -783,8 +783,6 @@
 
                 <div id="messageRow">
 
-                    <!-- TEXT MESSAGE -->
-
                     <input
                         id="messageInput"
                         type="text"
@@ -802,8 +800,6 @@
                         hidden
                     >
 
-
-                    <!-- BUTTONS -->
 
                     <div class="messageControls">
 
@@ -836,7 +832,7 @@
 
 
     <!-- ========================================
-         ID BUTTON
+         MESSAGR ID
          ======================================== -->
 
     <script>
@@ -873,54 +869,6 @@
                         "Your ID";
 
                 }
-
-            }
-        );
-
-    </script>
-
-
-    <!-- ========================================
-         IMAGE BUTTON
-         ======================================== -->
-
-    <script>
-
-        const imageInput =
-            document.getElementById("imageInput");
-
-
-        const imageButton =
-            document.getElementById("imageButton");
-
-
-        imageButton.addEventListener(
-            "click",
-            () => {
-
-                imageInput.click();
-
-            }
-        );
-
-
-        imageInput.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    imageInput.files[0];
-
-
-                if (!file) {
-                    return;
-                }
-
-
-                console.log(
-                    "Selected image:",
-                    file.name
-                );
 
             }
         );
