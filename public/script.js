@@ -1,55 +1,6 @@
 const socket = io();
 
 
-
-
-
-
-const imageInput =
-    document.getElementById("imageInput");
-
-const imageButton =
-    document.getElementById("imageButton");
-
-imageButton.addEventListener("click", () => {
-    imageInput.click();
-});
-
-imageInput.addEventListener("change", () => {
-
-    const file = imageInput.files[0];
-
-    if (!file) {
-        return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-        alert("Please select an image.");
-        imageInput.value = "";
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-        alert("Image must be smaller than 5 MB.");
-        imageInput.value = "";
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-
-        socket.emit("sendImage", {
-            image: reader.result,
-            type: file.type
-        });
-
-    };
-
-    reader.readAsArrayBuffer(file);
-
-});
-
 /* ========================================
    ELEMENTS
    ======================================== */
@@ -92,6 +43,12 @@ const muteButton =
 
 const muteIcon =
     document.getElementById("muteIcon");
+
+const imageInput =
+    document.getElementById("imageInput");
+
+const imageButton =
+    document.getElementById("imageButton");
 
 
 /* ========================================
@@ -176,10 +133,8 @@ generateButton.addEventListener(
         codeBox.textContent =
             code;
 
-
         codeInput.value =
             code;
-
 
         status.textContent =
             "Code generated.";
@@ -203,7 +158,9 @@ copyCodeButton.addEventListener(
         if (
             code === "----"
         ) {
+
             return;
+
         }
 
 
@@ -241,7 +198,6 @@ joinButton.addEventListener(
         const username =
             usernameInput.value.trim();
 
-
         const code =
             codeInput.value
                 .trim()
@@ -260,6 +216,7 @@ joinButton.addEventListener(
             usernameInput.focus();
 
             return;
+
         }
 
 
@@ -275,6 +232,7 @@ joinButton.addEventListener(
             usernameInput.focus();
 
             return;
+
         }
 
 
@@ -290,6 +248,7 @@ joinButton.addEventListener(
             codeInput.focus();
 
             return;
+
         }
 
 
@@ -322,7 +281,8 @@ function urlBase64ToUint8Array(
 
     const padding =
         "=".repeat(
-            (4 -
+            (
+                4 -
                 base64String.length % 4
             ) % 4
         );
@@ -605,7 +565,9 @@ function sendMessage() {
     if (
         text.length === 0
     ) {
+
         return;
+
     }
 
 
@@ -650,6 +612,120 @@ messageInput.addEventListener(
 
 
 /* ========================================
+   IMAGE UPLOAD BUTTON
+   ======================================== */
+
+imageButton.addEventListener(
+    "click",
+    function() {
+
+        imageInput.click();
+
+    }
+);
+
+
+/* ========================================
+   IMAGE SELECTED
+   ======================================== */
+
+imageInput.addEventListener(
+    "change",
+    function() {
+
+        const file =
+            imageInput.files[0];
+
+
+        if (!file) {
+
+            return;
+
+        }
+
+
+        /* Make sure it is an image */
+
+        if (
+            !file.type.startsWith("image/")
+        ) {
+
+            alert(
+                "Please select an image."
+            );
+
+            imageInput.value =
+                "";
+
+            return;
+
+        }
+
+
+        /* 5 MB limit */
+
+        if (
+            file.size >
+            5 * 1024 * 1024
+        ) {
+
+            alert(
+                "Image must be smaller than 5 MB."
+            );
+
+            imageInput.value =
+                "";
+
+            return;
+
+        }
+
+
+        /*
+           Convert the image into a
+           data URL so Socket.IO can
+           send it.
+        */
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function() {
+
+                socket.emit(
+                    "sendImage",
+                    {
+                        image:
+                            reader.result,
+
+                        type:
+                            file.type
+                    }
+                );
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+
+        /*
+           Allows the user to select
+           the same image again later.
+        */
+
+        imageInput.value =
+            "";
+
+    }
+);
+
+
+/* ========================================
    RECEIVE MESSAGE
    ======================================== */
 
@@ -667,7 +743,112 @@ socket.on(
 
 
         /* ========================================
-           YOUR MESSAGE
+           IMAGE MESSAGE
+           ======================================== */
+
+        if (
+            data.type === "image"
+        ) {
+
+            /*
+               Give images the same
+               left/right alignment
+               as normal messages.
+            */
+
+            if (
+                data.sender === socket.id
+            ) {
+
+                message.classList.add(
+                    "messageMine"
+                );
+
+            } else {
+
+                message.classList.add(
+                    "messageOther"
+                );
+
+            }
+
+
+            const image =
+                document.createElement("img");
+
+
+            image.src =
+                data.image;
+
+
+            image.alt =
+                "Image sent by " +
+                data.username;
+
+
+            image.style.maxWidth =
+                "250px";
+
+            image.style.maxHeight =
+                "250px";
+
+            image.style.borderRadius =
+                "8px";
+
+            image.style.display =
+                "block";
+
+
+            /*
+               Prevent the image from
+               overflowing the message.
+            */
+
+            image.style.objectFit =
+                "contain";
+
+
+            message.appendChild(
+                image
+            );
+
+
+            messages.appendChild(
+                message
+            );
+
+
+            messages.scrollTop =
+                messages.scrollHeight;
+
+
+            /*
+               Play sound for images
+               from other users.
+            */
+
+            if (
+                data.sender !== socket.id &&
+                !muted
+            ) {
+
+                audio.currentTime =
+                    0;
+
+                audio.play().catch(
+                    function() {}
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+        /* ========================================
+           YOUR TEXT MESSAGE
            ======================================== */
 
         if (
@@ -688,7 +869,7 @@ socket.on(
 
 
         /* ========================================
-           OTHER PERSON'S MESSAGE
+           OTHER PERSON'S TEXT MESSAGE
            ======================================== */
 
         else {
@@ -769,10 +950,6 @@ socket.on(
 
     }
 );
-
-
-
-
 
 
 
