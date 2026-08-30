@@ -133,6 +133,33 @@
             line-height: 1.4;
         }
 
+        .usernameInput {
+            width: 100%;
+        
+            padding: 13px;
+        
+            box-sizing: border-box;
+        
+            background-color: #ffffff;
+            color: #111111;
+        
+            border: 1px solid #dddddd;
+        
+            border-radius: 9px;
+        
+            font-size: 16px;
+        
+            text-align: center;
+        
+            outline: none;
+        
+            margin-bottom: 10px;
+        }
+        
+        .usernameInput:focus {
+            border-color: #111111;
+        }
+
     </style>
 
 </head>
@@ -144,10 +171,6 @@
         accept="image/png, image/jpeg, image/gif, image/webp"
         hidden
     >
-    
-    <button id="imageButton">
-        🖼️
-    </button>
 
     <main class="welcome">
 
@@ -164,38 +187,31 @@
             <div class="identityTitle">
                 Welcome to Messagr 👋
             </div>
-
+        
             <div class="identityText">
-                We've created your personal Messagr ID.
-                Use it to add friends and start private conversations.
+                Choose a username to use when messaging.
             </div>
-
-            <div
-                class="messagrID"
-                id="messagrID"
+        
+            <input
+                class="usernameInput"
+                id="welcomeUsername"
+                type="text"
+                placeholder="Choose a username"
+                maxlength="5"
+                autocomplete="off"
             >
-                Generating...
-            </div>
-
-            <button
-                class="copyButton"
-                id="copyButton"
-            >
-                Copy Messagr ID
-            </button>
-
+        
             <button
                 class="continueButton"
                 id="continueButton"
             >
                 Continue
             </button>
-
+        
             <div class="warning">
-                Your Messagr ID is tied to this browser.
-                If you clear your browser data, this identity cannot be recovered.
+                Your username can be changed later.
             </div>
-
+        
         </div>
 
     </main>
