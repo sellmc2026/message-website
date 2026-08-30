@@ -5,8 +5,6 @@ const { Server } = require("socket.io");
 const webpush = require("web-push");
 
 
-
-
 /* ========================================
    WEB PUSH
    ======================================== */
@@ -518,7 +516,7 @@ io.on(
 
         /* ========================================
            SEND MESSAGE
-           ======================================== */
+        ======================================== */
 
         socket.on(
             "sendMessage",
@@ -550,7 +548,7 @@ io.on(
 
                 /* ========================================
                    NORMAL CHAT MESSAGE
-                   ======================================== */
+                ======================================== */
 
                 io.to(
                     socket.currentRoom
@@ -571,7 +569,7 @@ io.on(
 
                 /* ========================================
                    PUSH NOTIFICATIONS
-                   ======================================== */
+                ======================================== */
 
                 if (
                     !VAPID_PUBLIC_KEY ||
@@ -672,8 +670,73 @@ io.on(
 
 
         /* ========================================
+           SEND IMAGE
+        ======================================== */
+
+        socket.on(
+            "sendImage",
+            (data) => {
+
+                if (
+                    !socket.currentRoom
+                ) {
+                    return;
+                }
+
+
+                if (
+                    !data ||
+                    !data.image ||
+                    !data.type
+                ) {
+                    return;
+                }
+
+
+                /*
+                   Only allow image MIME types.
+                */
+
+                if (
+                    typeof data.type !==
+                        "string" ||
+                    !data.type.startsWith("image/")
+                ) {
+                    return;
+                }
+
+
+                /*
+                   Send the image to everyone
+                   in the current room.
+                */
+
+                io.to(
+                    socket.currentRoom
+                ).emit(
+                    "receiveImage",
+                    {
+                        sender:
+                            socket.id,
+
+                        username:
+                            socket.username,
+
+                        image:
+                            data.image,
+
+                        type:
+                            data.type
+                    }
+                );
+
+            }
+        );
+
+
+        /* ========================================
            DISCONNECT
-           ======================================== */
+        ======================================== */
 
         socket.on(
             "disconnect",
