@@ -208,6 +208,7 @@
             color: #000000;
         }
 
+
         #copyCodeButton:active {
 
             background-color: #00ffee;
@@ -444,9 +445,12 @@
             gap: 8px;
         }
 
+
         #logo {
-            width: 150px; /* Adjust pixels to change size */
-            height: auto; /* Maintains aspect ratio */
+
+            width: 150px;
+
+            height: auto;
         }
 
 
@@ -492,9 +496,6 @@
 
             color: #ffffff;
         }
-
-
-    
 
 
         /* ========================================
@@ -544,6 +545,46 @@
 
 
         /* ========================================
+           MESSAGE CONTROLS
+           ======================================== */
+
+        .messageControls {
+
+            display: flex;
+
+            gap: 8px;
+        }
+
+
+        /* ========================================
+           IMAGE BUTTON
+           ======================================== */
+
+        #imageButton {
+
+            padding: 11px 14px;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+
+            border-radius: 8px;
+
+            font-size: 18px;
+
+            cursor: pointer;
+        }
+
+
+        #imageButton:hover {
+
+            background-color: #555555;
+        }
+
+
+        /* ========================================
            SEND BUTTON
            ======================================== */
 
@@ -570,33 +611,44 @@
             background-color: #8FFF3D;
         }
 
+
+        /* ========================================
+           ID BUTTON
+           ======================================== */
+
         #idButton {
+
             position: fixed;
-        
+
             top: 20px;
             right: 70px;
-        
+
             padding: 11px 18px;
-        
+
             background-color: #545454;
-        
+
             color: #ffffff;
-        
+
             border: 4px solid #000000;
-        
+
             border-radius: 8px;
-        
+
             font-weight: bold;
-        
+
             cursor: pointer;
         }
-        
+
+
         #idButton:hover {
+
             background-color: #212121;
         }
-        
+
+
         .idRevealed {
+
             background-color: #ffffff;
+
             color: #000000;
         }
 
@@ -608,20 +660,8 @@
 <body>
 
 
-    <input
-        type="file"
-        id="imageInput"
-        accept="image/png, image/jpeg, image/gif, image/webp"
-        hidden
-    >
-    
-    <button id="imageButton">
-        🖼️
-    </button>
-    
     <main id="main">
 
-        
         <div id="container">
 
 
@@ -634,7 +674,8 @@
                 src="logo.png"
                 alt="Private Messenger Logo"
             >
-            
+
+
             <h1 id="title">
                 Messagr
             </h1>
@@ -643,8 +684,6 @@
             <p id="subtitle">
                 Private messaging for cautious users
             </p>
-
-            
 
 
             <!-- ========================================
@@ -678,12 +717,14 @@
                 GENERATE MESSAGE CODE
             </button>
 
+
+            <!-- ========================================
+                 ID BUTTON
+                 ======================================== -->
+
             <button id="idButton">
                 Your ID
-            
             </button>
-
-            
 
 
             <!-- ========================================
@@ -738,7 +779,11 @@
                 <div id="messages"></div>
 
 
+                <!-- MESSAGE ROW -->
+
                 <div id="messageRow">
+
+                    <!-- TEXT MESSAGE -->
 
                     <input
                         id="messageInput"
@@ -748,9 +793,30 @@
                     >
 
 
-                    <button id="sendButton">
-                        SEND
-                    </button>
+                    <!-- HIDDEN IMAGE FILE PICKER -->
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/png, image/jpeg, image/gif, image/webp"
+                        hidden
+                    >
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="messageControls">
+
+                        <button id="imageButton">
+                            🖼️
+                        </button>
+
+
+                        <button id="sendButton">
+                            SEND
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -768,22 +834,104 @@
 
     <script src="/socket.io/socket.io.js"></script>
 
+
+    <!-- ========================================
+         ID BUTTON
+         ======================================== -->
+
     <script>
-        const messagrID = localStorage.getItem("messagrID");
 
-        idButton.addEventListener("click", () => {
+        const messagrID =
+            localStorage.getItem("messagrID");
 
-            idButton.classList.toggle("idRevealed");
-        
-            if (idButton.classList.contains("idRevealed")) {
-                idButton.textContent = messagrID;
-            } else {
-                idButton.textContent = "Your ID";
+
+        const idButton =
+            document.getElementById("idButton");
+
+
+        idButton.addEventListener(
+            "click",
+            () => {
+
+                idButton.classList.toggle(
+                    "idRevealed"
+                );
+
+
+                if (
+                    idButton.classList.contains(
+                        "idRevealed"
+                    )
+                ) {
+
+                    idButton.textContent =
+                        messagrID;
+
+                } else {
+
+                    idButton.textContent =
+                        "Your ID";
+
+                }
+
             }
-        
-        });
+        );
+
     </script>
-    
+
+
+    <!-- ========================================
+         IMAGE BUTTON
+         ======================================== -->
+
+    <script>
+
+        const imageInput =
+            document.getElementById("imageInput");
+
+
+        const imageButton =
+            document.getElementById("imageButton");
+
+
+        imageButton.addEventListener(
+            "click",
+            () => {
+
+                imageInput.click();
+
+            }
+        );
+
+
+        imageInput.addEventListener(
+            "change",
+            () => {
+
+                const file =
+                    imageInput.files[0];
+
+
+                if (!file) {
+                    return;
+                }
+
+
+                console.log(
+                    "Selected image:",
+                    file.name
+                );
+
+            }
+        );
+
+    </script>
+
+
+    <!-- ========================================
+         MAIN JAVASCRIPT
+         ======================================== -->
+
     <script src="script.js"></script>
 
 
