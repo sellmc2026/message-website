@@ -327,105 +327,102 @@
 
     <script>
 
-        const welcomeUsername =
-            document.getElementById(
-                "welcomeUsername"
-            );
+    /* ========================================
+       USERNAME
+       ======================================== */
+
+    const welcomeUsername =
+        document.getElementById("welcomeUsername");
+
+    const continueButton =
+        document.getElementById("continueButton");
 
 
-        const continueButton =
-            document.getElementById(
-                "continueButton"
-            );
+    /* Load saved username */
+
+    const savedUsername =
+        localStorage.getItem("messagrUsername");
 
 
-        /* ========================================
-           LOAD SAVED USERNAME
-           ======================================== */
+    if (savedUsername) {
 
-        const savedUsername =
-            localStorage.getItem(
-                "messagrUsername"
-            );
+        welcomeUsername.value =
+            savedUsername;
+
+    }
 
 
-        if (savedUsername) {
+    /* ========================================
+       CONTINUE BUTTON
+       ======================================== */
 
-            welcomeUsername.value =
-                savedUsername;
+    continueButton.addEventListener(
+        "click",
+        () => {
 
-        }
-
-
-        /* ========================================
-           CONTINUE
-           ======================================== */
-
-        continueButton.addEventListener(
-            "click",
-            () => {
-
-                const username =
-                    welcomeUsername.value.trim();
+            const username =
+                welcomeUsername.value.trim();
 
 
-                if (!username) {
+            if (!username) {
 
-                    alert(
-                        "Please choose a username."
-                    );
-
-                    return;
-                }
-
-
-                if (username.length > 10) {
-
-                    alert(
-                        "Username must be 10 characters or less."
-                    );
-
-                    return;
-                }
-
-
-                /* Save username */
-
-                localStorage.setItem(
-                    "messagrUsername",
-                    username
+                alert(
+                    "Please choose a username."
                 );
 
-
-                /* Go to main Messagr page */
-
-                window.location.href =
-                    "messagr.html";
+                return;
 
             }
-        );
 
 
-        /* ========================================
-           ENTER KEY
-           ======================================== */
+            if (username.length > 5) {
 
-        welcomeUsername.addEventListener(
-            "keydown",
-            (event) => {
+                alert(
+                    "Username must be 5 characters or less."
+                );
 
-                if (
-                    event.key === "Enter"
-                ) {
-
-                    continueButton.click();
-
-                }
+                return;
 
             }
-        );
 
-    </script>
+
+            /* Save username */
+
+            localStorage.setItem(
+                "messagrUsername",
+                username
+            );
+
+
+            /* Go to main Messagr page */
+
+            window.location.href =
+                "messagr.html";
+
+        }
+    );
+
+
+    /* ========================================
+       ENTER KEY
+       ======================================== */
+
+    welcomeUsername.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (event.key === "Enter") {
+
+                continueButton.click();
+
+            }
+
+        }
+    );
+
+</script>
+
+          
 
 
 </body>
