@@ -218,6 +218,45 @@
 
     <script>
 
+        
+        const welcomeUsername =
+            document.getElementById("welcomeUsername");
+        
+        const savedUsername =
+            localStorage.getItem("messagrUsername");
+        
+        if (savedUsername) {
+            welcomeUsername.value = savedUsername;
+        }
+        
+        
+        document.getElementById("continueButton")
+            .addEventListener("click", () => {
+        
+                const username =
+                    welcomeUsername.value.trim();
+        
+                if (!username) {
+                    alert("Please choose a username.");
+                    return;
+                }
+        
+                if (username.length > 5) {
+                    alert("Username must be 5 characters or less.");
+                    return;
+                }
+        
+                localStorage.setItem(
+                    "messagrUsername",
+                    username
+                );
+        
+                window.location.href =
+                    "messagr.html";
+        
+            });
+        
+        
         const imageInput = document.getElementById("imageInput");
         const imageButton = document.getElementById("imageButton");
         
