@@ -19,6 +19,8 @@
         content="Messagr is a simple private messaging website. Create a room, share the code, and start chatting."
     >
 
+    
+
     <style>
 
         * {
@@ -136,6 +138,16 @@
 </head>
 
 <body>
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/png, image/jpeg, image/gif, image/webp"
+        hidden
+    >
+    
+    <button id="imageButton">
+        🖼️
+    </button>
 
     <main class="welcome">
 
@@ -190,6 +202,24 @@
 
     <script>
 
+        const imageInput = document.getElementById("imageInput");
+        const imageButton = document.getElementById("imageButton");
+        
+        imageButton.addEventListener("click", () => {
+            imageInput.click();
+        });
+        
+        imageInput.addEventListener("change", () => {
+        
+            const file = imageInput.files[0];
+        
+            if (!file) {
+                return;
+            }
+        
+            console.log("Selected image:", file.name);
+        });
+        
         function generateMessagrID() {
 
             const chars =
