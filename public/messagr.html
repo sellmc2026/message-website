@@ -1,1 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <title>Messagr - Simple Private Messaging</title>
+
+    <meta
+        name="description"
+        content="Messagr is a simple private messaging website. Create a room, share the code, and start chatting."
+    >
+
+    <style>
+
+        /* ========================================
+           JOIN MESSAGE
+           ======================================== */
+
+        .systemMessage {
+            align-self: flex-start;
+
+            color: #000000;
+
+            background-color: #FFE658;
+
+            font-size: 13px;
+
+            padding: 15px;
+
+            margin: 5px 0;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            min-height: 100%;
+
+            background-color: #101010;
+            color: #ffffff;
+
+            font-family: Arial, sans-serif;
+        }
+
+
+        /* ========================================
+           MAIN
+           ======================================== */
+
+        #main {
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        /* ========================================
+           CONTAINER
+           ======================================== */
+
+        #container {
+            width: 450px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 30px;
+
+            box-sizing: border-box;
+        }
+
+
+        /* ========================================
+           TITLE
+           ======================================== */
+
+        #title {
+            margin: 0;
+
+            font-size: 32px;
+
+            text-align: center;
+        }
+
+
+        #subtitle {
+            margin: 0 0 15px 0;
+
+            color: #aaaaaa;
+
+            font-size: 16px;
+
+            text-align: center;
+        }
+
+
+        /* ========================================
+           USERNAME
+           ======================================== */
+
+        #usernameInput {
+
+            width: 100%;
+
+            padding: 13px;
+
+            box-sizing: border-box;
+
+            background-color: #222222;
+
+            color: #ffffff;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            font-size: 18px;
+
+            text-align: center;
+
+            outline: none;
+        }
+
+
+        #usernameInput:focus {
+
+            border-color: #BEFF8F;
+        }
+
+
+        /* ========================================
+           MESSAGE CODE
+           ======================================== */
+
+        #codeBox {
+
+            width: 100%;
+
+            padding: 18px;
+
+            box-sizing: border-box;
+
+            background-color: #222222;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            letter-spacing: 4px;
+
+            color: #BEFF8F;
+        }
+
+
+        #copyCodeButton {
+
+            width: 100%;
+
+            padding: 10px;
+
+            box-sizing: border-box;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        #copyCodeButton:hover {
+
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        #copyCodeButton:active {
+
+            background-color: #00ffee;
+            color: #ffffff;
+        }
+
+
+        /* ========================================
+           GENERATE BUTTON
+           ======================================== */
+
+        #generateButton {
+
+            width: 100%;
+
+            padding: 12px;
+
+            box-sizing: border-box;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background-color: #BEFF8F;
+
+            color: #000000;
+
+            border: 2px solid #000000;
+        }
+
+
+        #generateButton:hover {
+
+            background-color: #8FFF3D;
+        }
+
+
+        /* ========================================
+           MUTE / UNMUTE BUTTON
+           ======================================== */
+
+        #muteButton {
+
+            width: 20%;
+
+            padding: 12px;
+
+            box-sizing: border-box;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background-color: #606060;
+
+            color: #ffffff;
+
+            border: 2px solid #777777;
+        }
+
+
+        #muteButton:hover {
+
+            background-color: #808080;
+
+            color: #000000;
+
+            border: 2px solid #ffffff;
+        }
+
+
+        #muteButton img {
+
+            width: 25px;
+
+            height: 25px;
+
+            display: block;
+
+            margin: auto;
+        }
+
+
+        /* ========================================
+           DIVIDER
+           ======================================== */
+
+        #divider {
+
+            width: 100%;
+
+            height: 1px;
+
+            margin: 15px 0;
+
+            background-color: #444444;
+        }
+
+
+        /* ========================================
+           CODE INPUT
+           ======================================== */
+
+        #codeInput {
+
+            width: 100%;
+
+            padding: 13px;
+
+            box-sizing: border-box;
+
+            background-color: #222222;
+
+            color: #ffffff;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            font-size: 18px;
+
+            text-align: center;
+
+            outline: none;
+        }
+
+
+        #codeInput:focus {
+
+            border-color: #BEFF8F;
+        }
+
+
+        /* ========================================
+           JOIN BUTTON
+           ======================================== */
+
+        #joinButton {
+
+            width: 100%;
+
+            padding: 12px;
+
+            box-sizing: border-box;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+        }
+
+
+        #joinButton:hover {
+
+            background-color: #555555;
+        }
+
+
+        /* ========================================
+           STATUS
+           ======================================== */
+
+        #status {
+
+            min-height: 20px;
+
+            color: #aaaaaa;
+
+            font-size: 14px;
+
+            text-align: center;
+        }
+
+
+        /* ========================================
+           CHAT
+           ======================================== */
+
+        #chat {
+
+            display: none;
+
+            width: 100%;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+
+        /* ========================================
+           MESSAGES BOX
+           ======================================== */
+
+        #messages {
+
+            width: 100%;
+
+            height: 300px;
+
+            box-sizing: border-box;
+
+            padding: 12px;
+
+            overflow-y: auto;
+
+            background-color: #181818;
+
+            border: 2px solid #444444;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+        #logo {
+            width: 150px; /* Adjust pixels to change size */
+            height: auto; /* Maintains aspect ratio */
+        }
+
+
+        /* ========================================
+           MESSAGE
+           ======================================== */
+
+        .message {
+
+            max-width: 70%;
+
+            padding: 10px 14px;
+
+            border-radius: 12px;
+
+            word-wrap: break-word;
+        }
+
+
+        /* ========================================
+           YOUR MESSAGE
+           ======================================== */
+
+        .messageMine {
+
+            align-self: flex-end;
+
+            background-color: #8EFF3B;
+
+            color: #000000;
+        }
+
+
+        /* ========================================
+           OTHER MESSAGE
+           ======================================== */
+
+        .messageOther {
+
+            align-self: flex-start;
+
+            background-color: #444444;
+
+            color: #ffffff;
+        }
+
+
+        /* ========================================
+           MESSAGE ROW
+           ======================================== */
+
+        #messageRow {
+
+            display: flex;
+
+            gap: 8px;
+
+            width: 100%;
+        }
+
+
+        /* ========================================
+           MESSAGE INPUT
+           ======================================== */
+
+        #messageInput {
+
+            flex: 1;
+
+            padding: 11px;
+
+            box-sizing: border-box;
+
+            background-color: #222222;
+
+            color: #ffffff;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-size: 16px;
+        }
+
+
+        #messageInput:focus {
+
+            border-color: #BEFF8F;
+        }
+
+
+        /* ========================================
+           SEND BUTTON
+           ======================================== */
+
+        #sendButton {
+
+            padding: 11px 18px;
+
+            background-color: #BEFF8F;
+
+            color: #000000;
+
+            border: 2px solid #000000;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        #sendButton:hover {
+
+            background-color: #8FFF3D;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main id="main">
+
+        <div id="container">
+
+
+            <!-- ========================================
+                 TITLE
+                 ======================================== -->
+
+            <img
+                id="logo"
+                src="logo.png"
+                alt="Private Messenger Logo"
+            >
+            
+            <h1 id="title">
+                Messagr
+            </h1>
+
+
+            <p id="subtitle">
+                Private messaging for cautious users
+            </p>
+
+            
+
+
+            <!-- ========================================
+                 USERNAME
+                 ======================================== -->
+
+            <input
+                id="usernameInput"
+                type="text"
+                placeholder="Enter your username"
+                maxlength="8"
+                autocomplete="off"
+            >
+
+
+            <!-- ========================================
+                 GENERATED CODE
+                 ======================================== -->
+
+            <div id="codeBox">
+                ----
+            </div>
+
+
+            <button id="copyCodeButton">
+                COPY ROOM CODE
+            </button>
+
+
+            <button id="generateButton">
+                GENERATE MESSAGE CODE
+            </button>
+
+
+            <!-- ========================================
+                 MUTE BUTTON
+                 ======================================== -->
+
+            <button id="muteButton">
+
+                <img
+                    id="muteIcon"
+                    src="unmute.png"
+                    alt="Mute"
+                >
+
+            </button>
+
+
+            <!-- ========================================
+                 DIVIDER
+                 ======================================== -->
+
+            <div id="divider"></div>
+
+
+            <!-- ========================================
+                 JOIN
+                 ======================================== -->
+
+            <input
+                id="codeInput"
+                type="text"
+                placeholder="Enter Message Code"
+                maxlength="9"
+                autocomplete="off"
+            >
+
+
+            <button id="joinButton">
+                JOIN
+            </button>
+
+
+            <div id="status"></div>
+
+
+            <!-- ========================================
+                 CHAT
+                 ======================================== -->
+
+            <div id="chat">
+
+                <div id="messages"></div>
+
+
+                <div id="messageRow">
+
+                    <input
+                        id="messageInput"
+                        type="text"
+                        placeholder="Type a message..."
+                        autocomplete="off"
+                    >
+
+
+                    <button id="sendButton">
+                        SEND
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- ========================================
+         SOCKET.IO
+         ======================================== -->
+
+    <script src="/socket.io/socket.io.js"></script>
+
+
+    <!-- ========================================
+         YOUR JAVASCRIPT
+         ======================================== -->
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>
