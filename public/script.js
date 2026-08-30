@@ -17,35 +17,36 @@ imageButton.addEventListener("click", () => {
 
 imageInput.addEventListener("change", () => {
 
-    const file =
-        imageInput.files[0];
+    const file = imageInput.files[0];
 
     if (!file) {
         return;
     }
 
     if (!file.type.startsWith("image/")) {
-
         alert("Please select an image.");
-
         imageInput.value = "";
-
         return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-
         alert("Image must be smaller than 5 MB.");
-
         imageInput.value = "";
-
         return;
     }
 
-    console.log(
-        "Selected image:",
-        file.name
-    );
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+        socket.emit("sendImage", {
+            image: reader.result,
+            type: file.type
+        });
+
+    };
+
+    reader.readAsArrayBuffer(file);
 
 });
 
