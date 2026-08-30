@@ -433,7 +433,9 @@ const server =
    ======================================== */
 
 const io =
-    new Server(server);
+    new Server(server, {
+        maxHttpBufferSize: 10 * 1024 * 1024
+    });
 
 
 /* ========================================
