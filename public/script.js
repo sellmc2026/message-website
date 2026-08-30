@@ -130,7 +130,7 @@ if (profileButton) {
         function() {
 
             window.location.href =
-                "index.html";
+                "messagr-profile.html";
 
         }
     );
