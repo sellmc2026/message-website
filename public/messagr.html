@@ -59,13 +59,6 @@
 
         /* ========================================
            MAIN DASHBOARD
-
-           Fixed-size canvas that everything below
-           is positioned inside of. Centered on the
-           page instead of stretching to fill the
-           viewport (which is what was pushing every
-           absolutely-positioned element into the
-           top-left corner on large screens).
            ======================================== */
 
         #dashboard {
@@ -82,8 +75,6 @@
 
         /* ========================================
            LOGO
-           x = 375
-           y = 56
            ======================================== */
 
         #logo {
@@ -103,8 +94,6 @@
 
         /* ========================================
            TITLE
-           x = 375
-           y = 115
            ======================================== */
 
         #title {
@@ -120,6 +109,7 @@
             margin: 0;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -132,8 +122,6 @@
 
         /* ========================================
            PROFILE / TOP BUTTONS
-           x = 668
-           y = 7
            ======================================== */
 
         #topButtons {
@@ -149,7 +137,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: flex-end;
 
             gap: 5px;
@@ -176,6 +163,7 @@
             cursor: pointer;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -258,6 +246,7 @@
             cursor: pointer;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -285,8 +274,6 @@
 
         /* ========================================
            DIRECT MESSAGES BUTTON
-           x = 655
-           y = 61
            ======================================== */
 
         #directMessagesButton {
@@ -597,7 +584,7 @@
 
 
         /* ========================================
-           CHAT HEADER (DM MODE)
+           CHAT HEADER
            ======================================== */
 
         #chatHeader {
@@ -605,7 +592,6 @@
             display: none;
 
             align-items: center;
-
             justify-content: space-between;
 
             gap: 8px;
@@ -619,7 +605,6 @@
             border-radius: 8px;
 
             font-size: 13px;
-
             font-weight: bold;
 
         }
@@ -662,8 +647,6 @@
 
         /* ========================================
            JOIN ROOM
-           x = 35
-           y = 210
            ======================================== */
 
         #joinButton {
@@ -683,6 +666,7 @@
             color: #000000;
 
             border: 2px solid #000000;
+
             border-radius: 8px;
 
             font-size: 14px;
@@ -703,84 +687,84 @@
         /* ========================================
            ROOM CODE INPUT
            ======================================== */
-        
+
         #codeInput {
-        
+
             position: absolute;
-        
+
             left: 35px;
             top: 160px;
-        
+
             width: 220px;
             height: 38px;
-        
+
             padding: 8px 75px 8px 8px;
-        
+
             background-color: #222222;
-        
+
             color: #ffffff;
-        
+
             border: 2px solid #555555;
+
             border-radius: 8px;
-        
+
             outline: none;
-        
+
             text-align: center;
-        
+
         }
-        
-        
+
+
         #codeInput:focus {
-        
+
             border-color: #BEFF8F;
-        
+
         }
-        
-        
+
+
         /* ========================================
            GENERATE ROOM BUTTON
            ======================================== */
-        
-        #generateRoomButton {
-        
+
+        #generateButton {
+
             position: absolute;
-        
+
             left: 177px;
             top: 164px;
-        
+
             width: 72px;
             height: 30px;
-        
+
             padding: 0;
-        
+
             background-color: #4D9EFF;
-        
+
             color: #ffffff;
-        
+
             border: 2px solid #000000;
-        
+
             border-radius: 7px;
-        
+
             font-size: 10px;
             font-weight: bold;
-        
+
             cursor: pointer;
-        
+
             z-index: 2;
-        
+
         }
-        
-        
-        #generateRoomButton:hover {
-        
+
+
+        #generateButton:hover {
+
             background-color: #3689EE;
-        
+
         }
+
 
         /* ========================================
            SAVED ROOMS
-           x = 35
-           y = 270
            ======================================== */
 
         #savedRooms {
@@ -796,6 +780,7 @@
             background-color: #181818;
 
             border: 2px solid #444444;
+
             border-radius: 10px;
 
             padding: 8px;
@@ -911,8 +896,6 @@
 
         /* ========================================
            BIG CHAT BOX
-           x = 267
-           y = 210
            ======================================== */
 
         #chat {
@@ -949,6 +932,7 @@
             background-color: #181818;
 
             border: 2px solid #444444;
+
             border-radius: 8px;
 
             display: flex;
@@ -1094,11 +1078,13 @@
             background-color: #444444;
 
             border: 2px solid #666666;
+
             border-radius: 8px;
 
             cursor: pointer;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -1134,11 +1120,13 @@
             background-color: #444444;
 
             border: 2px solid #666666;
+
             border-radius: 8px;
 
             cursor: pointer;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -1338,11 +1326,13 @@
             background-color: #BEFF8F;
 
             border: 2px solid #000000;
+
             border-radius: 8px;
 
             cursor: pointer;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -1365,12 +1355,12 @@
 
 
         /* ========================================
-           CODE / GENERATE AREA
+           OLD CODE ELEMENTS
+           HIDDEN
            ======================================== */
 
         #codeBox,
         #copyCodeButton,
-        #generateButton,
         #divider,
         #subtitle {
 
@@ -1381,7 +1371,6 @@
 
         /* ========================================
            STATUS TEXT
-           (feedback under the join box)
            ======================================== */
 
         #status {
@@ -1492,11 +1481,15 @@
         @keyframes imageLoadingSpin {
 
             from {
+
                 transform: rotate(0deg);
+
             }
 
             to {
+
                 transform: rotate(360deg);
+
             }
 
         }
@@ -1540,7 +1533,6 @@
             opacity: 0;
 
         }
-
 
     </style>
 
@@ -1634,17 +1626,22 @@
          ROOM CODE INPUT
          ======================================== -->
 
-    <input
-        id="codeInput"
-        type="text"
-        placeholder="Enter Room Code"
-        maxlength="9"
-        autocomplete="off"
-    >
-    
-    <button id="generateRoomButton">
-        Generate
-    </button>
+    <div id="roomCodeArea">
+
+        <input
+            id="codeInput"
+            type="text"
+            placeholder="Enter Room Code"
+            maxlength="9"
+            autocomplete="off"
+        >
+
+
+        <button id="generateButton">
+            Generate
+        </button>
+
+    </div>
 
 
     <!-- ========================================
@@ -1678,10 +1675,6 @@
 
 
         <!-- ========================================
-             MESSAGE ROW
-             ======================================== -->
-
-        <!-- ========================================
              GIF PICKER
              ======================================== -->
 
@@ -1696,16 +1689,22 @@
                     autocomplete="off"
                 >
 
+
                 <button id="closeGifPicker">
                     ✕
                 </button>
 
             </div>
 
+
             <div id="gifResults"></div>
 
         </div>
 
+
+        <!-- ========================================
+             MESSAGE ROW
+             ======================================== -->
 
         <div id="messageRow">
 
@@ -1732,9 +1731,7 @@
 
 
                 <button id="gifButton">
-
                     GIF
-
                 </button>
 
 
