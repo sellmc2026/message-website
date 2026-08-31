@@ -107,56 +107,6 @@ const profileButton =
     document.getElementById("profileButton");
 
 
-/*
-   NEW GENERATE ROOM BUTTON
-
-   This expects the HTML button to have:
-
-   id="generateRoomButton"
-
-   If it does not exist yet, the script
-   will create it automatically.
-*/
-
-let generateRoomButton =
-    document.getElementById(
-        "generateRoomButton"
-    );
-
-
-/* ========================================
-   CREATE GENERATE BUTTON IF NEEDED
-   ======================================== */
-
-if (
-    !generateRoomButton &&
-    codeInput
-) {
-
-    generateRoomButton =
-        document.createElement("button");
-
-
-    generateRoomButton.id =
-        "generateRoomButton";
-
-
-    generateRoomButton.textContent =
-        "Generate";
-
-
-    /*
-       Put the button inside the same
-       parent as the room code input.
-    */
-
-    codeInput.parentElement.appendChild(
-        generateRoomButton
-    );
-
-}
-
-
 /* ========================================
    SAVED USERNAME
    ======================================== */
@@ -239,13 +189,46 @@ if (profileButton) {
 
 
 /* ========================================
-   ROOM CODE GENERATOR
+   ROOM CODE SYSTEM
+   ======================================== */
+
+/*
+   Room codes are always:
+
+   XXXX-XXXX
+
+   Allowed characters:
+
+   A-Z
+   2-9
+
+   Characters that can easily be confused
+   such as 0, 1, I and O are not used.
+*/
+
+
+const roomCodeCharacters =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+
+/* ========================================
+   VALIDATE ROOM CODE
+   ======================================== */
+
+function isValidRoomCode(code) {
+
+    return /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(
+        code
+    );
+
+}
+
+
+/* ========================================
+   GENERATE ROOM CODE
    ======================================== */
 
 function generateCode() {
-
-    const characters =
-        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
     let code =
         "";
@@ -258,10 +241,10 @@ function generateCode() {
     ) {
 
         code +=
-            characters[
+            roomCodeCharacters[
                 Math.floor(
                     Math.random() *
-                    characters.length
+                    roomCodeCharacters.length
                 )
             ];
 
@@ -278,44 +261,10 @@ function generateCode() {
 
 
 /* ========================================
-   ROOM CODE VALIDATION
-   ======================================== */
-
-/*
-   A valid Messagr room code is:
-
-   XXXX-XXXX
-
-   Where each X is one of:
-
-   A-Z
-   2-9
-
-   The letters I and O are excluded,
-   just like generated room codes.
-*/
-
-function isValidRoomCode(code) {
-
-    return /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(
-        code
-    );
-
-}
-
-
-/* ========================================
    UPDATE JOIN BUTTON
    ======================================== */
 
 function updateJoinButton() {
-
-    if (!joinButton) {
-
-        return;
-
-    }
-
 
     const code =
         codeInput.value
@@ -328,9 +277,7 @@ function updateJoinButton() {
     ) {
 
         /*
-           VALID CODE
-
-           Blue button
+           Valid room code = blue
         */
 
         joinButton.style.backgroundColor =
@@ -339,18 +286,10 @@ function updateJoinButton() {
         joinButton.style.borderColor =
             "#000000";
 
-        joinButton.style.color =
-            "#000000";
-
-        joinButton.dataset.valid =
-            "true";
-
     } else {
 
         /*
-           INVALID / EMPTY CODE
-
-           Original green button
+           Empty/invalid = original green
         */
 
         joinButton.style.backgroundColor =
@@ -359,151 +298,265 @@ function updateJoinButton() {
         joinButton.style.borderColor =
             "#000000";
 
-        joinButton.style.color =
-            "#000000";
-
-        joinButton.dataset.valid =
-            "false";
-
     }
 
 }
 
 
 /* ========================================
+   CREATE GENERATE BUTTON
+   ======================================== */
+
+/*
+   Your HTML currently doesn't contain a
+   Generate button inside the code input.
+
+   So we create it here and place it inside
+   the room-code area.
+*/
+
+
+let roomGenerateButton =
+    document.getElementById(
+        "roomGenerateButton"
+    );
+
+
+if (
+    !roomGenerateButton
+) {
+
+    roomGenerateButton =
+        document.createElement("button");
+
+
+    roomGenerateButton.id =
+        "roomGenerateButton";
+
+
+    roomGenerateButton.type =
+        "button";
+
+
+    roomGenerateButton.textContent =
+        "Generate";
+
+
+    document.body.appendChild(
+        roomGenerateButton
+    );
+
+
+    /*
+       Position it over the right side
+       of the room-code input.
+    */
+
+    roomGenerateButton.style.position =
+        "absolute";
+
+
+    roomGenerateButton.style.left =
+        "222px";
+
+
+    roomGenerateButton.style.top =
+        "163px";
+
+
+    roomGenerateButton.style.width =
+        "72px";
+
+
+    roomGenerateButton.style.height =
+        "32px";
+
+
+    roomGenerateButton.style.padding =
+        "0";
+
+
+    roomGenerateButton.style.backgroundColor =
+        "#4DA6FF";
+
+
+    roomGenerateButton.style.color =
+        "#ffffff";
+
+
+    roomGenerateButton.style.border =
+        "2px solid #000000";
+
+
+    roomGenerateButton.style.borderRadius =
+        "7px";
+
+
+    roomGenerateButton.style.fontSize =
+        "11px";
+
+
+    roomGenerateButton.style.fontWeight =
+        "bold";
+
+
+    roomGenerateButton.style.cursor =
+        "pointer";
+
+
+    roomGenerateButton.style.zIndex =
+        "10";
+
+
+    roomGenerateButton.addEventListener(
+        "mouseenter",
+        function() {
+
+            roomGenerateButton.style.backgroundColor =
+                "#268FFF";
+
+        }
+    );
+
+
+    roomGenerateButton.addEventListener(
+        "mouseleave",
+        function() {
+
+            roomGenerateButton.style.backgroundColor =
+                "#4DA6FF";
+
+        }
+    );
+
+}
+
+
+/* ========================================
+   GENERATE NEW ROOM
+   ======================================== */
+
+roomGenerateButton.addEventListener(
+    "click",
+    function() {
+
+        const code =
+            generateCode();
+
+
+        codeInput.value =
+            code;
+
+
+        /*
+           Keep the old codeBox updated too
+           in case another part of the page
+           still uses it.
+        */
+
+        if (codeBox) {
+
+            codeBox.textContent =
+                code;
+
+        }
+
+
+        updateJoinButton();
+
+
+        status.textContent =
+            "New room code generated.";
+
+
+        codeInput.focus();
+
+    }
+);
+
+
+/* ========================================
    FORMAT ROOM CODE WHILE TYPING
    ======================================== */
 
-if (codeInput) {
+codeInput.addEventListener(
+    "input",
+    function() {
 
-    codeInput.addEventListener(
-        "input",
-        function() {
-
-            let value =
-                codeInput.value
-                    .toUpperCase()
-                    .replace(
-                        /[^A-HJ-NP-Z2-9]/g,
-                        ""
-                    );
+        let value =
+            codeInput.value
+                .toUpperCase();
 
 
-            /*
-               Maximum of 8 actual
-               room-code characters.
-            */
+        /*
+           Only allow room-code characters.
+        */
+
+        value =
+            value.replace(
+                /[^A-Z2-9]/g,
+                ""
+            );
+
+
+        /*
+           Remove characters that aren't
+           allowed by the generator.
+        */
+
+        value =
+            value.replace(
+                /[IO01]/g,
+                ""
+            );
+
+
+        /*
+           Maximum of 8 actual characters.
+        */
+
+        value =
+            value.substring(
+                0,
+                8
+            );
+
+
+        /*
+           Put the dash after the first
+           four characters.
+        */
+
+        if (
+            value.length > 4
+        ) {
 
             value =
-                value.substring(
-                    0,
-                    8
-                );
-
-
-            /*
-               Automatically add the dash
-               after four characters.
-            */
-
-            if (
-                value.length > 4
-            ) {
-
-                value =
-                    value.substring(0, 4)
-                    + "-"
-                    + value.substring(4);
-
-            }
-
-
-            codeInput.value =
-                value;
-
-
-            updateJoinButton();
-
-
-            /*
-               Clear old status text while
-               the user is typing.
-            */
-
-            if (
-                status &&
-                value.length > 0
-            ) {
-
-                if (
-                    isValidRoomCode(value)
-                ) {
-
-                    status.textContent =
-                        "Valid room code.";
-
-                } else {
-
-                    status.textContent =
-                        "Enter a valid room code.";
-
-                }
-
-            }
+                value.substring(0, 4)
+                + "-"
+                + value.substring(4);
 
         }
-    );
-
-}
 
 
-/* ========================================
-   GENERATE NEW ROOM BUTTON
-   ======================================== */
-
-if (generateRoomButton) {
-
-    generateRoomButton.addEventListener(
-        "click",
-        function() {
-
-            const code =
-                generateCode();
+        codeInput.value =
+            value;
 
 
-            codeInput.value =
-                code;
+        updateJoinButton();
 
-
-            updateJoinButton();
-
-
-            if (status) {
-
-                status.textContent =
-                    "New room code generated.";
-
-            }
-
-
-            codeInput.focus();
-
-        }
-    );
-
-}
+    }
+);
 
 
 /* ========================================
-   INITIAL ROOM CODE STATE
+   GENERATE BUTTON COMPATIBILITY
    ======================================== */
 
-updateJoinButton();
-
-
-/* ========================================
-   OLD GENERATE BUTTON
-   ======================================== */
+/*
+   If the old hidden generateButton exists,
+   keep it functional too.
+*/
 
 if (generateButton) {
 
@@ -515,8 +568,12 @@ if (generateButton) {
                 generateCode();
 
 
-            codeBox.textContent =
-                code;
+            if (codeBox) {
+
+                codeBox.textContent =
+                    code;
+
+            }
 
 
             codeInput.value =
@@ -527,12 +584,19 @@ if (generateButton) {
 
 
             status.textContent =
-                "Code generated.";
+                "New room code generated.";
 
         }
     );
 
 }
+
+
+/* ========================================
+   INITIAL JOIN BUTTON STATE
+   ======================================== */
+
+updateJoinButton();
 
 
 /* ========================================
@@ -550,6 +614,7 @@ if (copyCodeButton) {
 
 
             if (
+                !code ||
                 code === "----"
             ) {
 
@@ -603,7 +668,10 @@ joinButton.addEventListener(
     function() {
 
         const username =
-            (savedUsername || "").trim();
+            (localStorage.getItem(
+                "messagrUsername"
+            ) || "").trim();
+
 
         const code =
             codeInput.value
@@ -644,27 +712,11 @@ joinButton.addEventListener(
            ======================================== */
 
         if (
-            code.length === 0
-        ) {
-
-            status.textContent =
-                "Enter a room code.";
-
-            codeInput.focus();
-
-            updateJoinButton();
-
-            return;
-
-        }
-
-
-        if (
             !isValidRoomCode(code)
         ) {
 
             status.textContent =
-                "Invalid room code.";
+                "Please enter a valid room code.";
 
             codeInput.focus();
 
@@ -676,8 +728,20 @@ joinButton.addEventListener(
 
 
         /* ========================================
-           JOINING
+           CHECK CONNECTION
            ======================================== */
+
+        if (
+            !socket.connected
+        ) {
+
+            status.textContent =
+                "Not connected to server.";
+
+            return;
+
+        }
+
 
         status.textContent =
             "Joining " + code + "...";
@@ -688,6 +752,16 @@ joinButton.addEventListener(
             username
         );
 
+
+        /*
+           The server decides whether this room
+           already exists.
+
+           If it doesn't exist, the server should
+           create it.
+
+           If it does exist, we join it.
+        */
 
         socket.emit(
             "joinRoom",
@@ -909,8 +983,8 @@ async function registerNotificationSystem(
                                     roomCode
                             }
                         )
-                }
-            );
+                    }
+                );
 
 
         if (
