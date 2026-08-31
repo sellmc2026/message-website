@@ -188,32 +188,13 @@ if (mainProfileButton) {
 }
 
 
-/* ========================================
-   ROOM CODE SYSTEM
-   ======================================== */
-
-/*
-   Room codes are always:
-
-   XXXX-XXXX
-
-   Allowed characters:
-
-   A-Z
-   2-9
-
-   Characters that can easily be confused
-   such as 0, 1, I and O are not used.
-*/
 
 
 const roomCodeCharacters =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 
-/* ========================================
-   VALIDATE ROOM CODE
-   ======================================== */
+
 
 function isValidRoomCode(code) {
 
@@ -224,9 +205,7 @@ function isValidRoomCode(code) {
 }
 
 
-/* ========================================
-   GENERATE ROOM CODE
-   ======================================== */
+
 
 function generateCode() {
 
@@ -260,9 +239,7 @@ function generateCode() {
 }
 
 
-/* ========================================
-   UPDATE JOIN BUTTON
-   ======================================== */
+
 
 function updateJoinButton() {
 
@@ -276,9 +253,7 @@ function updateJoinButton() {
         isValidRoomCode(code)
     ) {
 
-        /*
-           Valid room code = blue
-        */
+       
 
         joinButton.style.backgroundColor =
             "#4DA6FF";
@@ -303,17 +278,7 @@ function updateJoinButton() {
 }
 
 
-/* ========================================
-   CREATE GENERATE BUTTON
-   ======================================== */
 
-/*
-   Your HTML currently doesn't contain a
-   Generate button inside the code input.
-
-   So we create it here and place it inside
-   the room-code area.
-*/
 
 
 let roomGenerateButton =
