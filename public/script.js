@@ -296,8 +296,7 @@ function updateJoinButton() {
 
 if (generateButton) {
 
-    generateButton.addEventListener(
-        "click",
+    generateButton.onclick =
         function() {
 
             const code =
@@ -329,8 +328,7 @@ if (generateButton) {
 
             codeInput.focus();
 
-        }
-    );
+        };
 
 }
 
