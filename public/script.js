@@ -497,7 +497,7 @@ if (saveChatButton) {
                 if (status) {
 
                     status.textContent =
-                        "Chat removed from saved rooms.";
+                        "Chat removed from saved rooms";
 
                 }
 
