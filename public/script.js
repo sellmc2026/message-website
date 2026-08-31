@@ -75,6 +75,10 @@ const generateButton =
     document.getElementById("generateButton");
 
 
+const roomGenerateButton =
+    document.getElementById("roomGenerateButton");
+
+
 const codeInput =
     document.getElementById("codeInput");
 
@@ -261,6 +265,16 @@ function generateCode() {
 
 function updateJoinButton() {
 
+    if (
+        !codeInput ||
+        !joinButton
+    ) {
+
+        return;
+
+    }
+
+
     const code =
         codeInput.value
             .trim()
@@ -274,6 +288,7 @@ function updateJoinButton() {
         joinButton.style.backgroundColor =
             "#4DA6FF";
 
+
         joinButton.style.borderColor =
             "#000000";
 
@@ -282,6 +297,7 @@ function updateJoinButton() {
         joinButton.style.backgroundColor =
             "#BEFF8F";
 
+
         joinButton.style.borderColor =
             "#000000";
 
@@ -291,44 +307,112 @@ function updateJoinButton() {
 
 
 /* ========================================
-   GENERATE NEW ROOM
+   GENERATE NEW ROOM CODE
+   ======================================== */
+
+function generateNewRoomCode() {
+
+    const code =
+        generateCode();
+
+
+    /*
+       Put generated code into
+       the room-code input.
+    */
+
+    if (codeInput) {
+
+        codeInput.value =
+            code;
+
+    }
+
+
+    /*
+       Keep codeBox updated too.
+    */
+
+    if (codeBox) {
+
+        codeBox.textContent =
+            code;
+
+    }
+
+
+    /*
+       Update JOIN button.
+    */
+
+    updateJoinButton();
+
+
+    /*
+       Update status.
+    */
+
+    if (status) {
+
+        status.textContent =
+            "New room code generated.";
+
+    }
+
+
+    /*
+       Focus the input.
+    */
+
+    if (codeInput) {
+
+        codeInput.focus();
+
+    }
+
+}
+
+
+/* ========================================
+   GENERATE BUTTON
    ======================================== */
 
 if (generateButton) {
 
-    generateButton.onclick =
-        function() {
+    generateButton.addEventListener(
+        "click",
+        function(event) {
 
-            const code =
-                generateCode();
+            event.preventDefault();
 
+            generateNewRoomCode();
 
-            codeInput.value =
-                code;
+        }
+    );
 
-
-            if (codeBox) {
-
-                codeBox.textContent =
-                    code;
-
-            }
+}
 
 
-            updateJoinButton();
+/*
+   If the page uses roomGenerateButton
+   instead of generateButton, support that too.
+*/
 
+if (
+    roomGenerateButton &&
+    roomGenerateButton !== generateButton
+) {
 
-            if (status) {
+    roomGenerateButton.addEventListener(
+        "click",
+        function(event) {
 
-                status.textContent =
-                    "New room code generated.";
+            event.preventDefault();
 
-            }
+            generateNewRoomCode();
 
-
-            codeInput.focus();
-
-        };
+        }
+    );
 
 }
 
@@ -337,74 +421,78 @@ if (generateButton) {
    FORMAT ROOM CODE WHILE TYPING
    ======================================== */
 
-codeInput.addEventListener(
-    "input",
-    function() {
+if (codeInput) {
 
-        let value =
-            codeInput.value
-                .toUpperCase();
+    codeInput.addEventListener(
+        "input",
+        function() {
 
-
-        /*
-           Only allow room-code characters.
-        */
-
-        value =
-            value.replace(
-                /[^A-Z2-9]/g,
-                ""
-            );
+            let value =
+                codeInput.value
+                    .toUpperCase();
 
 
-        /*
-           Remove characters that aren't
-           allowed by the generator.
-        */
-
-        value =
-            value.replace(
-                /[IO01]/g,
-                ""
-            );
-
-
-        /*
-           Maximum of 8 actual characters.
-        */
-
-        value =
-            value.substring(
-                0,
-                8
-            );
-
-
-        /*
-           Put the dash after the first
-           four characters.
-        */
-
-        if (
-            value.length > 4
-        ) {
+            /*
+               Only allow letters and numbers.
+            */
 
             value =
-                value.substring(0, 4)
-                + "-"
-                + value.substring(4);
+                value.replace(
+                    /[^A-Z2-9]/g,
+                    ""
+                );
+
+
+            /*
+               Remove characters that
+               aren't allowed.
+            */
+
+            value =
+                value.replace(
+                    /[IO01]/g,
+                    ""
+                );
+
+
+            /*
+               Maximum of 8 characters.
+            */
+
+            value =
+                value.substring(
+                    0,
+                    8
+                );
+
+
+            /*
+               Put dash after first
+               four characters.
+            */
+
+            if (
+                value.length > 4
+            ) {
+
+                value =
+                    value.substring(0, 4)
+                    + "-"
+                    + value.substring(4);
+
+            }
+
+
+            codeInput.value =
+                value;
+
+
+            updateJoinButton();
 
         }
+    );
 
-
-        codeInput.value =
-            value;
-
-
-        updateJoinButton();
-
-    }
-);
+}
 
 
 /* ========================================
@@ -415,7 +503,7 @@ updateJoinButton();
 
 
 /* ========================================
-   COPY MESSAGE CODE
+   COPY ROOM CODE
    ======================================== */
 
 if (copyCodeButton) {
@@ -423,6 +511,13 @@ if (copyCodeButton) {
     copyCodeButton.addEventListener(
         "click",
         async function() {
+
+            if (!codeBox) {
+
+                return;
+
+            }
+
 
             const code =
                 codeBox.textContent;
@@ -478,111 +573,115 @@ if (copyCodeButton) {
    JOIN ROOM
    ======================================== */
 
-joinButton.addEventListener(
-    "click",
-    function() {
+if (joinButton) {
 
-        const username =
-            (
-                localStorage.getItem(
-                    "messagrUsername"
-                ) || ""
-            ).trim();
+    joinButton.addEventListener(
+        "click",
+        function() {
 
-
-        const code =
-            codeInput.value
-                .trim()
-                .toUpperCase();
+            const username =
+                (
+                    localStorage.getItem(
+                        "messagrUsername"
+                    ) || ""
+                ).trim();
 
 
-        /* ========================================
-           CHECK USERNAME
-           ======================================== */
-
-        if (
-            username.length === 0
-        ) {
-
-            status.textContent =
-                "Please set a username on the welcome page first.";
-
-            return;
-
-        }
+            const code =
+                codeInput.value
+                    .trim()
+                    .toUpperCase();
 
 
-        if (
-            username.length > 8
-        ) {
+            /* ========================================
+               CHECK USERNAME
+               ======================================== */
 
-            status.textContent =
-                "Username must be 8 characters or less.";
+            if (
+                username.length === 0
+            ) {
 
-            return;
+                status.textContent =
+                    "Please set a username on the welcome page first.";
 
-        }
+                return;
 
-
-        /* ========================================
-           CHECK ROOM CODE
-           ======================================== */
-
-        if (
-            !isValidRoomCode(code)
-        ) {
-
-            status.textContent =
-                "Please enter a valid room code.";
-
-            codeInput.focus();
-
-            updateJoinButton();
-
-            return;
-
-        }
-
-
-        /* ========================================
-           CHECK CONNECTION
-           ======================================== */
-
-        if (
-            !socket.connected
-        ) {
-
-            status.textContent =
-                "Not connected to server.";
-
-            return;
-
-        }
-
-
-        status.textContent =
-            "Joining " + code + "...";
-
-
-        localStorage.setItem(
-            "messagrUsername",
-            username
-        );
-
-
-        socket.emit(
-            "joinRoom",
-            {
-                code:
-                    code,
-
-                username:
-                    username
             }
-        );
 
-    }
-);
+
+            if (
+                username.length > 8
+            ) {
+
+                status.textContent =
+                    "Username must be 8 characters or less.";
+
+                return;
+
+            }
+
+
+            /* ========================================
+               CHECK ROOM CODE
+               ======================================== */
+
+            if (
+                !isValidRoomCode(code)
+            ) {
+
+                status.textContent =
+                    "Please enter a valid room code.";
+
+                codeInput.focus();
+
+                updateJoinButton();
+
+                return;
+
+            }
+
+
+            /* ========================================
+               CHECK CONNECTION
+               ======================================== */
+
+            if (
+                !socket.connected
+            ) {
+
+                status.textContent =
+                    "Not connected to server.";
+
+                return;
+
+            }
+
+
+            status.textContent =
+                "Joining " + code + "...";
+
+
+            localStorage.setItem(
+                "messagrUsername",
+                username
+            );
+
+
+            socket.emit(
+                "joinRoom",
+                {
+                    code:
+                        code,
+
+                    username:
+                        username
+                }
+            );
+
+        }
+    );
+
+}
 
 
 /* ========================================
@@ -902,329 +1001,402 @@ function sendMessage() {
 }
 
 
-sendButton.addEventListener(
-    "click",
-    sendMessage
-);
+if (sendButton) {
+
+    sendButton.addEventListener(
+        "click",
+        sendMessage
+    );
+
+}
 
 
 /* ========================================
    ENTER TO SEND
    ======================================== */
 
-messageInput.addEventListener(
-    "keydown",
-    function(event) {
+if (messageInput) {
 
-        if (
-            event.key === "Enter"
-        ) {
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
 
-            event.preventDefault();
+            if (
+                event.key === "Enter"
+            ) {
 
-            sendMessage();
+                event.preventDefault();
+
+                sendMessage();
+
+            }
 
         }
+    );
 
-    }
-);
+}
 
 
 /* ========================================
    IMAGE BUTTON
    ======================================== */
 
-imageButton.addEventListener(
-    "click",
-    function() {
+if (imageButton) {
 
-        if (
-            imageUploadInProgress
-        ) {
+    imageButton.addEventListener(
+        "click",
+        function() {
 
-            return;
+            if (
+                imageUploadInProgress
+            ) {
+
+                return;
+
+            }
+
+
+            imageInput.click();
 
         }
+    );
 
-
-        imageInput.click();
-
-    }
-);
+}
 
 
 /* ========================================
    IMAGE SELECTED
    ======================================== */
 
-imageInput.addEventListener(
-    "change",
-    function() {
+if (imageInput) {
 
-        const file =
-            imageInput.files[0];
+    imageInput.addEventListener(
+        "change",
+        function() {
 
+            const file =
+                imageInput.files[0];
 
-        if (!file) {
 
-            return;
+            if (!file) {
 
-        }
+                return;
 
+            }
 
-        /* ========================================
-           CHECK FILE TYPE
-           ======================================== */
 
-        if (
-            !file.type.startsWith("image/")
-        ) {
+            /* ========================================
+               CHECK FILE TYPE
+               ======================================== */
 
-            alert(
-                "Please select an image."
-            );
+            if (
+                !file.type.startsWith("image/")
+            ) {
 
-            imageInput.value =
-                "";
-
-            return;
-
-        }
-
-
-        /* ========================================
-           CHECK FILE SIZE
-           ======================================== */
-
-        if (
-            file.size >
-            4 * 1024 * 1024
-        ) {
-
-            alert(
-                "Image must be 4 MB or smaller."
-            );
-
-            imageInput.value =
-                "";
-
-            return;
-
-        }
-
-
-        /* ========================================
-           CHECK ROOM
-           ======================================== */
-
-        if (
-            !socket.connected
-        ) {
-
-            alert(
-                "You are not connected to a room."
-            );
-
-            imageInput.value =
-                "";
-
-            return;
-
-        }
-
-
-        if (
-            imageUploadInProgress
-        ) {
-
-            return;
-
-        }
-
-
-        imageUploadInProgress =
-            true;
-
-
-        /* ========================================
-           DISABLE CHAT
-           ======================================== */
-
-        messageInput.disabled =
-            true;
-
-
-        sendButton.disabled =
-            true;
-
-
-        imageButton.disabled =
-            true;
-
-
-        /* ========================================
-           CREATE IMAGE PREVIEW
-           ======================================== */
-
-        const preview =
-            new Image();
-
-
-        preview.onload =
-            function() {
-
-                let width =
-                    preview.naturalWidth;
-
-
-                let height =
-                    preview.naturalHeight;
-
-
-                const maxWidth =
-                    250;
-
-
-                const maxHeight =
-                    250;
-
-
-                if (
-                    width > maxWidth
-                ) {
-
-                    const ratio =
-                        maxWidth / width;
-
-
-                    width =
-                        maxWidth;
-
-
-                    height =
-                        height * ratio;
-
-                }
-
-
-                if (
-                    height > maxHeight
-                ) {
-
-                    const ratio =
-                        maxHeight / height;
-
-
-                    height =
-                        maxHeight;
-
-
-                    width =
-                        width * ratio;
-
-                }
-
-
-                /* ========================================
-                   CREATE LOADING MESSAGE
-                   ======================================== */
-
-                const loadingMessage =
-                    document.createElement("div");
-
-
-                loadingMessage.classList.add(
-                    "message",
-                    "messageMine",
-                    "imageLoadingMessage"
+                alert(
+                    "Please select an image."
                 );
 
+                imageInput.value =
+                    "";
 
-                loadingMessage.style.width =
-                    width + "px";
+                return;
 
-
-                loadingMessage.style.height =
-                    height + "px";
-
-
-                loadingMessage.style.backgroundColor =
-                    "#555555";
+            }
 
 
-                loadingMessage.style.display =
-                    "flex";
+            /* ========================================
+               CHECK FILE SIZE
+               ======================================== */
 
+            if (
+                file.size >
+                4 * 1024 * 1024
+            ) {
 
-                loadingMessage.style.alignItems =
-                    "center";
-
-
-                loadingMessage.style.justifyContent =
-                    "center";
-
-
-                loadingMessage.style.padding =
-                    "0";
-
-
-                /* ========================================
-                   SPINNER
-                   ======================================== */
-
-                const spinner =
-                    document.createElement("div");
-
-
-                spinner.classList.add(
-                    "imageLoadingSpinner"
+                alert(
+                    "Image must be 4 MB or smaller."
                 );
 
+                imageInput.value =
+                    "";
 
-                spinner.textContent =
-                    "⟳";
+                return;
 
-
-                spinner.style.color =
-                    "#ffffff";
-
-
-                spinner.style.fontSize =
-                    "40px";
+            }
 
 
-                spinner.style.lineHeight =
-                    "1";
+            /* ========================================
+               CHECK ROOM
+               ======================================== */
 
+            if (
+                !socket.connected
+            ) {
 
-                spinner.style.animation =
-                    "imageSpinner 1s linear infinite";
-
-
-                loadingMessage.appendChild(
-                    spinner
+                alert(
+                    "You are not connected to a room."
                 );
 
+                imageInput.value =
+                    "";
 
-                messages.appendChild(
-                    loadingMessage
-                );
+                return;
 
-
-                messages.scrollTop =
-                    messages.scrollHeight;
+            }
 
 
-                currentImageLoadingMessage =
-                    loadingMessage;
+            if (
+                imageUploadInProgress
+            ) {
+
+                return;
+
+            }
 
 
-                /* ========================================
-                   7 SECOND TIMEOUT
-                   ======================================== */
+            imageUploadInProgress =
+                true;
 
-                imageUploadTimeout =
-                    setTimeout(
+
+            /* ========================================
+               DISABLE CHAT
+               ======================================== */
+
+            messageInput.disabled =
+                true;
+
+
+            sendButton.disabled =
+                true;
+
+
+            imageButton.disabled =
+                true;
+
+
+            /* ========================================
+               CREATE IMAGE PREVIEW
+               ======================================== */
+
+            const preview =
+                new Image();
+
+
+            preview.onload =
+                function() {
+
+                    let width =
+                        preview.naturalWidth;
+
+
+                    let height =
+                        preview.naturalHeight;
+
+
+                    const maxWidth =
+                        250;
+
+
+                    const maxHeight =
+                        250;
+
+
+                    if (
+                        width > maxWidth
+                    ) {
+
+                        const ratio =
+                            maxWidth / width;
+
+
+                        width =
+                            maxWidth;
+
+
+                        height =
+                            height * ratio;
+
+                    }
+
+
+                    if (
+                        height > maxHeight
+                    ) {
+
+                        const ratio =
+                            maxHeight / height;
+
+
+                        height =
+                            maxHeight;
+
+
+                        width =
+                            width * ratio;
+
+                    }
+
+
+                    /* ========================================
+                       CREATE LOADING MESSAGE
+                       ======================================== */
+
+                    const loadingMessage =
+                        document.createElement("div");
+
+
+                    loadingMessage.classList.add(
+                        "message",
+                        "messageMine",
+                        "imageLoadingMessage"
+                    );
+
+
+                    loadingMessage.style.width =
+                        width + "px";
+
+
+                    loadingMessage.style.height =
+                        height + "px";
+
+
+                    loadingMessage.style.backgroundColor =
+                        "#555555";
+
+
+                    loadingMessage.style.display =
+                        "flex";
+
+
+                    loadingMessage.style.alignItems =
+                        "center";
+
+
+                    loadingMessage.style.justifyContent =
+                        "center";
+
+
+                    loadingMessage.style.padding =
+                        "0";
+
+
+                    /* ========================================
+                       SPINNER
+                       ======================================== */
+
+                    const spinner =
+                        document.createElement("div");
+
+
+                    spinner.classList.add(
+                        "imageLoadingSpinner"
+                    );
+
+
+                    spinner.textContent =
+                        "⟳";
+
+
+                    spinner.style.color =
+                        "#ffffff";
+
+
+                    spinner.style.fontSize =
+                        "40px";
+
+
+                    spinner.style.lineHeight =
+                        "1";
+
+
+                    spinner.style.animation =
+                        "imageSpinner 1s linear infinite";
+
+
+                    loadingMessage.appendChild(
+                        spinner
+                    );
+
+
+                    messages.appendChild(
+                        loadingMessage
+                    );
+
+
+                    messages.scrollTop =
+                        messages.scrollHeight;
+
+
+                    currentImageLoadingMessage =
+                        loadingMessage;
+
+
+                    /* ========================================
+                       7 SECOND TIMEOUT
+                       ======================================== */
+
+                    imageUploadTimeout =
+                        setTimeout(
+                            function() {
+
+                                if (
+                                    !imageUploadInProgress
+                                ) {
+
+                                    return;
+
+                                }
+
+
+                                imageUploadInProgress =
+                                    false;
+
+
+                                if (
+                                    currentImageLoadingMessage
+                                ) {
+
+                                    currentImageLoadingMessage.remove();
+
+                                    currentImageLoadingMessage =
+                                        null;
+
+                                }
+
+
+                                messageInput.disabled =
+                                    false;
+
+
+                                sendButton.disabled =
+                                    false;
+
+
+                                imageButton.disabled =
+                                    false;
+
+
+                                showUploadError();
+
+
+                                imageInput.value =
+                                    "";
+
+                            },
+                            7000
+                        );
+
+
+                    /* ========================================
+                       READ IMAGE
+                       ======================================== */
+
+                    const reader =
+                        new FileReader();
+
+
+                    reader.onload =
                         function() {
 
                             if (
@@ -1232,6 +1404,37 @@ imageInput.addEventListener(
                             ) {
 
                                 return;
+
+                            }
+
+
+                            socket.emit(
+                                "sendImage",
+                                {
+                                    image:
+                                        reader.result,
+
+                                    type:
+                                        file.type
+                                }
+                            );
+
+                        };
+
+
+                    reader.onerror =
+                        function() {
+
+                            if (
+                                imageUploadTimeout
+                            ) {
+
+                                clearTimeout(
+                                    imageUploadTimeout
+                                );
+
+                                imageUploadTimeout =
+                                    null;
 
                             }
 
@@ -1266,143 +1469,55 @@ imageInput.addEventListener(
 
                             showUploadError();
 
+                        };
 
-                            imageInput.value =
-                                "";
 
-                        },
-                        7000
+                    reader.readAsDataURL(
+                        file
                     );
 
-
-                /* ========================================
-                   READ IMAGE
-                   ======================================== */
-
-                const reader =
-                    new FileReader();
+                };
 
 
-                reader.onload =
-                    function() {
+            /* ========================================
+               IMAGE PREVIEW ERROR
+               ======================================== */
 
-                        if (
-                            !imageUploadInProgress
-                        ) {
+            preview.onerror =
+                function() {
 
-                            return;
-
-                        }
-
-
-                        socket.emit(
-                            "sendImage",
-                            {
-                                image:
-                                    reader.result,
-
-                                type:
-                                    file.type
-                            }
-                        );
-
-                    };
+                    imageUploadInProgress =
+                        false;
 
 
-                reader.onerror =
-                    function() {
-
-                        if (
-                            imageUploadTimeout
-                        ) {
-
-                            clearTimeout(
-                                imageUploadTimeout
-                            );
-
-                            imageUploadTimeout =
-                                null;
-
-                        }
+                    messageInput.disabled =
+                        false;
 
 
-                        imageUploadInProgress =
-                            false;
+                    sendButton.disabled =
+                        false;
 
 
-                        if (
-                            currentImageLoadingMessage
-                        ) {
-
-                            currentImageLoadingMessage.remove();
-
-                            currentImageLoadingMessage =
-                                null;
-
-                        }
+                    imageButton.disabled =
+                        false;
 
 
-                        messageInput.disabled =
-                            false;
+                    showUploadError();
+
+                };
 
 
-                        sendButton.disabled =
-                            false;
+            preview.src =
+                URL.createObjectURL(file);
 
 
-                        imageButton.disabled =
-                            false;
+            imageInput.value =
+                "";
 
+        }
+    );
 
-                        showUploadError();
-
-                    };
-
-
-                reader.readAsDataURL(
-                    file
-                );
-
-            };
-
-
-        /* ========================================
-           IMAGE PREVIEW ERROR
-           ======================================== */
-
-        preview.onerror =
-            function() {
-
-                imageUploadInProgress =
-                    false;
-
-
-                messageInput.disabled =
-                    false;
-
-
-                sendButton.disabled =
-                    false;
-
-
-                imageButton.disabled =
-                    false;
-
-
-                showUploadError();
-
-            };
-
-
-        preview.src =
-            URL.createObjectURL(file);
-
-
-        imageInput.value =
-            "";
-
-    }
-);
+}
 
 
 /* ========================================
