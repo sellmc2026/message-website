@@ -33,22 +33,28 @@
             padding: 0;
 
             width: 100%;
-            height: 100%;
+            min-height: 100%;
 
             background-color: #101010;
             color: #ffffff;
 
             font-family: Arial, sans-serif;
 
+        }
+
+
+        body {
+
             overflow: hidden;
+
         }
 
 
         /* ========================================
-           MAIN PAGE
+           MAIN DASHBOARD
            ======================================== */
 
-        #main {
+        #dashboard {
 
             position: relative;
 
@@ -57,11 +63,14 @@
 
             min-width: 834px;
             min-height: 481px;
+
         }
 
 
         /* ========================================
            LOGO
+           x = 375
+           y = 56
            ======================================== */
 
         #logo {
@@ -75,11 +84,14 @@
             height: 45px;
 
             object-fit: contain;
+
         }
 
 
         /* ========================================
            TITLE
+           x = 375
+           y = 115
            ======================================== */
 
         #title {
@@ -94,14 +106,21 @@
 
             margin: 0;
 
-            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
 
             text-align: center;
+
         }
 
 
         /* ========================================
-           TOP BUTTONS
+           PROFILE / TOP BUTTONS
+           x = 668
+           y = 7
            ======================================== */
 
         #topButtons {
@@ -118,45 +137,10 @@
 
             align-items: center;
 
-            gap: 4px;
-        }
+            justify-content: flex-end;
 
+            gap: 5px;
 
-        #topButtons button {
-
-            height: 45px;
-
-            background-color: #545454;
-
-            color: #ffffff;
-
-            border: 2px solid #000000;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
-            font-size: 11px;
-        }
-
-
-        #topButtons button:hover {
-
-            background-color: #707070;
-        }
-
-
-        /* ========================================
-           DIRECT MESSAGE BUTTON
-           ======================================== */
-
-        #dmButton {
-
-            width: 52px;
-
-            padding: 3px;
         }
 
 
@@ -166,23 +150,39 @@
 
         #friendsButton {
 
-            width: 35px;
+            width: 38px;
+            height: 38px;
 
-            padding: 4px;
+            padding: 5px;
+
+            background-color: #545454;
+
+            border: 3px solid #000000;
+            border-radius: 50%;
+
+            cursor: pointer;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
+
+        }
+
+
+        #friendsButton:hover {
+
+            background-color: #212121;
+
         }
 
 
         #friendsButton img {
 
-            width: 24px;
-            height: 24px;
+            width: 25px;
+            height: 25px;
 
             object-fit: contain;
+
         }
 
 
@@ -192,21 +192,37 @@
 
         #idButton {
 
-            width: 35px;
+            height: 38px;
 
-            padding: 3px;
+            padding: 7px 10px;
 
-            overflow: hidden;
+            background-color: #545454;
 
-            white-space: nowrap;
+            color: #ffffff;
+
+            border: 3px solid #000000;
+            border-radius: 8px;
+
+            font-size: 11px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        #idButton:hover {
+
+            background-color: #212121;
+
         }
 
 
         .idRevealed {
 
             background-color: #ffffff !important;
-
             color: #000000 !important;
+
         }
 
 
@@ -216,28 +232,84 @@
 
         #profileButton {
 
-            width: 35px;
+            width: 38px;
+            height: 38px;
 
-            padding: 3px;
+            padding: 4px;
+
+            background-color: #545454;
+
+            border: 3px solid #000000;
+            border-radius: 50%;
+
+            cursor: pointer;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
+
+            overflow: hidden;
+
+        }
+
+
+        #profileButton:hover {
+
+            background-color: #212121;
+
         }
 
 
         #profileButton img {
 
-            width: 27px;
-            height: 27px;
+            width: 28px;
+            height: 28px;
 
             object-fit: contain;
+
         }
 
 
         /* ========================================
-           DIRECT MESSAGE POPUP
+           DIRECT MESSAGES BUTTON
+           x = 655
+           y = 61
+           ======================================== */
+
+        #directMessagesButton {
+
+            position: absolute;
+
+            left: 655px;
+            top: 61px;
+
+            width: 169px;
+            height: 45px;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        #directMessagesButton:hover {
+
+            background-color: #555555;
+
+        }
+
+
+        /* ========================================
+           DM DROPDOWN
            ======================================== */
 
         #dmArea {
@@ -253,18 +325,16 @@
             background-color: #181818;
 
             border: 2px solid #444444;
-
             border-radius: 10px;
-
-            padding: 10px;
-
-            z-index: 50;
-
-            display: none;
 
             overflow-y: auto;
 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+            padding: 8px;
+
+            display: none;
+
+            z-index: 100;
+
         }
 
 
@@ -272,76 +342,66 @@
 
             display: block;
 
-            animation: dmSlideDown 0.18s ease-out;
-        }
-
-
-        @keyframes dmSlideDown {
-
-            from {
-
-                opacity: 0;
-
-                transform: translateY(-10px);
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform: translateY(0);
-            }
-
-        }
-
-
-        .dmTitle {
-
-            font-size: 14px;
-
-            font-weight: bold;
-
-            color: #aaaaaa;
-
-            margin-bottom: 10px;
         }
 
 
         .dmEmpty {
 
-            color: #777777;
+            width: 100%;
+
+            padding: 25px 10px;
+
+            color: #888888;
 
             font-size: 13px;
 
             text-align: center;
 
-            margin-top: 25px;
+        }
+
+
+        .dmFriend {
+
+            width: 100%;
+
+            padding: 10px;
+
+            margin-bottom: 6px;
+
+            background-color: #292929;
+
+            border: 1px solid #444444;
+
+            border-radius: 7px;
+
+            color: #ffffff;
+
+            text-align: left;
+
+            cursor: pointer;
+
+        }
+
+
+        .dmFriend:hover {
+
+            background-color: #3a3a3a;
+
         }
 
 
         /* ========================================
            JOIN ROOM
+           x = 35
+           y = 210
            ======================================== */
 
-        #joinSection {
+        #joinButton {
 
             position: absolute;
 
             left: 35px;
             top: 210px;
-
-            width: 117px;
-            height: auto;
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 8px;
-        }
-
-
-        #joinButton {
 
             width: 117px;
             height: 45px;
@@ -353,67 +413,64 @@
             color: #000000;
 
             border: 2px solid #000000;
-
             border-radius: 8px;
 
+            font-size: 14px;
             font-weight: bold;
 
             cursor: pointer;
+
         }
 
 
         #joinButton:hover {
 
             background-color: #8FFF3D;
+
         }
 
 
+        /* ========================================
+           ROOM CODE INPUT
+           ======================================== */
+
         #codeInput {
 
-            width: 117px;
+            position: absolute;
 
+            left: 35px;
+            top: 160px;
+
+            width: 220px;
             height: 38px;
 
-            padding: 5px;
+            padding: 8px;
 
             background-color: #222222;
 
             color: #ffffff;
 
             border: 2px solid #555555;
-
             border-radius: 8px;
-
-            text-align: center;
 
             outline: none;
 
-            font-size: 12px;
+            text-align: center;
+
         }
 
 
         #codeInput:focus {
 
             border-color: #BEFF8F;
-        }
 
-
-        #status {
-
-            width: 117px;
-
-            min-height: 20px;
-
-            color: #aaaaaa;
-
-            font-size: 11px;
-
-            text-align: center;
         }
 
 
         /* ========================================
            SAVED ROOMS
+           x = 35
+           y = 270
            ======================================== */
 
         #savedRooms {
@@ -429,121 +486,89 @@
             background-color: #181818;
 
             border: 2px solid #444444;
-
             border-radius: 10px;
 
-            padding: 10px;
+            padding: 8px;
 
             overflow-y: auto;
+
         }
 
 
-        .savedRoomsTitle {
-
-            font-size: 14px;
-
-            font-weight: bold;
-
-            color: #aaaaaa;
-
-            margin-bottom: 8px;
-        }
-
-
-        #savedRoomList {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 6px;
-        }
-
+        /* ========================================
+           SAVED ROOM
+           ======================================== */
 
         .savedRoom {
 
             width: 100%;
-
-            min-height: 38px;
+            min-height: 42px;
 
             display: flex;
 
             align-items: center;
 
-            gap: 5px;
-        }
+            margin-bottom: 6px;
 
+            background-color: #292929;
 
-        .savedRoomJoin {
-
-            flex: 1;
-
-            height: 38px;
-
-            padding: 5px 8px;
-
-            background-color: #303030;
-
-            color: #ffffff;
-
-            border: 1px solid #555555;
+            border: 1px solid #444444;
 
             border-radius: 7px;
 
-            cursor: pointer;
+        }
+
+
+        .savedRoomButton {
+
+            flex: 1;
+
+            height: 40px;
+
+            padding: 7px;
+
+            background: transparent;
+
+            border: none;
+
+            color: #ffffff;
 
             text-align: left;
 
+            cursor: pointer;
+
             overflow: hidden;
-        }
-
-
-        .savedRoomJoin:hover {
-
-            background-color: #404040;
-        }
-
-
-        .savedRoomName {
-
-            display: block;
-
-            font-size: 13px;
-
-            font-weight: bold;
 
             white-space: nowrap;
 
-            overflow: hidden;
-
             text-overflow: ellipsis;
+
         }
 
 
-        .savedRoomCode {
+        .savedRoomButton:hover {
 
-            display: block;
+            background-color: #333333;
 
-            font-size: 9px;
-
-            color: #888888;
-
-            margin-top: 2px;
         }
 
+
+        /* ========================================
+           ROOM EDIT BUTTON
+           ======================================== */
 
         .editRoomButton {
 
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
+
+            margin-right: 5px;
 
             padding: 5px;
 
-            background-color: #303030;
+            background-color: transparent;
 
-            border: 1px solid #555555;
-
-            border-radius: 6px;
+            border: none;
 
             cursor: pointer;
 
@@ -551,38 +576,33 @@
 
             align-items: center;
             justify-content: center;
+
         }
 
 
         .editRoomButton:hover {
 
             background-color: #444444;
+
+            border-radius: 5px;
+
         }
 
 
         .editRoomButton img {
 
-            width: 17px;
-            height: 17px;
+            width: 20px;
+            height: 20px;
 
             object-fit: contain;
-        }
 
-
-        .noRooms {
-
-            color: #666666;
-
-            font-size: 12px;
-
-            text-align: center;
-
-            margin-top: 25px;
         }
 
 
         /* ========================================
-           CHAT
+           BIG CHAT BOX
+           x = 267
+           y = 210
            ======================================== */
 
         #chat {
@@ -599,7 +619,6 @@
 
             flex-direction: column;
 
-            gap: 8px;
         }
 
 
@@ -609,9 +628,9 @@
 
         #messages {
 
-            width: 420px;
+            width: 100%;
 
-            height: 305px;
+            height: 290px;
 
             padding: 12px;
 
@@ -620,7 +639,6 @@
             background-color: #181818;
 
             border: 2px solid #444444;
-
             border-radius: 8px;
 
             display: flex;
@@ -628,6 +646,7 @@
             flex-direction: column;
 
             gap: 8px;
+
         }
 
 
@@ -644,6 +663,7 @@
             border-radius: 12px;
 
             word-wrap: break-word;
+
         }
 
 
@@ -654,6 +674,7 @@
             background-color: #8EFF3B;
 
             color: #000000;
+
         }
 
 
@@ -664,6 +685,7 @@
             background-color: #444444;
 
             color: #ffffff;
+
         }
 
 
@@ -686,6 +708,7 @@
             margin: 5px 0;
 
             border-radius: 8px;
+
         }
 
 
@@ -695,13 +718,16 @@
 
         #messageRow {
 
+            width: 100%;
+
+            height: 50px;
+
             display: flex;
 
             gap: 8px;
 
-            width: 420px;
+            margin-top: 8px;
 
-            height: 42px;
         }
 
 
@@ -709,7 +735,7 @@
 
             flex: 1;
 
-            height: 42px;
+            min-width: 0;
 
             padding: 11px;
 
@@ -724,18 +750,16 @@
             outline: none;
 
             font-size: 14px;
+
         }
 
 
         #messageInput:focus {
 
             border-color: #BEFF8F;
+
         }
 
-
-        /* ========================================
-           MESSAGE CONTROLS
-           ======================================== */
 
         .messageControls {
 
@@ -743,11 +767,53 @@
 
             gap: 8px;
 
-            height: 42px;
         }
 
 
-        #imageButton,
+        /* ========================================
+           IMAGE BUTTON
+           ======================================== */
+
+        #imageButton {
+
+            width: 50px;
+            height: 42px;
+
+            padding: 0;
+
+            background-color: #444444;
+
+            border: 2px solid #666666;
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+
+        #imageButton:hover {
+
+            background-color: #555555;
+
+        }
+
+
+        #imageButton img {
+
+            width: 30px;
+            height: 30px;
+
+        }
+
+
+        /* ========================================
+           SEND BUTTON
+           ======================================== */
+
         #sendButton {
 
             width: 50px;
@@ -755,99 +821,49 @@
 
             padding: 0;
 
+            background-color: #BEFF8F;
+
+            border: 2px solid #000000;
             border-radius: 8px;
 
             cursor: pointer;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
-        }
 
-
-        #imageButton {
-
-            background-color: #444444;
-
-            color: #ffffff;
-
-            border: 2px solid #666666;
-        }
-
-
-        #imageButton:hover {
-
-            background-color: #555555;
-        }
-
-
-        #sendButton {
-
-            background-color: #BEFF8F;
-
-            color: #000000;
-
-            border: 2px solid #000000;
         }
 
 
         #sendButton:hover {
 
             background-color: #8FFF3D;
+
         }
 
 
-        #imageButton img,
         #sendButton img {
 
             width: 30px;
             height: 30px;
 
-            object-fit: contain;
         }
 
 
         /* ========================================
-           MUTE
+           CODE / GENERATE AREA
            ======================================== */
 
-        #muteButton {
-
-            position: absolute;
-
-            left: 705px;
-            top: 430px;
-
-            width: 45px;
-            height: 42px;
-
-            padding: 5px;
-
-            background-color: #444444;
-
-            border: 2px solid #666666;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-        }
-
-
-        #muteButton img {
-
-            width: 25px;
-            height: 25px;
-        }
-
-
-        /* ========================================
-           HIDDEN FILE INPUT
-           ======================================== */
-
-        #imageInput {
+        #codeBox,
+        #copyCodeButton,
+        #generateButton,
+        #muteButton,
+        #divider,
+        #status,
+        #subtitle {
 
             display: none;
+
         }
 
 
@@ -863,8 +879,6 @@
 
             border-radius: 12px;
 
-            padding: 0;
-
             display: flex;
 
             align-items: center;
@@ -872,14 +886,12 @@
 
             overflow: hidden;
 
-            position: relative;
         }
 
 
         .imageLoadingSpinner {
 
             width: 32px;
-
             height: 32px;
 
             border: 4px solid #777777;
@@ -889,6 +901,7 @@
             border-radius: 50%;
 
             animation: imageLoadingSpin 0.8s linear infinite;
+
         }
 
 
@@ -914,7 +927,6 @@
             position: fixed;
 
             left: 50%;
-
             bottom: 30px;
 
             transform: translateX(-50%);
@@ -930,104 +942,19 @@
             padding: 12px 20px;
 
             font-size: 14px;
-
             font-weight: bold;
 
             z-index: 9999;
 
-            opacity: 1;
-
             transition: opacity 0.3s ease;
+
         }
 
 
         .uploadError.hide {
 
             opacity: 0;
-        }
 
-
-        /* ========================================
-           GENERATED ROOM AREA
-           ======================================== */
-
-        #generatedRoom {
-
-            position: absolute;
-
-            left: 35px;
-            top: 20px;
-
-            width: 220px;
-
-            display: none;
-        }
-
-
-        #generatedRoom.visible {
-
-            display: block;
-        }
-
-
-        #codeBox {
-
-            width: 100%;
-
-            padding: 10px;
-
-            background-color: #222222;
-
-            border: 2px solid #555555;
-
-            border-radius: 8px;
-
-            text-align: center;
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-            letter-spacing: 3px;
-
-            color: #BEFF8F;
-        }
-
-
-        #copyCodeButton,
-        #generateButton {
-
-            width: 100%;
-
-            padding: 8px;
-
-            margin-top: 5px;
-
-            border-radius: 7px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-        }
-
-
-        #copyCodeButton {
-
-            background-color: #444444;
-
-            color: #ffffff;
-
-            border: 2px solid #666666;
-        }
-
-
-        #generateButton {
-
-            background-color: #BEFF8F;
-
-            color: #000000;
-
-            border: 2px solid #000000;
         }
 
 
@@ -1039,7 +966,7 @@
 <body>
 
 
-<main id="main">
+<div id="dashboard">
 
 
     <!-- ========================================
@@ -1063,15 +990,10 @@
 
 
     <!-- ========================================
-         TOP BUTTONS
+         TOP RIGHT BUTTONS
          ======================================== -->
 
     <div id="topButtons">
-
-
-        <button id="dmButton">
-            Direct<br>Messages
-        </button>
 
 
         <button id="friendsButton">
@@ -1103,19 +1025,21 @@
 
 
     <!-- ========================================
-         DIRECT MESSAGE POPUP
+         DIRECT MESSAGES
+         ======================================== -->
+
+    <button id="directMessagesButton">
+        Direct Messages
+    </button>
+
+
+    <!-- ========================================
+         DM POPUP
          ======================================== -->
 
     <div id="dmArea">
 
-        <div class="dmTitle">
-            Direct Messages
-        </div>
-
-        <div
-            id="dmList"
-            class="dmEmpty"
-        >
+        <div class="dmEmpty">
             No friends yet.
         </div>
 
@@ -1123,63 +1047,51 @@
 
 
     <!-- ========================================
+         ROOM CODE INPUT
+         ======================================== -->
+
+    <input
+        id="codeInput"
+        type="text"
+        placeholder="Enter Room Code"
+        maxlength="9"
+        autocomplete="off"
+    >
+
+
+    <!-- ========================================
          JOIN ROOM
          ======================================== -->
 
-    <section id="joinSection">
-
-
-        <button id="joinButton">
-            JOIN ROOM
-        </button>
-
-
-        <input
-            id="codeInput"
-            type="text"
-            placeholder="Room Code"
-            maxlength="9"
-            autocomplete="off"
-        >
-
-
-        <div id="status"></div>
-
-
-    </section>
+    <button id="joinButton">
+        JOIN ROOM
+    </button>
 
 
     <!-- ========================================
          SAVED ROOMS
          ======================================== -->
 
-    <section id="savedRooms">
+    <div id="savedRooms">
 
-        <div class="savedRoomsTitle">
-            Saved Rooms
-        </div>
+        <!-- Rooms will be added here by JavaScript -->
 
-
-        <div id="savedRoomList">
-
-            <div class="noRooms">
-                No saved rooms yet.
-            </div>
-
-        </div>
-
-    </section>
+    </div>
 
 
     <!-- ========================================
          CHAT
          ======================================== -->
 
-    <section id="chat">
+    <div id="chat">
 
 
         <div id="messages"></div>
 
+
+        <!-- ========================================
+             MESSAGE ROW
+             ======================================== -->
 
         <div id="messageRow">
 
@@ -1191,6 +1103,8 @@
                 autocomplete="off"
             >
 
+
+            <!-- HIDDEN IMAGE PICKER -->
 
             <input
                 type="file"
@@ -1229,50 +1143,10 @@
         </div>
 
 
-    </section>
+    </div>
 
 
-    <!-- ========================================
-         MUTE
-         ======================================== -->
-
-    <button id="muteButton">
-
-        <img
-            id="muteIcon"
-            src="unmute.png"
-            alt="Mute"
-        >
-
-    </button>
-
-
-    <!-- ========================================
-         GENERATED ROOM
-         ======================================== -->
-
-    <section id="generatedRoom">
-
-
-        <div id="codeBox">
-            ----
-        </div>
-
-
-        <button id="copyCodeButton">
-            COPY ROOM CODE
-        </button>
-
-
-        <button id="generateButton">
-            GENERATE ROOM CODE
-        </button>
-
-
-    </section>
-
-
-</main>
+</div>
 
 
 <!-- ========================================
@@ -1283,10 +1157,15 @@
 
 
 <!-- ========================================
-     YOUR ID
+     BASIC DASHBOARD CONTROLS
      ======================================== -->
 
 <script>
+
+
+/* ========================================
+   USER ID
+   ======================================== */
 
 const messagrID =
     localStorage.getItem("messagrID");
@@ -1298,7 +1177,7 @@ const idButton =
 
 idButton.addEventListener(
     "click",
-    () => {
+    function() {
 
         idButton.classList.toggle(
             "idRevealed"
@@ -1312,7 +1191,7 @@ idButton.addEventListener(
         ) {
 
             idButton.textContent =
-                messagrID || "No ID";
+                messagrID || "Unknown";
 
         } else {
 
@@ -1325,34 +1204,56 @@ idButton.addEventListener(
 );
 
 
-</script>
+/* ========================================
+   PROFILE
+   ======================================== */
+
+const profileButton =
+    document.getElementById("profileButton");
 
 
-<!-- ========================================
-     DIRECT MESSAGES
-     ======================================== -->
-
-<script>
-
-const dmButton =
-    document.getElementById("dmButton");
-
-
-const dmArea =
-    document.getElementById("dmArea");
-
-
-dmButton.addEventListener(
+profileButton.addEventListener(
     "click",
-    function(event) {
+    function() {
 
-        event.stopPropagation();
-
-        dmArea.classList.toggle("open");
+        window.location.href =
+            "messagr-profile.html";
 
     }
 );
 
+
+/* ========================================
+   DIRECT MESSAGES POPUP
+   ======================================== */
+
+const directMessagesButton =
+    document.getElementById(
+        "directMessagesButton"
+    );
+
+
+const dmArea =
+    document.getElementById(
+        "dmArea"
+    );
+
+
+directMessagesButton.addEventListener(
+    "click",
+    function() {
+
+        dmArea.classList.toggle(
+            "open"
+        );
+
+    }
+);
+
+
+/* ========================================
+   CLOSE DM MENU WHEN CLICKING ELSEWHERE
+   ======================================== */
 
 document.addEventListener(
     "click",
@@ -1360,10 +1261,12 @@ document.addEventListener(
 
         if (
             !dmArea.contains(event.target) &&
-            event.target !== dmButton
+            event.target !== directMessagesButton
         ) {
 
-            dmArea.classList.remove("open");
+            dmArea.classList.remove(
+                "open"
+            );
 
         }
 
@@ -1375,271 +1278,7 @@ document.addEventListener(
 
 
 <!-- ========================================
-     SAVED ROOMS
-     ======================================== -->
-
-<script>
-
-const savedRoomList =
-    document.getElementById("savedRoomList");
-
-
-function getSavedRooms() {
-
-    try {
-
-        return JSON.parse(
-            localStorage.getItem("messagrRooms") || "[]"
-        );
-
-    } catch {
-
-        return [];
-
-    }
-
-}
-
-
-function saveRooms(rooms) {
-
-    localStorage.setItem(
-        "messagrRooms",
-        JSON.stringify(rooms)
-    );
-
-}
-
-
-function renderSavedRooms() {
-
-    const rooms =
-        getSavedRooms();
-
-
-    savedRoomList.innerHTML =
-        "";
-
-
-    if (
-        rooms.length === 0
-    ) {
-
-        savedRoomList.innerHTML =
-            '<div class="noRooms">No saved rooms yet.</div>';
-
-        return;
-
-    }
-
-
-    rooms.forEach(
-        function(room, index) {
-
-            const row =
-                document.createElement("div");
-
-            row.className =
-                "savedRoom";
-
-
-            const join =
-                document.createElement("button");
-
-            join.className =
-                "savedRoomJoin";
-
-
-            const name =
-                document.createElement("span");
-
-            name.className =
-                "savedRoomName";
-
-            name.textContent =
-                room.name || "Unnamed Room";
-
-
-            const code =
-                document.createElement("span");
-
-            code.className =
-                "savedRoomCode";
-
-            code.textContent =
-                room.code;
-
-
-            join.appendChild(name);
-
-            join.appendChild(code);
-
-
-            join.addEventListener(
-                "click",
-                function() {
-
-                    document.getElementById(
-                        "codeInput"
-                    ).value = room.code;
-
-                    document.getElementById(
-                        "joinButton"
-                    ).click();
-
-                }
-            );
-
-
-            const edit =
-                document.createElement("button");
-
-            edit.className =
-                "editRoomButton";
-
-
-            const editImage =
-                document.createElement("img");
-
-            editImage.src =
-                "edit.png";
-
-            editImage.alt =
-                "Edit";
-
-
-            edit.appendChild(
-                editImage
-            );
-
-
-            edit.addEventListener(
-                "click",
-                function(event) {
-
-                    event.stopPropagation();
-
-
-                    const newName =
-                        prompt(
-                            "Enter a new name for this room:",
-                            room.name
-                        );
-
-
-                    if (
-                        newName === null
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    room.name =
-                        newName.trim() ||
-                        "Unnamed Room";
-
-
-                    rooms[index] =
-                        room;
-
-
-                    saveRooms(rooms);
-
-                    renderSavedRooms();
-
-                }
-            );
-
-
-            row.appendChild(join);
-
-            row.appendChild(edit);
-
-
-            savedRoomList.appendChild(row);
-
-        }
-    );
-
-}
-
-
-renderSavedRooms();
-
-
-/* ========================================
-   SAVE A ROOM WHEN JOINING
-   ======================================== */
-
-const joinButton =
-    document.getElementById("joinButton");
-
-
-joinButton.addEventListener(
-    "click",
-    function() {
-
-        const code =
-            document.getElementById(
-                "codeInput"
-            ).value.trim().toUpperCase();
-
-
-        if (
-            !code
-        ) {
-
-            return;
-
-        }
-
-
-        let rooms =
-            getSavedRooms();
-
-
-        const existing =
-            rooms.find(
-                room =>
-                    room.code === code
-            );
-
-
-        if (
-            !existing
-        ) {
-
-            rooms.unshift(
-                {
-                    code: code,
-                    name: "Room " + code
-                }
-            );
-
-        }
-
-
-        /* Maximum of 25 rooms */
-
-        rooms =
-            rooms.slice(0, 25);
-
-
-        saveRooms(rooms);
-
-        renderSavedRooms();
-
-    }
-);
-
-
-</script>
-
-
-<!-- ========================================
-     MAIN JAVASCRIPT
+     MAIN MESSAGR JAVASCRIPT
      ======================================== -->
 
 <script src="script.js"></script>
