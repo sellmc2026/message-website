@@ -67,6 +67,7 @@ databaseRequest.onerror =
    ======================================== */
 
 const buttonClickSound = new Audio('button-click.mp3');
+const messageSentSound = new Audio('message-sent.mp3');
 
 const codeBox =
     document.getElementById("codeBox");
@@ -2215,6 +2216,7 @@ function sendMessage() {
         }
 
         return;
+        audio.play(messageSentSound);
 
     }
 
