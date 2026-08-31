@@ -496,7 +496,7 @@ io.on(
 
 
                 if (
-                    username.length > 5
+                    username.length > 8
                 ) {
 
                     return;
