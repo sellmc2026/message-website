@@ -45,6 +45,9 @@ databaseRequest.onsuccess =
             "Messagr local database ready."
         );
 
+
+        loadSavedRooms();
+
     };
 
 
@@ -132,6 +135,14 @@ const savedRooms =
 
 
 /* ========================================
+   CURRENT ROOM
+   ======================================== */
+
+let currentRoomCode =
+    null;
+
+
+/* ========================================
    SAVED USERNAME
    ======================================== */
 
@@ -204,6 +215,441 @@ if (muteButton) {
 
 
 /* ========================================
+   SAVED ROOMS
+   ======================================== */
+
+function getSavedRooms() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "messagrSavedChats"
+            ) || "[]"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not load saved rooms:",
+            error
+        );
+
+
+        return [];
+
+    }
+
+}
+
+
+/* ========================================
+   SAVE ROOM LIST
+   ======================================== */
+
+function saveRoomList(roomList) {
+
+    localStorage.setItem(
+        "messagrSavedChats",
+        JSON.stringify(roomList)
+    );
+
+}
+
+
+/* ========================================
+   CHECK IF ROOM IS SAVED
+   ======================================== */
+
+function isRoomSaved(code) {
+
+    const saved =
+        getSavedRooms();
+
+
+    return saved.includes(code);
+
+}
+
+
+/* ========================================
+   UPDATE SAVE BUTTON
+   ======================================== */
+
+function updateSaveChatButton() {
+
+    if (!saveChatButton) {
+
+        return;
+
+    }
+
+
+    if (!currentRoomCode) {
+
+        saveChatButton.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    saveChatButton.style.display =
+        "block";
+
+
+    if (
+        isRoomSaved(currentRoomCode)
+    ) {
+
+        saveChatButton.textContent =
+            "Delete Chat";
+
+
+        saveChatButton.classList.add(
+            "delete"
+        );
+
+    } else {
+
+        saveChatButton.textContent =
+            "SAVE CHAT";
+
+
+        saveChatButton.classList.remove(
+            "delete"
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   SAVE / DELETE CHAT
+   ======================================== */
+
+if (saveChatButton) {
+
+    saveChatButton.addEventListener(
+        "click",
+        function() {
+
+            if (!currentRoomCode) {
+
+                return;
+
+            }
+
+
+            let saved =
+                getSavedRooms();
+
+
+            /* ========================================
+               DELETE SAVED ROOM
+               ======================================== */
+
+            if (
+                saved.includes(currentRoomCode)
+            ) {
+
+                saved =
+                    saved.filter(
+                        function(room) {
+
+                            return (
+                                room !==
+                                currentRoomCode
+                            );
+
+                        }
+                    );
+
+
+                saveRoomList(saved);
+
+
+                updateSaveChatButton();
+
+
+                loadSavedRooms();
+
+
+                return;
+
+            }
+
+
+            /* ========================================
+               SAVE ROOM
+               ======================================== */
+
+            saved.push(
+                currentRoomCode
+            );
+
+
+            saveRoomList(saved);
+
+
+            updateSaveChatButton();
+
+
+            loadSavedRooms();
+
+        }
+    );
+
+}
+
+
+/* ========================================
+   LOAD SAVED ROOMS
+   ======================================== */
+
+function loadSavedRooms() {
+
+    if (!savedRooms) {
+
+        return;
+
+    }
+
+
+    savedRooms.innerHTML =
+        "";
+
+
+    const rooms =
+        getSavedRooms();
+
+
+    if (
+        rooms.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    rooms.forEach(
+        function(code) {
+
+            createSavedRoomElement(
+                code
+            );
+
+        }
+    );
+
+}
+
+
+/* ========================================
+   CREATE SAVED ROOM ELEMENT
+   ======================================== */
+
+function createSavedRoomElement(code) {
+
+    if (!savedRooms) {
+
+        return;
+
+    }
+
+
+    const room =
+        document.createElement("div");
+
+
+    room.className =
+        "savedRoom";
+
+
+    const roomButton =
+        document.createElement("button");
+
+
+    roomButton.className =
+        "savedRoomButton";
+
+
+    roomButton.textContent =
+        code;
+
+
+    roomButton.addEventListener(
+        "click",
+        function() {
+
+            if (codeInput) {
+
+                codeInput.value =
+                    code;
+
+            }
+
+
+            updateJoinButton();
+
+
+            joinRoom(code);
+
+        }
+    );
+
+
+    const editButton =
+        document.createElement("button");
+
+
+    editButton.className =
+        "editRoomButton";
+
+
+    const editIcon =
+        document.createElement("img");
+
+
+    editIcon.src =
+        "edit.png";
+
+
+    editIcon.alt =
+        "Edit";
+
+
+    editButton.appendChild(
+        editIcon
+    );
+
+
+    editButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+
+            const newName =
+                prompt(
+                    "Enter a name for this room:",
+                    code
+                );
+
+
+            if (
+                newName === null
+            ) {
+
+                return;
+
+            }
+
+
+            const trimmedName =
+                newName.trim();
+
+
+            if (
+                trimmedName.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * For now the room's actual
+             * code remains the same.
+             *
+             * The display name is stored
+             * separately.
+             */
+
+            const roomNames =
+                JSON.parse(
+                    localStorage.getItem(
+                        "messagrRoomNames"
+                    ) || "{}"
+                );
+
+
+            roomNames[code] =
+                trimmedName;
+
+
+            localStorage.setItem(
+                "messagrRoomNames",
+                JSON.stringify(roomNames)
+            );
+
+
+            loadSavedRooms();
+
+        }
+    );
+
+
+    const roomNames =
+        JSON.parse(
+            localStorage.getItem(
+                "messagrRoomNames"
+            ) || "{}"
+        );
+
+
+    if (
+        roomNames[code]
+    ) {
+
+        roomButton.textContent =
+            roomNames[code];
+
+    }
+
+
+    room.appendChild(
+        roomButton
+    );
+
+
+    room.appendChild(
+        editButton
+    );
+
+
+    savedRooms.appendChild(
+        room
+    );
+
+}
+
+
+/* ========================================
+   PROFILE BUTTON
+   ======================================== */
+
+if (mainProfileButton) {
+
+    mainProfileButton.addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "messagr-profile.html";
+
+        }
+    );
+
+}
+
+
+/* ========================================
    ROOM CODE
    ======================================== */
 
@@ -247,438 +693,6 @@ function generateCode() {
         code.substring(0, 4)
         + "-"
         + code.substring(4)
-    );
-
-}
-
-
-/* ========================================
-   SAVED ROOMS STORAGE
-   ======================================== */
-
-function getSavedRooms() {
-
-    try {
-
-        return JSON.parse(
-            localStorage.getItem(
-                "messagrSavedChats"
-            ) || "[]"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Could not read saved rooms:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-/* ========================================
-   SAVE ROOMS
-   ======================================== */
-
-function setSavedRooms(rooms) {
-
-    localStorage.setItem(
-        "messagrSavedChats",
-        JSON.stringify(rooms)
-    );
-
-}
-
-
-/* ========================================
-   LOAD SAVED ROOMS
-   ======================================== */
-
-function loadSavedRooms() {
-
-    if (!savedRooms) {
-
-        return;
-
-    }
-
-
-    savedRooms.innerHTML =
-        "";
-
-
-    const rooms =
-        getSavedRooms();
-
-
-    if (rooms.length === 0) {
-
-        return;
-
-    }
-
-
-    rooms.forEach(
-        function(code) {
-
-            createSavedRoomElement(
-                code
-            );
-
-        }
-    );
-
-}
-
-
-/* ========================================
-   CREATE SAVED ROOM ELEMENT
-   ======================================== */
-
-function createSavedRoomElement(code) {
-
-    if (!savedRooms) {
-
-        return;
-
-    }
-
-
-    const room =
-        document.createElement("div");
-
-
-    room.classList.add(
-        "savedRoom"
-    );
-
-
-    const roomButton =
-        document.createElement("button");
-
-
-    roomButton.classList.add(
-        "savedRoomButton"
-    );
-
-
-    roomButton.textContent =
-        code;
-
-
-    roomButton.title =
-        "Join " + code;
-
-
-    roomButton.addEventListener(
-        "click",
-        function() {
-
-            if (!codeInput) {
-
-                return;
-
-            }
-
-
-            codeInput.value =
-                code;
-
-
-            updateJoinButton();
-
-
-            updateSaveChatButton();
-
-
-            if (joinButton) {
-
-                joinButton.click();
-
-            }
-
-        }
-    );
-
-
-    const deleteButton =
-        document.createElement("button");
-
-
-    deleteButton.classList.add(
-        "editRoomButton"
-    );
-
-
-    deleteButton.textContent =
-        "✕";
-
-
-    deleteButton.title =
-        "Remove saved room";
-
-
-    deleteButton.addEventListener(
-        "click",
-        function(event) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-
-            removeSavedRoom(
-                code
-            );
-
-        }
-    );
-
-
-    room.appendChild(
-        roomButton
-    );
-
-
-    room.appendChild(
-        deleteButton
-    );
-
-
-    savedRooms.appendChild(
-        room
-    );
-
-}
-
-
-/* ========================================
-   REMOVE SAVED ROOM
-   ======================================== */
-
-function removeSavedRoom(code) {
-
-    let rooms =
-        getSavedRooms();
-
-
-    rooms =
-        rooms.filter(
-            function(savedCode) {
-
-                return savedCode !== code;
-
-            }
-        );
-
-
-    setSavedRooms(
-        rooms
-    );
-
-
-    loadSavedRooms();
-
-
-    updateSaveChatButton();
-
-}
-
-
-/* ========================================
-   UPDATE SAVE CHAT BUTTON
-   ======================================== */
-
-function updateSaveChatButton() {
-
-    if (!saveChatButton) {
-
-        return;
-
-    }
-
-
-    const code =
-        codeInput
-            ? codeInput.value
-                .trim()
-                .toUpperCase()
-            : "";
-
-
-    if (
-        !isValidRoomCode(code)
-    ) {
-
-        saveChatButton.textContent =
-            "SAVE CHAT";
-
-
-        saveChatButton.classList.remove(
-            "delete"
-        );
-
-
-        return;
-
-    }
-
-
-    const rooms =
-        getSavedRooms();
-
-
-    const isSaved =
-        rooms.includes(code);
-
-
-    if (isSaved) {
-
-        saveChatButton.textContent =
-            "DELETE CHAT";
-
-
-        saveChatButton.classList.add(
-            "delete"
-        );
-
-    } else {
-
-        saveChatButton.textContent =
-            "SAVE CHAT";
-
-
-        saveChatButton.classList.remove(
-            "delete"
-        );
-
-    }
-
-}
-
-
-/* ========================================
-   SAVE / DELETE CHAT BUTTON
-   ======================================== */
-
-if (saveChatButton) {
-
-    saveChatButton.addEventListener(
-        "click",
-        function() {
-
-            if (!codeInput) {
-
-                return;
-
-            }
-
-
-            const code =
-                codeInput.value
-                    .trim()
-                    .toUpperCase();
-
-
-            if (
-                !isValidRoomCode(code)
-            ) {
-
-                return;
-
-            }
-
-
-            let rooms =
-                getSavedRooms();
-
-
-            const alreadySaved =
-                rooms.includes(code);
-
-
-            /* ========================================
-               DELETE CHAT
-               ======================================== */
-
-            if (alreadySaved) {
-
-                rooms =
-                    rooms.filter(
-                        function(savedCode) {
-
-                            return savedCode !== code;
-
-                        }
-                    );
-
-
-                setSavedRooms(
-                    rooms
-                );
-
-
-                loadSavedRooms();
-
-
-                updateSaveChatButton();
-
-
-                return;
-
-            }
-
-
-            /* ========================================
-               SAVE CHAT
-               ======================================== */
-
-            rooms.push(
-                code
-            );
-
-
-            setSavedRooms(
-                rooms
-            );
-
-
-            loadSavedRooms();
-
-
-            updateSaveChatButton();
-
-        }
-    );
-
-}
-
-
-/* ========================================
-   LOAD SAVED ROOMS ON PAGE LOAD
-   ======================================== */
-
-loadSavedRooms();
-
-
-/* ========================================
-   PROFILE BUTTON
-   ======================================== */
-
-if (mainProfileButton) {
-
-    mainProfileButton.addEventListener(
-        "click",
-        function() {
-
-            window.location.href =
-                "messagr-profile.html";
-
-        }
     );
 
 }
@@ -758,9 +772,6 @@ function generateNewRoomCode() {
 
 
     updateJoinButton();
-
-
-    updateSaveChatButton();
 
 
     if (status) {
@@ -854,9 +865,6 @@ if (codeInput) {
 
             updateJoinButton();
 
-
-            updateSaveChatButton();
-
         }
     );
 
@@ -868,9 +876,6 @@ if (codeInput) {
    ======================================== */
 
 updateJoinButton();
-
-
-updateSaveChatButton();
 
 
 /* ========================================
@@ -941,7 +946,252 @@ if (copyCodeButton) {
 
 
 /* ========================================
-   JOIN ROOM
+   JOIN ROOM FUNCTION
+   ======================================== */
+
+function joinRoom(code) {
+
+    const username =
+        (
+            localStorage.getItem(
+                "messagrUsername"
+            ) || ""
+        ).trim();
+
+
+    /* ========================================
+       CHECK USERNAME
+       ======================================== */
+
+    if (
+        username.length === 0
+    ) {
+
+        if (status) {
+
+            status.textContent =
+                "Please set a username on the welcome page first.";
+
+        }
+
+        return;
+
+    }
+
+
+    if (
+        username.length > 8
+    ) {
+
+        if (status) {
+
+            status.textContent =
+                "Username must be 8 characters or less.";
+
+        }
+
+        return;
+
+    }
+
+
+    /* ========================================
+       CHECK ROOM CODE
+       ======================================== */
+
+    code =
+        code
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        !isValidRoomCode(code)
+    ) {
+
+        if (status) {
+
+            status.textContent =
+                "Please enter a valid room code.";
+
+        }
+
+        if (codeInput) {
+
+            codeInput.focus();
+
+        }
+
+
+        updateJoinButton();
+
+
+        return;
+
+    }
+
+
+    /* ========================================
+       CHECK SOCKET
+       ======================================== */
+
+    if (
+        !socket.connected
+    ) {
+
+        if (status) {
+
+            status.textContent =
+                "Connecting to server...";
+
+        }
+
+
+        socket.connect();
+
+
+        return;
+
+    }
+
+
+    /* ========================================
+       CLEAR OLD CHAT
+       ======================================== */
+
+    /*
+     * THIS IS THE IMPORTANT FIX.
+     *
+     * Before joining another room, completely
+     * remove the messages from the previous room.
+     */
+
+    if (messages) {
+
+        messages.innerHTML =
+            "";
+
+    }
+
+
+    /* ========================================
+       CLEAR IMAGE UPLOAD STATE
+       ======================================== */
+
+    if (
+        imageUploadTimeout
+    ) {
+
+        clearTimeout(
+            imageUploadTimeout
+        );
+
+        imageUploadTimeout =
+            null;
+
+    }
+
+
+    imageUploadInProgress =
+        false;
+
+
+    currentImageLoadingMessage =
+        null;
+
+
+    if (messageInput) {
+
+        messageInput.disabled =
+            false;
+
+    }
+
+
+    if (sendButton) {
+
+        sendButton.disabled =
+            false;
+
+    }
+
+
+    if (imageButton) {
+
+        imageButton.disabled =
+            false;
+
+    }
+
+
+    /* ========================================
+       UPDATE CURRENT ROOM
+       ======================================== */
+
+    currentRoomCode =
+        code;
+
+
+    updateSaveChatButton();
+
+
+    /* ========================================
+       SAVE USERNAME
+       ======================================== */
+
+    localStorage.setItem(
+        "messagrUsername",
+        username
+    );
+
+
+    /* ========================================
+       UPDATE INPUT
+       ======================================== */
+
+    if (codeInput) {
+
+        codeInput.value =
+            code;
+
+    }
+
+
+    updateJoinButton();
+
+
+    /* ========================================
+       SHOW STATUS
+       ======================================== */
+
+    if (status) {
+
+        status.textContent =
+            "Joining " + code + "...";
+
+    }
+
+
+    /* ========================================
+       JOIN SERVER ROOM
+       ======================================== */
+
+    socket.emit(
+        "joinRoom",
+        {
+            code:
+                code,
+
+            username:
+                username
+        }
+    );
+
+}
+
+
+/* ========================================
+   JOIN ROOM BUTTON
    ======================================== */
 
 if (joinButton) {
@@ -950,125 +1200,14 @@ if (joinButton) {
         "click",
         function() {
 
-            /* ========================================
-               GET USERNAME
-               ======================================== */
-
-            const username =
-                (
-                    localStorage.getItem(
-                        "messagrUsername"
-                    ) || ""
-                ).trim();
-
-
-            /* ========================================
-               GET ROOM CODE
-               ======================================== */
-
             const code =
                 codeInput.value
                     .trim()
                     .toUpperCase();
 
 
-            /* ========================================
-               CHECK USERNAME
-               ======================================== */
-
-            if (
-                username.length === 0
-            ) {
-
-                status.textContent =
-                    "Please set a username on the welcome page first.";
-
-                return;
-
-            }
-
-
-            if (
-                username.length > 8
-            ) {
-
-                status.textContent =
-                    "Username must be 8 characters or less.";
-
-                return;
-
-            }
-
-
-            /* ========================================
-               CHECK ROOM CODE
-               ======================================== */
-
-            if (
-                !isValidRoomCode(code)
-            ) {
-
-                status.textContent =
-                    "Please enter a valid room code.";
-
-                codeInput.focus();
-
-                updateJoinButton();
-
-                return;
-
-            }
-
-
-            /* ========================================
-               CHECK SOCKET CONNECTION
-               ======================================== */
-
-            if (
-                !socket.connected
-            ) {
-
-                status.textContent =
-                    "Connecting to server...";
-
-                socket.connect();
-
-                return;
-
-            }
-
-
-            /* ========================================
-               SHOW JOINING STATUS
-               ======================================== */
-
-            status.textContent =
-                "Joining " + code + "...";
-
-
-            /* ========================================
-               SAVE USERNAME
-               ======================================== */
-
-            localStorage.setItem(
-                "messagrUsername",
-                username
-            );
-
-
-            /* ========================================
-               JOIN ROOM
-               ======================================== */
-
-            socket.emit(
-                "joinRoom",
-                {
-                    code:
-                        code,
-
-                    username:
-                        username
-                }
+            joinRoom(
+                code
             );
 
         }
@@ -1092,15 +1231,38 @@ socket.on(
 
 
         /* ========================================
-           PUT CURRENT ROOM CODE IN INPUT
+           SET CURRENT ROOM
            ======================================== */
 
-        if (codeInput) {
+        currentRoomCode =
+            code
+                .trim()
+                .toUpperCase();
 
-            codeInput.value =
-                code;
+
+        /* ========================================
+           CLEAR CHAT AGAIN
+           ======================================== */
+
+        /*
+         * This protects against old messages
+         * remaining if the server takes a moment
+         * to finish joining the room.
+         */
+
+        if (messages) {
+
+            messages.innerHTML =
+                "";
 
         }
+
+
+        /* ========================================
+           UPDATE SAVE BUTTON
+           ======================================== */
+
+        updateSaveChatButton();
 
 
         /* ========================================
@@ -1110,7 +1272,8 @@ socket.on(
         if (status) {
 
             status.textContent =
-                "Connected to " + code;
+                "Connected to " +
+                currentRoomCode;
 
         }
 
@@ -1125,21 +1288,6 @@ socket.on(
                 "flex";
 
         }
-
-
-        /* ========================================
-           SHOW SAVE CHAT BUTTON
-           ======================================== */
-
-        if (saveChatButton) {
-
-            saveChatButton.style.display =
-                "block";
-
-        }
-
-
-        updateSaveChatButton();
 
 
         /* ========================================
@@ -1160,7 +1308,7 @@ socket.on(
         try {
 
             await registerNotificationSystem(
-                code
+                currentRoomCode
             );
 
         } catch (error) {
@@ -1464,6 +1612,13 @@ function sendMessage() {
     }
 
 
+    if (!currentRoomCode) {
+
+        return;
+
+    }
+
+
     socket.emit(
         "sendMessage",
         text
@@ -1614,6 +1769,15 @@ if (imageInput) {
 
 
             if (
+                !currentRoomCode
+            ) {
+
+                return;
+
+            }
+
+
+            if (
                 imageUploadInProgress
             ) {
 
@@ -1710,7 +1874,9 @@ if (imageInput) {
 
 
                     const loadingMessage =
-                        document.createElement("div");
+                        document.createElement(
+                            "div"
+                        );
 
 
                     loadingMessage.classList.add(
@@ -1749,7 +1915,9 @@ if (imageInput) {
 
 
                     const spinner =
-                        document.createElement("div");
+                        document.createElement(
+                            "div"
+                        );
 
 
                     spinner.classList.add(
@@ -2067,6 +2235,18 @@ socket.on(
     "receiveMessage",
     function(data) {
 
+        /*
+         * Ignore messages if we aren't
+         * currently inside a room.
+         */
+
+        if (!currentRoomCode) {
+
+            return;
+
+        }
+
+
         const message =
             document.createElement("div");
 
@@ -2145,6 +2325,15 @@ socket.on(
 socket.on(
     "receiveImage",
     function(data) {
+
+        if (
+            !currentRoomCode
+        ) {
+
+            return;
+
+        }
+
 
         if (
             !data ||
@@ -2327,6 +2516,13 @@ socket.on(
 socket.on(
     "userJoined",
     function(username) {
+
+        if (!currentRoomCode) {
+
+            return;
+
+        }
+
 
         const message =
             document.createElement("div");
