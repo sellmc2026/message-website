@@ -3202,8 +3202,11 @@ socket.on(
 
 
 
-element.addEventListener("click", () => {
-    audio.play(buttonClickSound);
+document.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", () => {
+        buttonClickSound.currentTime = 0;
+        buttonClickSound.play();
+    });
 });
 
 
