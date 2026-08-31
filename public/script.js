@@ -14,9 +14,6 @@ const copyCodeButton =
 const generateButton =
     document.getElementById("generateButton");
 
-const usernameInput =
-    document.getElementById("usernameInput");
-
 const codeInput =
     document.getElementById("codeInput");
 
@@ -60,13 +57,6 @@ const profileButton =
 
 const savedUsername =
     localStorage.getItem("messagrUsername");
-
-if (savedUsername) {
-
-    usernameInput.value =
-        savedUsername;
-
-}
 
 
 /* ========================================
@@ -264,7 +254,7 @@ joinButton.addEventListener(
     function() {
 
         const username =
-            usernameInput.value.trim();
+            (savedUsername || "").trim();
 
         const code =
             codeInput.value
@@ -277,9 +267,7 @@ joinButton.addEventListener(
         ) {
 
             status.textContent =
-                "Please enter a username.";
-
-            usernameInput.focus();
+                "Please set a username on the welcome page first.";
 
             return;
 
@@ -292,8 +280,6 @@ joinButton.addEventListener(
 
             status.textContent =
                 "Username must be 5 characters or less.";
-
-            usernameInput.focus();
 
             return;
 
