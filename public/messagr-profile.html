@@ -1,117 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    >
-
-    <link
-        rel="icon"
-        type="image/png"
-        href="favicon.png"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="favicon.png">
     <title>Messagr - Profile</title>
-
     <style>
-
-        /* ========================================
-           RESET
-           ======================================== */
-
         * {
             box-sizing: border-box;
         }
-
-
-        /* ========================================
-           PAGE
-           ======================================== */
-
-        html,
-        body {
-
+        html, body {
             margin: 0;
             padding: 0;
-
             width: 100%;
             height: 100%;
-
             font-family: Arial, sans-serif;
-
             background-color: #101010;
-
-            color: #111111;
         }
-
-
         body {
-
             display: flex;
-
             justify-content: center;
-
             align-items: center;
         }
-
-
-        /* ========================================
-           PROFILE
-           ======================================== */
-
         .profile {
-
             width: 90%;
-
             max-width: 430px;
-
             text-align: center;
         }
-
-
-        /* ========================================
-           PROFILE BOX
-           ======================================== */
-
-        .profileBox {
-
+        .usernameBox {
             width: 100%;
-
             padding: 25px;
-
             background-color: #fafafa;
-
-            border: 1px solid #dddddd;
-
+            border: 1px solid #00ab67;
             border-radius: 14px;
+            font-size: 16px;
+            color: #111111;
+            outline: none;
         }
-
-
+        /* Readonly (view) state */
+        .usernameBox[readonly] {
+            background-color: #1a1a1a;
+            color: #fafafa;
+            border-color: #333;
+            cursor: default;
+        }
+        /* Editable (rename) state */
+        .usernameBox:not([readonly]) {
+            background-color: #fafafa;
+            color: #111111;
+            border-color: #00ab67;
+        }
+        .editBtn {
+            margin-top: 12px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #00ab67;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
     </style>
-
 </head>
-
-
 <body>
-
-
     <main class="profile">
-
         <div class="profileBox">
-
-            <!-- PROFILE CONTENT GOES HERE -->
-
-
+            <input id="usernameBox" class="usernameBox" type="text" value="CurrentUsername" readonly>
+            <br>
+            <button id="editBtn" class="editBtn">Edit</button>
         </div>
-
     </main>
 
+    <script>
+        const usernameBox = document.getElementById('usernameBox');
+        const editBtn = document.getElementById('editBtn');
+        let renaming = false;
 
+        editBtn.addEventListener('click', () => {
+            renaming = !renaming;
+
+            if (renaming) {
+                // Enter edit mode
+                usernameBox.removeAttribute('readonly');
+                usernameBox.focus();
+                usernameBox.select();
+                editBtn.textContent = 'Save';
+            } else {
+                // Save mode: lock it back down and persist the change
+                usernameBox.setAttribute('readonly', true);
+                editBtn.textContent = 'Edit';
+
+                const newUsername = usernameBox.value.trim();
+                saveUsername(newUsername);
+            }
+        });
+
+        function saveUsername(newUsername) {
+            // TODO: send `newUsername` to your backend / API here
+            console.log('Saving new username:', newUsername);
+        }
+    </script>
 </body>
-
 </html>
