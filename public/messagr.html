@@ -25,7 +25,6 @@
             box-sizing: border-box;
         }
 
-
         html,
         body {
 
@@ -41,7 +40,6 @@
             font-family: Arial, sans-serif;
 
         }
-
 
         body {
 
@@ -169,13 +167,11 @@
 
         }
 
-
         #friendsButton:hover {
 
             background-color: #212121;
 
         }
-
 
         #friendsButton img {
 
@@ -211,13 +207,11 @@
 
         }
 
-
         #idButton:hover {
 
             background-color: #212121;
 
         }
-
 
         .idRevealed {
 
@@ -254,13 +248,11 @@
 
         }
 
-
         #profileButton:hover {
 
             background-color: #212121;
 
         }
-
 
         #profileButton img {
 
@@ -300,7 +292,6 @@
 
         }
 
-
         #directMessagesButton:hover {
 
             background-color: #555555;
@@ -337,13 +328,11 @@
 
         }
 
-
         #dmArea.open {
 
             display: block;
 
         }
-
 
         .dmEmpty {
 
@@ -358,7 +347,6 @@
             text-align: center;
 
         }
-
 
         .dmFriend {
 
@@ -381,7 +369,6 @@
             cursor: pointer;
 
         }
-
 
         .dmFriend:hover {
 
@@ -419,7 +406,6 @@
 
         }
 
-
         #friendsArea.open {
 
             display: flex;
@@ -429,7 +415,6 @@
             gap: 6px;
 
         }
-
 
         #addFriendButton {
 
@@ -455,13 +440,11 @@
 
         }
 
-
         #addFriendButton:hover {
 
             background-color: #8FFF3D;
 
         }
-
 
         .friendEmpty {
 
@@ -475,7 +458,6 @@
 
         }
 
-
         .friendRow {
 
             display: flex;
@@ -485,7 +467,6 @@
             gap: 5px;
 
         }
-
 
         .friendRowMain {
 
@@ -511,13 +492,11 @@
 
         }
 
-
         .friendRowMain:hover {
 
             background-color: #3a3a3a;
 
         }
-
 
         .friendRowName {
 
@@ -535,7 +514,6 @@
 
         }
 
-
         .friendRowID {
 
             display: block;
@@ -547,7 +525,6 @@
             margin-top: 2px;
 
         }
-
 
         .friendRowButton {
 
@@ -574,7 +551,6 @@
             justify-content: center;
 
         }
-
 
         .friendRowButton:hover {
 
@@ -609,13 +585,11 @@
 
         }
 
-
         #chatHeader.open {
 
             display: flex;
 
         }
-
 
         #backToRoomButton {
 
@@ -636,7 +610,6 @@
             cursor: pointer;
 
         }
-
 
         #backToRoomButton:hover {
 
@@ -676,7 +649,6 @@
 
         }
 
-
         #joinButton:hover {
 
             background-color: #8FFF3D;
@@ -713,7 +685,6 @@
             text-align: center;
 
         }
-
 
         #codeInput:focus {
 
@@ -754,7 +725,6 @@
             z-index: 2;
 
         }
-
 
         #generateButton:hover {
 
@@ -813,7 +783,6 @@
 
         }
 
-
         .savedRoomButton {
 
             flex: 1;
@@ -839,7 +808,6 @@
             text-overflow: ellipsis;
 
         }
-
 
         .savedRoomButton:hover {
 
@@ -874,7 +842,6 @@
 
         }
 
-
         .editRoomButton:hover {
 
             background-color: #444444;
@@ -882,7 +849,6 @@
             border-radius: 5px;
 
         }
-
 
         .editRoomButton img {
 
@@ -911,6 +877,60 @@
             display: none;
 
             flex-direction: column;
+
+        }
+
+
+        /* ========================================
+           SAVE CHAT BUTTON
+           ======================================== */
+
+        #saveChatButton {
+
+            position: absolute;
+
+            left: 695px;
+            top: 210px;
+
+            width: 120px;
+            height: 45px;
+
+            padding: 0;
+
+            background-color: #4D9EFF;
+
+            color: #ffffff;
+
+            border: 2px solid #000000;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            display: none;
+
+        }
+
+        #saveChatButton:hover {
+
+            background-color: #3689EE;
+
+        }
+
+        #saveChatButton.delete {
+
+            background-color: #FF4D4D;
+
+            color: #ffffff;
+
+        }
+
+        #saveChatButton.delete:hover {
+
+            background-color: #E93636;
 
         }
 
@@ -960,7 +980,6 @@
 
         }
 
-
         .messageMine {
 
             align-self: flex-end;
@@ -970,7 +989,6 @@
             color: #000000;
 
         }
-
 
         .messageOther {
 
@@ -1024,7 +1042,6 @@
 
         }
 
-
         #messageInput {
 
             flex: 1;
@@ -1047,13 +1064,11 @@
 
         }
 
-
         #messageInput:focus {
 
             border-color: #BEFF8F;
 
         }
-
 
         .messageControls {
 
@@ -1090,13 +1105,11 @@
 
         }
 
-
         #imageButton:hover {
 
             background-color: #555555;
 
         }
-
 
         #imageButton img {
 
@@ -1139,7 +1152,6 @@
 
         }
 
-
         #gifButton:hover {
 
             background-color: #555555;
@@ -1177,13 +1189,11 @@
 
         }
 
-
         #gifPicker.open {
 
             display: flex;
 
         }
-
 
         #gifSearchRow {
 
@@ -1196,7 +1206,6 @@
             border-bottom: 1px solid #333333;
 
         }
-
 
         #gifSearchInput {
 
@@ -1220,13 +1229,11 @@
 
         }
 
-
         #gifSearchInput:focus {
 
             border-color: #BEFF8F;
 
         }
-
 
         #closeGifPicker {
 
@@ -1246,13 +1253,11 @@
 
         }
 
-
         #closeGifPicker:hover {
 
             background-color: #555555;
 
         }
-
 
         #gifResults {
 
@@ -1272,7 +1277,6 @@
 
         }
 
-
         #gifResults img {
 
             width: 100%;
@@ -1291,13 +1295,11 @@
 
         }
 
-
         #gifResults img:hover {
 
             outline: 2px solid #BEFF8F;
 
         }
-
 
         #gifStatus {
 
@@ -1338,13 +1340,11 @@
 
         }
 
-
         #sendButton:hover {
 
             background-color: #8FFF3D;
 
         }
-
 
         #sendButton img {
 
@@ -1424,13 +1424,11 @@
 
         }
 
-
         #muteButton:hover {
 
             background-color: #212121;
 
         }
-
 
         #muteButton img {
 
@@ -1461,7 +1459,6 @@
 
         }
 
-
         .imageLoadingSpinner {
 
             width: 32px;
@@ -1476,7 +1473,6 @@
             animation: imageLoadingSpin 0.8s linear infinite;
 
         }
-
 
         @keyframes imageLoadingSpin {
 
@@ -1527,7 +1523,6 @@
 
         }
 
-
         .uploadError.hide {
 
             opacity: 0;
@@ -1571,7 +1566,6 @@
 
     <div id="topButtons">
 
-
         <button id="friendsButton">
 
             <img
@@ -1595,7 +1589,6 @@
             >
 
         </button>
-
 
     </div>
 
@@ -1720,8 +1713,6 @@
             >
 
 
-            <!-- HIDDEN IMAGE PICKER -->
-
             <input
                 type="file"
                 id="imageInput"
@@ -1767,6 +1758,15 @@
     </div>
 
 
+    <!-- ========================================
+         SAVE CHAT BUTTON
+         ======================================== -->
+
+    <button id="saveChatButton">
+        SAVE CHAT
+    </button>
+
+
 </div>
 
 
@@ -1783,117 +1783,115 @@
 
 <script>
 
+    /* ========================================
+       USER ID
+       ======================================== */
 
-/* ========================================
-   USER ID
-   ======================================== */
-
-const messagrID =
-    localStorage.getItem("messagrID");
-
-
-const idButton =
-    document.getElementById("idButton");
+    const messagrID =
+        localStorage.getItem("messagrID");
 
 
-idButton.addEventListener(
-    "click",
-    function() {
-
-        idButton.classList.toggle(
-            "idRevealed"
-        );
+    const idButton =
+        document.getElementById("idButton");
 
 
-        if (
-            idButton.classList.contains(
+    idButton.addEventListener(
+        "click",
+        function() {
+
+            idButton.classList.toggle(
                 "idRevealed"
-            )
-        ) {
+            );
 
-            idButton.textContent =
-                messagrID || "Unknown";
 
-        } else {
+            if (
+                idButton.classList.contains(
+                    "idRevealed"
+                )
+            ) {
 
-            idButton.textContent =
-                "Your ID";
+                idButton.textContent =
+                    messagrID || "Unknown";
+
+            } else {
+
+                idButton.textContent =
+                    "Your ID";
+
+            }
 
         }
-
-    }
-);
-
-
-/* ========================================
-   PROFILE
-   ======================================== */
-
-const profileButton =
-    document.getElementById("profileButton");
-
-
-profileButton.addEventListener(
-    "click",
-    function() {
-
-        window.location.href =
-            "messagr-profile.html";
-
-    }
-);
-
-
-/* ========================================
-   DIRECT MESSAGES POPUP
-   ======================================== */
-
-const directMessagesButton =
-    document.getElementById(
-        "directMessagesButton"
     );
 
 
-const dmArea =
-    document.getElementById(
-        "dmArea"
+    /* ========================================
+       PROFILE
+       ======================================== */
+
+    const profileButton =
+        document.getElementById("profileButton");
+
+
+    profileButton.addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "messagr-profile.html";
+
+        }
     );
 
 
-directMessagesButton.addEventListener(
-    "click",
-    function() {
+    /* ========================================
+       DIRECT MESSAGES POPUP
+       ======================================== */
 
-        dmArea.classList.toggle(
-            "open"
+    const directMessagesButton =
+        document.getElementById(
+            "directMessagesButton"
         );
 
-    }
-);
+
+    const dmArea =
+        document.getElementById(
+            "dmArea"
+        );
 
 
-/* ========================================
-   CLOSE DM MENU WHEN CLICKING ELSEWHERE
-   ======================================== */
+    directMessagesButton.addEventListener(
+        "click",
+        function() {
 
-document.addEventListener(
-    "click",
-    function(event) {
-
-        if (
-            !dmArea.contains(event.target) &&
-            event.target !== directMessagesButton
-        ) {
-
-            dmArea.classList.remove(
+            dmArea.classList.toggle(
                 "open"
             );
 
         }
+    );
 
-    }
-);
 
+    /* ========================================
+       CLOSE DM MENU WHEN CLICKING ELSEWHERE
+       ======================================== */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !dmArea.contains(event.target) &&
+                event.target !== directMessagesButton
+            ) {
+
+                dmArea.classList.remove(
+                    "open"
+                );
+
+            }
+
+        }
+    );
 
 </script>
 
