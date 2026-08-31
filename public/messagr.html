@@ -33,7 +33,7 @@
             padding: 0;
 
             width: 100%;
-            min-height: 100%;
+            height: 100%;
 
             background-color: #101010;
             color: #ffffff;
@@ -45,24 +45,37 @@
 
         body {
 
-            overflow: hidden;
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: auto;
 
         }
 
 
         /* ========================================
            MAIN DASHBOARD
+
+           Fixed-size canvas that everything below
+           is positioned inside of. Centered on the
+           page instead of stretching to fill the
+           viewport (which is what was pushing every
+           absolutely-positioned element into the
+           top-left corner on large screens).
            ======================================== */
 
         #dashboard {
 
             position: relative;
 
-            width: 100vw;
-            height: 100vh;
+            flex-shrink: 0;
 
-            min-width: 834px;
-            min-height: 481px;
+            width: 860px;
+            height: 620px;
 
         }
 
@@ -386,6 +399,263 @@
         .dmFriend:hover {
 
             background-color: #3a3a3a;
+
+        }
+
+
+        /* ========================================
+           FRIENDS DROPDOWN
+           ======================================== */
+
+        #friendsArea {
+
+            position: absolute;
+
+            left: 622px;
+            top: 119px;
+
+            width: 200px;
+            height: 290px;
+
+            background-color: #181818;
+
+            border: 2px solid #444444;
+            border-radius: 10px;
+
+            overflow-y: auto;
+
+            padding: 8px;
+
+            display: none;
+
+            z-index: 100;
+
+        }
+
+
+        #friendsArea.open {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+
+        #addFriendButton {
+
+            width: 100%;
+
+            padding: 10px;
+
+            margin-bottom: 4px;
+
+            background-color: #BEFF8F;
+
+            color: #000000;
+
+            border: 2px solid #000000;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+        }
+
+
+        #addFriendButton:hover {
+
+            background-color: #8FFF3D;
+
+        }
+
+
+        .friendEmpty {
+
+            padding: 20px 10px;
+
+            color: #888888;
+
+            font-size: 13px;
+
+            text-align: center;
+
+        }
+
+
+        .friendRow {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+        }
+
+
+        .friendRowMain {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 10px;
+
+            background-color: #292929;
+
+            border: 1px solid #444444;
+
+            border-radius: 7px;
+
+            color: #ffffff;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            overflow: hidden;
+
+        }
+
+
+        .friendRowMain:hover {
+
+            background-color: #3a3a3a;
+
+        }
+
+
+        .friendRowName {
+
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .friendRowID {
+
+            display: block;
+
+            font-size: 9px;
+
+            color: #888888;
+
+            margin-top: 2px;
+
+        }
+
+
+        .friendRowButton {
+
+            width: 28px;
+            height: 28px;
+
+            flex-shrink: 0;
+
+            background-color: #303030;
+
+            border: 1px solid #555555;
+
+            border-radius: 6px;
+
+            color: #ffffff;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+        }
+
+
+        .friendRowButton:hover {
+
+            background-color: #444444;
+
+        }
+
+
+        /* ========================================
+           CHAT HEADER (DM MODE)
+           ======================================== */
+
+        #chatHeader {
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 8px;
+
+            padding: 8px 10px;
+
+            background-color: #181818;
+
+            border: 2px solid #444444;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        #chatHeader.open {
+
+            display: flex;
+
+        }
+
+
+        #backToRoomButton {
+
+            padding: 6px 10px;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 1px solid #666666;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        #backToRoomButton:hover {
+
+            background-color: #555555;
 
         }
 
@@ -811,6 +1081,210 @@
 
 
         /* ========================================
+           GIF BUTTON
+           ======================================== */
+
+        #gifButton {
+
+            width: 50px;
+            height: 42px;
+
+            padding: 0;
+
+            background-color: #444444;
+
+            border: 2px solid #666666;
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #ffffff;
+
+            font-size: 12px;
+            font-weight: bold;
+
+            letter-spacing: 0.5px;
+
+        }
+
+
+        #gifButton:hover {
+
+            background-color: #555555;
+
+        }
+
+
+        /* ========================================
+           GIF PICKER
+           ======================================== */
+
+        #gifPicker {
+
+            display: none;
+
+            flex-direction: column;
+
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            bottom: 58px;
+
+            height: 320px;
+
+            background-color: #181818;
+
+            border: 2px solid #555555;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            z-index: 20;
+
+        }
+
+
+        #gifPicker.open {
+
+            display: flex;
+
+        }
+
+
+        #gifSearchRow {
+
+            display: flex;
+
+            gap: 8px;
+
+            padding: 10px;
+
+            border-bottom: 1px solid #333333;
+
+        }
+
+
+        #gifSearchInput {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 10px;
+
+            background-color: #222222;
+
+            color: #ffffff;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-size: 14px;
+
+        }
+
+
+        #gifSearchInput:focus {
+
+            border-color: #BEFF8F;
+
+        }
+
+
+        #closeGifPicker {
+
+            width: 38px;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+        }
+
+
+        #closeGifPicker:hover {
+
+            background-color: #555555;
+
+        }
+
+
+        #gifResults {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 8px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 6px;
+
+            align-content: start;
+
+        }
+
+
+        #gifResults img {
+
+            width: 100%;
+
+            height: 110px;
+
+            object-fit: cover;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            display: block;
+
+            background-color: #222222;
+
+        }
+
+
+        #gifResults img:hover {
+
+            outline: 2px solid #BEFF8F;
+
+        }
+
+
+        #gifStatus {
+
+            padding: 20px;
+
+            text-align: center;
+
+            color: #aaaaaa;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ========================================
            SEND BUTTON
            ======================================== */
 
@@ -857,12 +1331,82 @@
         #codeBox,
         #copyCodeButton,
         #generateButton,
-        #muteButton,
         #divider,
-        #status,
         #subtitle {
 
             display: none;
+
+        }
+
+
+        /* ========================================
+           STATUS TEXT
+           (feedback under the join box)
+           ======================================== */
+
+        #status {
+
+            position: absolute;
+
+            left: 35px;
+            top: 258px;
+
+            width: 220px;
+
+            min-height: 12px;
+
+            color: #aaaaaa;
+
+            font-size: 11px;
+
+            text-align: center;
+
+        }
+
+
+        /* ========================================
+           MUTE BUTTON
+           ======================================== */
+
+        #muteButton {
+
+            position: absolute;
+
+            left: 35px;
+            top: 7px;
+
+            width: 45px;
+            height: 45px;
+
+            padding: 5px;
+
+            background-color: #545454;
+
+            border: 4px solid #000000;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+        }
+
+
+        #muteButton:hover {
+
+            background-color: #212121;
+
+        }
+
+
+        #muteButton img {
+
+            width: 22px;
+            height: 22px;
 
         }
 
@@ -1093,6 +1637,32 @@
              MESSAGE ROW
              ======================================== -->
 
+        <!-- ========================================
+             GIF PICKER
+             ======================================== -->
+
+        <div id="gifPicker">
+
+            <div id="gifSearchRow">
+
+                <input
+                    id="gifSearchInput"
+                    type="text"
+                    placeholder="Search GIFs..."
+                    autocomplete="off"
+                >
+
+                <button id="closeGifPicker">
+                    ✕
+                </button>
+
+            </div>
+
+            <div id="gifResults"></div>
+
+        </div>
+
+
         <div id="messageRow">
 
 
@@ -1115,6 +1685,13 @@
 
 
             <div class="messageControls">
+
+
+                <button id="gifButton">
+
+                    GIF
+
+                </button>
 
 
                 <button id="imageButton">
