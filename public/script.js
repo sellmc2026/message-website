@@ -75,10 +75,6 @@ const generateButton =
     document.getElementById("generateButton");
 
 
-const roomGenerateButton =
-    document.getElementById("roomGenerateButton");
-
-
 const codeInput =
     document.getElementById("codeInput");
 
@@ -175,13 +171,21 @@ if (muteButton) {
 
             if (muted) {
 
-                muteIcon.src =
-                    "mute.png";
+                if (muteIcon) {
+
+                    muteIcon.src =
+                        "mute.png";
+
+                }
 
             } else {
 
-                muteIcon.src =
-                    "unmute.png";
+                if (muteIcon) {
+
+                    muteIcon.src =
+                        "unmute.png";
+
+                }
 
             }
 
@@ -316,11 +320,6 @@ function generateNewRoomCode() {
         generateCode();
 
 
-    /*
-       Put generated code into
-       the room-code input.
-    */
-
     if (codeInput) {
 
         codeInput.value =
@@ -328,10 +327,6 @@ function generateNewRoomCode() {
 
     }
 
-
-    /*
-       Keep codeBox updated too.
-    */
 
     if (codeBox) {
 
@@ -341,16 +336,8 @@ function generateNewRoomCode() {
     }
 
 
-    /*
-       Update JOIN button.
-    */
-
     updateJoinButton();
 
-
-    /*
-       Update status.
-    */
 
     if (status) {
 
@@ -359,10 +346,6 @@ function generateNewRoomCode() {
 
     }
 
-
-    /*
-       Focus the input.
-    */
 
     if (codeInput) {
 
@@ -393,30 +376,6 @@ if (generateButton) {
 }
 
 
-/*
-   If the page uses roomGenerateButton
-   instead of generateButton, support that too.
-*/
-
-if (
-    roomGenerateButton &&
-    roomGenerateButton !== generateButton
-) {
-
-    roomGenerateButton.addEventListener(
-        "click",
-        function(event) {
-
-            event.preventDefault();
-
-            generateNewRoomCode();
-
-        }
-    );
-
-}
-
-
 /* ========================================
    FORMAT ROOM CODE WHILE TYPING
    ======================================== */
@@ -432,21 +391,12 @@ if (codeInput) {
                     .toUpperCase();
 
 
-            /*
-               Only allow letters and numbers.
-            */
-
             value =
                 value.replace(
                     /[^A-Z2-9]/g,
                     ""
                 );
 
-
-            /*
-               Remove characters that
-               aren't allowed.
-            */
 
             value =
                 value.replace(
@@ -455,21 +405,12 @@ if (codeInput) {
                 );
 
 
-            /*
-               Maximum of 8 characters.
-            */
-
             value =
                 value.substring(
                     0,
                     8
                 );
 
-
-            /*
-               Put dash after first
-               four characters.
-            */
 
             if (
                 value.length > 4
@@ -593,10 +534,6 @@ if (joinButton) {
                     .toUpperCase();
 
 
-            /* ========================================
-               CHECK USERNAME
-               ======================================== */
-
             if (
                 username.length === 0
             ) {
@@ -621,10 +558,6 @@ if (joinButton) {
             }
 
 
-            /* ========================================
-               CHECK ROOM CODE
-               ======================================== */
-
             if (
                 !isValidRoomCode(code)
             ) {
@@ -640,10 +573,6 @@ if (joinButton) {
 
             }
 
-
-            /* ========================================
-               CHECK CONNECTION
-               ======================================== */
 
             if (
                 !socket.connected
@@ -864,33 +793,61 @@ async function registerNotificationSystem(
 
 
         const saveResponse =
-    await fetch(
-        "/api/save-subscription",
-        {
-            method:
-                "POST",
-
-            headers:
+            await fetch(
+                "/api/save-subscription",
                 {
-                    "Content-Type":
-                        "application/json"
-                },
+                    method:
+                        "POST",
 
-            body:
-                JSON.stringify(
-                    {
-                        subscription:
-                            subscription,
+                    headers:
+                        {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-                        socketId:
-                            socket.id,
+                    body:
+                        JSON.stringify(
+                            {
+                                subscription:
+                                    subscription,
 
-                        room:
-                            roomCode
-                    }
-                )
+                                socketId:
+                                    socket.id,
+
+                                room:
+                                    roomCode
+                            }
+                        )
+                }
+            );
+
+
+        if (
+            !saveResponse.ok
+        ) {
+
+            throw new Error(
+                "Server rejected push subscription."
+            );
+
         }
-    );
+
+
+        console.log(
+            "Push notifications enabled!"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Notification setup failed:",
+            error
+        );
+
+    }
+
+}
 
 
 /* ========================================
@@ -901,15 +858,27 @@ socket.on(
     "joinedRoom",
     async function(code) {
 
-        status.textContent =
-            "Connected to " + code;
+        if (status) {
+
+            status.textContent =
+                "Connected to " + code;
+
+        }
 
 
-        chat.style.display =
-            "flex";
+        if (chat) {
+
+            chat.style.display =
+                "flex";
+
+        }
 
 
-        messageInput.focus();
+        if (messageInput) {
+
+            messageInput.focus();
+
+        }
 
 
         await registerNotificationSystem(
@@ -935,6 +904,13 @@ function sendMessage() {
     }
 
 
+    if (!messageInput) {
+
+        return;
+
+    }
+
+
     const text =
         messageInput.value.trim();
 
@@ -952,8 +928,12 @@ function sendMessage() {
         !socket.connected
     ) {
 
-        status.textContent =
-            "Not connected to server.";
+        if (status) {
+
+            status.textContent =
+                "Not connected to server.";
+
+        }
 
         return;
 
@@ -1027,7 +1007,11 @@ if (imageButton) {
             }
 
 
-            imageInput.click();
+            if (imageInput) {
+
+                imageInput.click();
+
+            }
 
         }
     );
@@ -1056,10 +1040,6 @@ if (imageInput) {
             }
 
 
-            /* ========================================
-               CHECK FILE TYPE
-               ======================================== */
-
             if (
                 !file.type.startsWith("image/")
             ) {
@@ -1075,10 +1055,6 @@ if (imageInput) {
 
             }
 
-
-            /* ========================================
-               CHECK FILE SIZE
-               ======================================== */
 
             if (
                 file.size >
@@ -1096,10 +1072,6 @@ if (imageInput) {
 
             }
 
-
-            /* ========================================
-               CHECK ROOM
-               ======================================== */
 
             if (
                 !socket.connected
@@ -1130,25 +1102,29 @@ if (imageInput) {
                 true;
 
 
-            /* ========================================
-               DISABLE CHAT
-               ======================================== */
+            if (messageInput) {
 
-            messageInput.disabled =
-                true;
+                messageInput.disabled =
+                    true;
 
-
-            sendButton.disabled =
-                true;
+            }
 
 
-            imageButton.disabled =
-                true;
+            if (sendButton) {
+
+                sendButton.disabled =
+                    true;
+
+            }
 
 
-            /* ========================================
-               CREATE IMAGE PREVIEW
-               ======================================== */
+            if (imageButton) {
+
+                imageButton.disabled =
+                    true;
+
+            }
+
 
             const preview =
                 new Image();
@@ -1209,10 +1185,6 @@ if (imageInput) {
                     }
 
 
-                    /* ========================================
-                       CREATE LOADING MESSAGE
-                       ======================================== */
-
                     const loadingMessage =
                         document.createElement("div");
 
@@ -1252,10 +1224,6 @@ if (imageInput) {
                         "0";
 
 
-                    /* ========================================
-                       SPINNER
-                       ======================================== */
-
                     const spinner =
                         document.createElement("div");
 
@@ -1290,22 +1258,22 @@ if (imageInput) {
                     );
 
 
-                    messages.appendChild(
-                        loadingMessage
-                    );
+                    if (messages) {
+
+                        messages.appendChild(
+                            loadingMessage
+                        );
 
 
-                    messages.scrollTop =
-                        messages.scrollHeight;
+                        messages.scrollTop =
+                            messages.scrollHeight;
+
+                    }
 
 
                     currentImageLoadingMessage =
                         loadingMessage;
 
-
-                    /* ========================================
-                       7 SECOND TIMEOUT
-                       ======================================== */
 
                     imageUploadTimeout =
                         setTimeout(
@@ -1336,16 +1304,28 @@ if (imageInput) {
                                 }
 
 
-                                messageInput.disabled =
-                                    false;
+                                if (messageInput) {
+
+                                    messageInput.disabled =
+                                        false;
+
+                                }
 
 
-                                sendButton.disabled =
-                                    false;
+                                if (sendButton) {
+
+                                    sendButton.disabled =
+                                        false;
+
+                                }
 
 
-                                imageButton.disabled =
-                                    false;
+                                if (imageButton) {
+
+                                    imageButton.disabled =
+                                        false;
+
+                                }
 
 
                                 showUploadError();
@@ -1358,10 +1338,6 @@ if (imageInput) {
                             7000
                         );
 
-
-                    /* ========================================
-                       READ IMAGE
-                       ======================================== */
 
                     const reader =
                         new FileReader();
@@ -1426,16 +1402,28 @@ if (imageInput) {
                             }
 
 
-                            messageInput.disabled =
-                                false;
+                            if (messageInput) {
+
+                                messageInput.disabled =
+                                    false;
+
+                            }
 
 
-                            sendButton.disabled =
-                                false;
+                            if (sendButton) {
+
+                                sendButton.disabled =
+                                    false;
+
+                            }
 
 
-                            imageButton.disabled =
-                                false;
+                            if (imageButton) {
+
+                                imageButton.disabled =
+                                    false;
+
+                            }
 
 
                             showUploadError();
@@ -1450,10 +1438,6 @@ if (imageInput) {
                 };
 
 
-            /* ========================================
-               IMAGE PREVIEW ERROR
-               ======================================== */
-
             preview.onerror =
                 function() {
 
@@ -1461,16 +1445,28 @@ if (imageInput) {
                         false;
 
 
-                    messageInput.disabled =
-                        false;
+                    if (messageInput) {
+
+                        messageInput.disabled =
+                            false;
+
+                    }
 
 
-                    sendButton.disabled =
-                        false;
+                    if (sendButton) {
+
+                        sendButton.disabled =
+                            false;
+
+                    }
 
 
-                    imageButton.disabled =
-                        false;
+                    if (imageButton) {
+
+                        imageButton.disabled =
+                            false;
+
+                    }
 
 
                     showUploadError();
@@ -1602,13 +1598,17 @@ socket.on(
         }
 
 
-        messages.appendChild(
-            message
-        );
+        if (messages) {
+
+            messages.appendChild(
+                message
+            );
 
 
-        messages.scrollTop =
-            messages.scrollHeight;
+            messages.scrollTop =
+                messages.scrollHeight;
+
+        }
 
     }
 );
@@ -1631,10 +1631,6 @@ socket.on(
 
         }
 
-
-        /* ========================================
-           IMAGE UPLOAD SUCCESS
-           ======================================== */
 
         if (
             data.sender === socket.id
@@ -1670,23 +1666,31 @@ socket.on(
             }
 
 
-            messageInput.disabled =
-                false;
+            if (messageInput) {
+
+                messageInput.disabled =
+                    false;
+
+            }
 
 
-            sendButton.disabled =
-                false;
+            if (sendButton) {
+
+                sendButton.disabled =
+                    false;
+
+            }
 
 
-            imageButton.disabled =
-                false;
+            if (imageButton) {
+
+                imageButton.disabled =
+                    false;
+
+            }
 
         }
 
-
-        /* ========================================
-           CREATE MESSAGE
-           ======================================== */
 
         const message =
             document.createElement("div");
@@ -1713,10 +1717,6 @@ socket.on(
 
         }
 
-
-        /* ========================================
-           CREATE IMAGE
-           ======================================== */
 
         const image =
             document.createElement("img");
@@ -1759,27 +1759,23 @@ socket.on(
             "contain";
 
 
-        /* ========================================
-           ADD IMAGE
-           ======================================== */
-
         message.appendChild(
             image
         );
 
 
-        messages.appendChild(
-            message
-        );
+        if (messages) {
+
+            messages.appendChild(
+                message
+            );
 
 
-        messages.scrollTop =
-            messages.scrollHeight;
+            messages.scrollTop =
+                messages.scrollHeight;
 
+        }
 
-        /* ========================================
-           PLAY MESSAGE SOUND
-           ======================================== */
 
         if (
             data.sender !== socket.id &&
@@ -1822,13 +1818,17 @@ socket.on(
             " joined the room.";
 
 
-        messages.appendChild(
-            message
-        );
+        if (messages) {
+
+            messages.appendChild(
+                message
+            );
 
 
-        messages.scrollTop =
-            messages.scrollHeight;
+            messages.scrollTop =
+                messages.scrollHeight;
+
+        }
 
     }
 );
@@ -1859,11 +1859,6 @@ socket.on(
             "Disconnected from server."
         );
 
-
-        /*
-           If the connection dies while
-           uploading, clean up the loading UI.
-        */
 
         if (
             imageUploadInProgress
@@ -1899,16 +1894,28 @@ socket.on(
             }
 
 
-            messageInput.disabled =
-                false;
+            if (messageInput) {
+
+                messageInput.disabled =
+                    false;
+
+            }
 
 
-            sendButton.disabled =
-                false;
+            if (sendButton) {
+
+                sendButton.disabled =
+                    false;
+
+            }
 
 
-            imageButton.disabled =
-                false;
+            if (imageButton) {
+
+                imageButton.disabled =
+                    false;
+
+            }
 
         }
 
