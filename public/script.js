@@ -66,6 +66,8 @@ databaseRequest.onerror =
    ELEMENTS
    ======================================== */
 
+const buttonClickSound = new Audio('button-click.mp3');
+
 const codeBox =
     document.getElementById("codeBox");
 
@@ -3196,3 +3198,13 @@ socket.on(
 
     }
 );
+
+
+
+
+element.addEventListener("click", () => {
+    audio.play(buttonClickSound);
+});
+
+
+
