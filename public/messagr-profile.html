@@ -1,104 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
     <link rel="icon" type="image/png" href="favicon.png">
+
     <title>Messagr - Profile</title>
+
     <style>
+
         * {
             box-sizing: border-box;
         }
-        html, body {
+
+
+        html,
+        body {
+
             margin: 0;
             padding: 0;
+
             width: 100%;
             height: 100%;
+
             font-family: Arial, sans-serif;
+
             background-color: #101010;
+            color: #ffffff;
         }
+
+
         body {
+
             display: flex;
+
             justify-content: center;
             align-items: center;
         }
+
+
+
+
         .profile {
+
             width: 90%;
+
             max-width: 430px;
+
             text-align: center;
         }
-        .usernameBox {
-            width: 100%;
-            padding: 25px;
-            background-color: #fafafa;
-            border: 1px solid #00ab67;
-            border-radius: 14px;
-            font-size: 16px;
-            color: #111111;
-            outline: none;
+
+
+        .profileTitle {
+
+            font-size: 24px;
+
+            font-weight: 700;
+
+            margin-bottom: 25px;
         }
-        /* Readonly (view) state */
-        .usernameBox[readonly] {
-            background-color: #1a1a1a;
-            color: #fafafa;
-            border-color: #333;
+
+
+
+        .usernameLabel {
+
+            font-size: 13px;
+
+            color: #aaaaaa;
+
+            text-align: left;
+
+            margin-bottom: 6px;
+        }
+
+
+        #usernameBox {
+
+            width: 100%;
+
+            padding: 13px;
+
+            background-color: #222222;
+
+            color: #ffffff;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            font-size: 18px;
+
+            text-align: center;
+
+            outline: none;
+
+            font-family: inherit;
+        }
+
+
+        /* Read-only (view) state */
+
+        #usernameBox[readonly] {
+
+            background-color: #181818;
+
+            color: #aaaaaa;
+
             cursor: default;
         }
+
+
         /* Editable (rename) state */
-        .usernameBox:not([readonly]) {
-            background-color: #fafafa;
-            color: #111111;
-            border-color: #00ab67;
+
+        #usernameBox:not([readonly]):focus {
+
+            border-color: #BEFF8F;
         }
-        .editBtn {
-            margin-top: 12px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            background-color: #00ab67;
-            color: #fff;
+
+
+
+
+        #profileStatus {
+
+            min-height: 18px;
+
+            font-size: 13px;
+
+            color: #ff8080;
+
+            margin-top: 8px;
+
+            text-align: left;
+        }
+
+
+
+
+        #editButton {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin-top: 14px;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background-color: #BEFF8F;
+
+            color: #000000;
+
+            border: 2px solid #000000;
+        }
+
+
+        #editButton:hover {
+
+            background-color: #8FFF3D;
+        }
+
+
+        #backButton {
+
+            width: 100%;
+
+            padding: 10px;
+
+            margin-top: 10px;
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+
+            border-radius: 8px;
+
             font-size: 14px;
+
+            font-weight: bold;
+
             cursor: pointer;
         }
+
+
+        #backButton:hover {
+
+            background-color: #ffffff;
+            color: #000000;
+        }
+
     </style>
+
 </head>
+
+
 <body>
+
+
     <main class="profile">
-        <div class="profileBox">
-            <input id="usernameBox" class="usernameBox" type="text" value="CurrentUsername" readonly>
-            <br>
-            <button id="editBtn" class="editBtn">Edit</button>
+
+        <div class="profileTitle">
+            Your Profile
         </div>
+
+
+        
+        <div class="usernameLabel">
+            Username
+        </div>
+
+        <input
+            id="usernameBox"
+            type="text"
+            maxlength="5"
+            autocomplete="off"
+            readonly
+        >
+
+        <div id="profileStatus"></div>
+
+        <button id="editButton">
+            Edit
+        </button>
+
+
+
+
+        <button id="backButton">
+            Back to Messagr
+        </button>
+
     </main>
 
+
+
+
     <script>
-        const usernameBox = document.getElementById('usernameBox');
-        const editBtn = document.getElementById('editBtn');
-        let renaming = false;
 
-        editBtn.addEventListener('click', () => {
-            renaming = !renaming;
 
-            if (renaming) {
-                // Enter edit mode
-                usernameBox.removeAttribute('readonly');
-                usernameBox.focus();
-                usernameBox.select();
-                editBtn.textContent = 'Save';
-            } else {
-                // Save mode: lock it back down and persist the change
-                usernameBox.setAttribute('readonly', true);
-                editBtn.textContent = 'Edit';
 
-                const newUsername = usernameBox.value.trim();
-                saveUsername(newUsername);
+        const usernameBox =
+            document.getElementById("usernameBox");
+
+        const editButton =
+            document.getElementById("editButton");
+
+        const backButton =
+            document.getElementById("backButton");
+
+        const profileStatus =
+            document.getElementById("profileStatus");
+
+
+
+        let savedUsername =
+            localStorage.getItem("messagrUsername") || "";
+
+        usernameBox.value =
+            savedUsername;
+
+
+
+
+        let renaming =
+            false;
+
+
+        editButton.addEventListener(
+            "click",
+            function() {
+
+                if (!renaming) {
+
+                    
+
+                    renaming =
+                        true;
+
+                    usernameBox.removeAttribute(
+                        "readonly"
+                    );
+
+                    usernameBox.focus();
+
+                    usernameBox.select();
+
+                    editButton.textContent =
+                        "Save";
+
+                    profileStatus.textContent =
+                        "";
+
+                } else {
+
+                   
+
+                    const newUsername =
+                        usernameBox.value.trim();
+
+
+                    if (
+                        newUsername.length === 0
+                    ) {
+
+                        profileStatus.textContent =
+                            "Please enter a username.";
+
+                        return;
+
+                    }
+
+
+                    if (
+                        newUsername.length > 5
+                    ) {
+
+                        profileStatus.textContent =
+                            "Username must be 5 characters or less.";
+
+                        return;
+
+                    }
+
+
+                    
+
+                    savedUsername =
+                        newUsername;
+
+                    localStorage.setItem(
+                        "messagrUsername",
+                        savedUsername
+                    );
+
+                    usernameBox.value =
+                        savedUsername;
+
+                    usernameBox.setAttribute(
+                        "readonly",
+                        true
+                    );
+
+                    renaming =
+                        false;
+
+                    editButton.textContent =
+                        "Edit";
+
+                    profileStatus.textContent =
+                        "";
+
+                }
+
             }
-        });
+        );
 
-        function saveUsername(newUsername) {
-            // TODO: send `newUsername` to your backend / API here
-            console.log('Saving new username:', newUsername);
-        }
+
+
+
+        usernameBox.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter" &&
+                    renaming
+                ) {
+
+                    editButton.click();
+
+                }
+
+            }
+        );
+
+
+
+
+        backButton.addEventListener(
+            "click",
+            function() {
+
+                window.location.href =
+                    "messagr.html";
+
+            }
+        );
+
     </script>
+
+
 </body>
+
 </html>
