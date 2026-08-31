@@ -103,7 +103,7 @@ const imageInput =
 const imageButton =
     document.getElementById("imageButton");
 
-const profileButton =
+const mainProfileButton =
     document.getElementById("profileButton");
 
 
@@ -173,9 +173,9 @@ if (muteButton) {
    PROFILE BUTTON
    ======================================== */
 
-if (profileButton) {
+if (mainProfileButton) {
 
-    profileButton.addEventListener(
+    mainProfileButton.addEventListener(
         "click",
         function() {
 
