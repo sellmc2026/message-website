@@ -864,62 +864,33 @@ async function registerNotificationSystem(
 
 
         const saveResponse =
-            await fetch(
-                "/api/save-subscription",
+    await fetch(
+        "/api/save-subscription",
+        {
+            method:
+                "POST",
+
+            headers:
                 {
-                    method:
-                        "POST",
+                    "Content-Type":
+                        "application/json"
+                },
 
-                    headers:
-                        {
-                            "Content-Type":
-                                "application/json"
-                        },
+            body:
+                JSON.stringify(
+                    {
+                        subscription:
+                            subscription,
 
-                    body:
-                        JSON.stringify(
-                            {
-                                subscription:
-                                    subscription,
+                        socketId:
+                            socket.id,
 
-                                socketId:
-                                    socket.id,
-
-                                room:
-                                    roomCode
-                            }
-                        )
+                        room:
+                            roomCode
                     }
-                }
-            );
-
-
-        if (
-            !saveResponse.ok
-        ) {
-
-            throw new Error(
-                "Server rejected push subscription."
-            );
-
+                )
         }
-
-
-        console.log(
-            "Push notifications enabled!"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Notification setup failed:",
-            error
-        );
-
-    }
-
-}
+    );
 
 
 /* ========================================
