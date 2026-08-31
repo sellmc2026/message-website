@@ -520,6 +520,10 @@ if (joinButton) {
         "click",
         function() {
 
+            /* ========================================
+               GET USERNAME
+               ======================================== */
+
             const username =
                 (
                     localStorage.getItem(
@@ -528,11 +532,19 @@ if (joinButton) {
                 ).trim();
 
 
+            /* ========================================
+               GET ROOM CODE
+               ======================================== */
+
             const code =
                 codeInput.value
                     .trim()
                     .toUpperCase();
 
+
+            /* ========================================
+               CHECK USERNAME
+               ======================================== */
 
             if (
                 username.length === 0
@@ -558,6 +570,10 @@ if (joinButton) {
             }
 
 
+            /* ========================================
+               CHECK ROOM CODE
+               ======================================== */
+
             if (
                 !isValidRoomCode(code)
             ) {
@@ -574,27 +590,45 @@ if (joinButton) {
             }
 
 
+            /* ========================================
+               CHECK SOCKET CONNECTION
+               ======================================== */
+
             if (
                 !socket.connected
             ) {
 
                 status.textContent =
-                    "Not connected to server.";
+                    "Connecting to server...";
+
+                socket.connect();
 
                 return;
 
             }
 
 
+            /* ========================================
+               SHOW JOINING STATUS
+               ======================================== */
+
             status.textContent =
                 "Joining " + code + "...";
 
+
+            /* ========================================
+               SAVE USERNAME
+               ======================================== */
 
             localStorage.setItem(
                 "messagrUsername",
                 username
             );
 
+
+            /* ========================================
+               JOIN ROOM
+               ======================================== */
 
             socket.emit(
                 "joinRoom",
@@ -611,6 +645,70 @@ if (joinButton) {
     );
 
 }
+
+
+/* ========================================
+   SUCCESSFULLY JOINED ROOM
+   ======================================== */
+
+socket.on(
+    "joinedRoom",
+    async function(code) {
+
+        console.log(
+            "Successfully joined room:",
+            code
+        );
+
+
+        /* ========================================
+           UPDATE STATUS
+           ======================================== */
+
+        status.textContent =
+            "Connected to " + code;
+
+
+        /* ========================================
+           SHOW CHAT
+           ======================================== */
+
+        chat.style.display =
+            "flex";
+
+
+        /* ========================================
+           FOCUS MESSAGE INPUT
+           ======================================== */
+
+        if (messageInput) {
+
+            messageInput.focus();
+
+        }
+
+
+        /* ========================================
+           ENABLE PUSH NOTIFICATIONS
+           ======================================== */
+
+        try {
+
+            await registerNotificationSystem(
+                code
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Notification setup failed:",
+                error
+            );
+
+        }
+
+    }
+);
 
 
 /* ========================================
