@@ -1,5 +1,61 @@
 const socket = io();
 
+/* ========================================
+   LOCAL MESSAGR DATABASE
+   ======================================== */
+
+let messagrDB;
+
+const databaseRequest =
+    indexedDB.open("MessagrDB", 1);
+
+
+databaseRequest.onupgradeneeded =
+    function(event) {
+
+        const db =
+            event.target.result;
+
+
+        if (
+            !db.objectStoreNames.contains("rooms")
+        ) {
+
+            db.createObjectStore(
+                "rooms",
+                {
+                    keyPath: "roomCode"
+                }
+            );
+
+        }
+
+    };
+
+
+databaseRequest.onsuccess =
+    function(event) {
+
+        messagrDB =
+            event.target.result;
+
+        console.log(
+            "Messagr local database ready."
+        );
+
+    };
+
+
+databaseRequest.onerror =
+    function(event) {
+
+        console.error(
+            "Could not open Messagr database:",
+            event.target.error
+        );
+
+    };
+
 
 /* ========================================
    ELEMENTS
