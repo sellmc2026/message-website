@@ -16,77 +16,65 @@
 
     <meta
         name="description"
-        content="Messagr is a simple private messaging website. Create a room, share the code, and start chatting."
+        content="Messagr is a simple private messaging website."
     >
 
     <style>
 
-        /* ========================================
-           JOIN MESSAGE
-           ======================================== */
-
-        .systemMessage {
-            align-self: flex-start;
-
-            color: #000000;
-
-            background-color: #FFE658;
-
-            font-size: 13px;
-
-            padding: 15px;
-
-            margin: 5px 0;
+        * {
+            box-sizing: border-box;
         }
 
 
         html,
         body {
+
             margin: 0;
             padding: 0;
 
             width: 100%;
-            min-height: 100%;
+            height: 100%;
 
             background-color: #101010;
             color: #ffffff;
 
             font-family: Arial, sans-serif;
+
+            overflow: hidden;
         }
 
 
         /* ========================================
-           MAIN
+           MAIN PAGE
            ======================================== */
 
         #main {
-            min-height: 100vh;
 
-            display: flex;
+            position: relative;
 
-            justify-content: center;
-            align-items: center;
+            width: 100vw;
+            height: 100vh;
+
+            min-width: 834px;
+            min-height: 481px;
         }
 
 
         /* ========================================
-           CONTAINER
+           LOGO
            ======================================== */
 
-        #container {
-            width: 450px;
+        #logo {
 
-            display: flex;
+            position: absolute;
 
-            flex-direction: column;
+            left: 375px;
+            top: 56px;
 
-            align-items: center;
+            width: 100px;
+            height: 45px;
 
-            gap: 15px;
-
-            padding: 30px;
-
-            box-sizing: border-box;
+            object-fit: contain;
         }
 
 
@@ -95,206 +83,298 @@
            ======================================== */
 
         #title {
+
+            position: absolute;
+
+            left: 375px;
+            top: 115px;
+
+            width: 100px;
+            height: 45px;
+
             margin: 0;
 
-            font-size: 32px;
+            font-size: 30px;
 
             text-align: center;
         }
-
-
-        #subtitle {
-            margin: 0 0 15px 0;
-
-            color: #aaaaaa;
-
-            font-size: 16px;
-
-            text-align: center;
-        }
-
-
 
 
         /* ========================================
-           MESSAGE CODE
+           TOP BUTTONS
            ======================================== */
 
-        #codeBox {
+        #topButtons {
 
-            width: 100%;
+            position: absolute;
 
-            padding: 18px;
+            left: 668px;
+            top: 7px;
 
-            box-sizing: border-box;
+            width: 153px;
+            height: 45px;
 
-            background-color: #222222;
+            display: flex;
 
-            border: 2px solid #555555;
+            align-items: center;
 
-            border-radius: 8px;
-
-            text-align: center;
-
-            font-size: 28px;
-
-            font-weight: bold;
-
-            letter-spacing: 4px;
-
-            color: #BEFF8F;
+            gap: 4px;
         }
 
 
-        #copyCodeButton {
+        #topButtons button {
 
-            width: 100%;
+            height: 45px;
+
+            background-color: #545454;
+
+            color: #ffffff;
+
+            border: 2px solid #000000;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            font-size: 11px;
+        }
+
+
+        #topButtons button:hover {
+
+            background-color: #707070;
+        }
+
+
+        /* ========================================
+           DIRECT MESSAGE BUTTON
+           ======================================== */
+
+        #dmButton {
+
+            width: 52px;
+
+            padding: 3px;
+        }
+
+
+        /* ========================================
+           FRIENDS BUTTON
+           ======================================== */
+
+        #friendsButton {
+
+            width: 35px;
+
+            padding: 4px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        #friendsButton img {
+
+            width: 24px;
+            height: 24px;
+
+            object-fit: contain;
+        }
+
+
+        /* ========================================
+           ID BUTTON
+           ======================================== */
+
+        #idButton {
+
+            width: 35px;
+
+            padding: 3px;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+        }
+
+
+        .idRevealed {
+
+            background-color: #ffffff !important;
+
+            color: #000000 !important;
+        }
+
+
+        /* ========================================
+           PROFILE BUTTON
+           ======================================== */
+
+        #profileButton {
+
+            width: 35px;
+
+            padding: 3px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        #profileButton img {
+
+            width: 27px;
+            height: 27px;
+
+            object-fit: contain;
+        }
+
+
+        /* ========================================
+           DIRECT MESSAGE POPUP
+           ======================================== */
+
+        #dmArea {
+
+            position: absolute;
+
+            left: 622px;
+            top: 119px;
+
+            width: 200px;
+            height: 290px;
+
+            background-color: #181818;
+
+            border: 2px solid #444444;
+
+            border-radius: 10px;
 
             padding: 10px;
 
-            box-sizing: border-box;
+            z-index: 50;
 
-            background-color: #444444;
+            display: none;
 
-            color: #ffffff;
+            overflow-y: auto;
 
-            border: 2px solid #666666;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+        }
 
-            border-radius: 8px;
 
-            font-size: 15px;
+        #dmArea.open {
+
+            display: block;
+
+            animation: dmSlideDown 0.18s ease-out;
+        }
+
+
+        @keyframes dmSlideDown {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(-10px);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0);
+            }
+
+        }
+
+
+        .dmTitle {
+
+            font-size: 14px;
 
             font-weight: bold;
 
-            cursor: pointer;
+            color: #aaaaaa;
+
+            margin-bottom: 10px;
         }
 
 
-        #copyCodeButton:hover {
+        .dmEmpty {
 
-            background-color: #ffffff;
-            color: #000000;
-        }
+            color: #777777;
 
+            font-size: 13px;
 
-        #copyCodeButton:active {
+            text-align: center;
 
-            background-color: #00ffee;
-            color: #ffffff;
+            margin-top: 25px;
         }
 
 
         /* ========================================
-           GENERATE BUTTON
+           JOIN ROOM
            ======================================== */
 
-        #generateButton {
+        #joinSection {
 
-            width: 100%;
+            position: absolute;
 
-            padding: 12px;
+            left: 35px;
+            top: 210px;
 
-            box-sizing: border-box;
+            width: 117px;
+            height: auto;
 
-            border-radius: 8px;
+            display: flex;
 
-            font-size: 16px;
+            flex-direction: column;
 
-            font-weight: bold;
+            gap: 8px;
+        }
 
-            cursor: pointer;
+
+        #joinButton {
+
+            width: 117px;
+            height: 45px;
+
+            padding: 0;
 
             background-color: #BEFF8F;
 
             color: #000000;
 
             border: 2px solid #000000;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            cursor: pointer;
         }
 
 
-        #generateButton:hover {
+        #joinButton:hover {
 
             background-color: #8FFF3D;
         }
 
 
-        /* ========================================
-           MUTE / UNMUTE BUTTON
-           ======================================== */
-
-        #muteButton {
-
-            width: 20%;
-
-            padding: 12px;
-
-            box-sizing: border-box;
-
-            border-radius: 8px;
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            background-color: #606060;
-
-            color: #ffffff;
-
-            border: 2px solid #777777;
-        }
-
-
-        #muteButton:hover {
-
-            background-color: #808080;
-
-            color: #000000;
-
-            border: 2px solid #ffffff;
-        }
-
-
-        #muteButton img {
-
-            width: 25px;
-
-            height: 25px;
-
-            display: block;
-
-            margin: auto;
-        }
-
-
-        /* ========================================
-           DIVIDER
-           ======================================== */
-
-        #divider {
-
-            width: 100%;
-
-            height: 1px;
-
-            margin: 15px 0;
-
-            background-color: #444444;
-        }
-
-
-        /* ========================================
-           CODE INPUT
-           ======================================== */
-
         #codeInput {
 
-            width: 100%;
+            width: 117px;
 
-            padding: 13px;
+            height: 38px;
 
-            box-sizing: border-box;
+            padding: 5px;
 
             background-color: #222222;
 
@@ -304,11 +384,11 @@
 
             border-radius: 8px;
 
-            font-size: 18px;
-
             text-align: center;
 
             outline: none;
+
+            font-size: 12px;
         }
 
 
@@ -318,53 +398,186 @@
         }
 
 
-        /* ========================================
-           JOIN BUTTON
-           ======================================== */
-
-        #joinButton {
-
-            width: 100%;
-
-            padding: 12px;
-
-            box-sizing: border-box;
-
-            border-radius: 8px;
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            background-color: #444444;
-
-            color: #ffffff;
-
-            border: 2px solid #666666;
-        }
-
-
-        #joinButton:hover {
-
-            background-color: #555555;
-        }
-
-
-        /* ========================================
-           STATUS
-           ======================================== */
-
         #status {
+
+            width: 117px;
 
             min-height: 20px;
 
             color: #aaaaaa;
 
-            font-size: 14px;
+            font-size: 11px;
 
             text-align: center;
+        }
+
+
+        /* ========================================
+           SAVED ROOMS
+           ======================================== */
+
+        #savedRooms {
+
+            position: absolute;
+
+            left: 35px;
+            top: 270px;
+
+            width: 220px;
+            height: 300px;
+
+            background-color: #181818;
+
+            border: 2px solid #444444;
+
+            border-radius: 10px;
+
+            padding: 10px;
+
+            overflow-y: auto;
+        }
+
+
+        .savedRoomsTitle {
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            color: #aaaaaa;
+
+            margin-bottom: 8px;
+        }
+
+
+        #savedRoomList {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+        }
+
+
+        .savedRoom {
+
+            width: 100%;
+
+            min-height: 38px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+        }
+
+
+        .savedRoomJoin {
+
+            flex: 1;
+
+            height: 38px;
+
+            padding: 5px 8px;
+
+            background-color: #303030;
+
+            color: #ffffff;
+
+            border: 1px solid #555555;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            overflow: hidden;
+        }
+
+
+        .savedRoomJoin:hover {
+
+            background-color: #404040;
+        }
+
+
+        .savedRoomName {
+
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+
+        .savedRoomCode {
+
+            display: block;
+
+            font-size: 9px;
+
+            color: #888888;
+
+            margin-top: 2px;
+        }
+
+
+        .editRoomButton {
+
+            width: 30px;
+            height: 30px;
+
+            padding: 5px;
+
+            background-color: #303030;
+
+            border: 1px solid #555555;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .editRoomButton:hover {
+
+            background-color: #444444;
+        }
+
+
+        .editRoomButton img {
+
+            width: 17px;
+            height: 17px;
+
+            object-fit: contain;
+        }
+
+
+        .noRooms {
+
+            color: #666666;
+
+            font-size: 12px;
+
+            text-align: center;
+
+            margin-top: 25px;
         }
 
 
@@ -374,27 +587,31 @@
 
         #chat {
 
-            display: none;
+            position: absolute;
 
-            width: 100%;
+            left: 267px;
+            top: 210px;
+
+            width: 420px;
+            height: 350px;
+
+            display: flex;
 
             flex-direction: column;
 
-            gap: 10px;
+            gap: 8px;
         }
 
 
         /* ========================================
-           MESSAGES BOX
+           MESSAGES
            ======================================== */
 
         #messages {
 
-            width: 100%;
+            width: 420px;
 
-            height: 300px;
-
-            box-sizing: border-box;
+            height: 305px;
 
             padding: 12px;
 
@@ -414,14 +631,6 @@
         }
 
 
-        #logo {
-
-            width: 150px;
-
-            height: auto;
-        }
-
-
         /* ========================================
            MESSAGE
            ======================================== */
@@ -438,10 +647,6 @@
         }
 
 
-        /* ========================================
-           YOUR MESSAGE
-           ======================================== */
-
         .messageMine {
 
             align-self: flex-end;
@@ -452,10 +657,6 @@
         }
 
 
-        /* ========================================
-           OTHER MESSAGE
-           ======================================== */
-
         .messageOther {
 
             align-self: flex-start;
@@ -463,6 +664,28 @@
             background-color: #444444;
 
             color: #ffffff;
+        }
+
+
+        /* ========================================
+           SYSTEM MESSAGE
+           ======================================== */
+
+        .systemMessage {
+
+            align-self: flex-start;
+
+            color: #000000;
+
+            background-color: #FFE658;
+
+            font-size: 13px;
+
+            padding: 15px;
+
+            margin: 5px 0;
+
+            border-radius: 8px;
         }
 
 
@@ -476,21 +699,19 @@
 
             gap: 8px;
 
-            width: 100%;
+            width: 420px;
+
+            height: 42px;
         }
 
-
-        /* ========================================
-           MESSAGE INPUT
-           ======================================== */
 
         #messageInput {
 
             flex: 1;
 
-            padding: 11px;
+            height: 42px;
 
-            box-sizing: border-box;
+            padding: 11px;
 
             background-color: #222222;
 
@@ -502,7 +723,7 @@
 
             outline: none;
 
-            font-size: 16px;
+            font-size: 14px;
         }
 
 
@@ -521,269 +742,294 @@
             display: flex;
 
             gap: 8px;
+
+            height: 42px;
         }
 
 
-        /* ========================================
-           IMAGE BUTTON
-           ======================================== */
-
-            #imageButton {
-                width: 50px;
-                height: 42px;
-            
-                padding: 0;
-            
-                background-color: #444444;
-                color: #ffffff;
-            
-                border: 2px solid #666666;
-                border-radius: 8px;
-            
-                cursor: pointer;
-            
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            #imageButton:hover {
-                background-color: #555555;
-            }
-            
-            #imageButton img {
-                width: 32px;
-                height: 32px;
-                display: block;
-            }
-
-
-        /* ========================================
-           SEND BUTTON
-           ======================================== */
-
+        #imageButton,
         #sendButton {
+
             width: 50px;
             height: 42px;
-        
+
             padding: 0;
-        
-            background-color: #BEFF8F;
-            color: #000000;
-        
-            border: 2px solid #000000;
+
             border-radius: 8px;
-        
-            font-weight: bold;
+
             cursor: pointer;
-        
+
             display: flex;
+
             align-items: center;
             justify-content: center;
         }
-        
+
+
+        #imageButton {
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+        }
+
+
+        #imageButton:hover {
+
+            background-color: #555555;
+        }
+
+
+        #sendButton {
+
+            background-color: #BEFF8F;
+
+            color: #000000;
+
+            border: 2px solid #000000;
+        }
+
+
         #sendButton:hover {
+
             background-color: #8FFF3D;
         }
-        
+
+
+        #imageButton img,
         #sendButton img {
-            width: 32px;
-            height: 32px;
-            display: block;
-        }
 
+            width: 30px;
+            height: 30px;
 
-
-        /* ========================================
-           ID BUTTON
-           ======================================== */
-
-        #topButtons {
-            position: fixed;
-        
-            top: 20px;
-            right: 70px;
-        
-            display: flex;
-        
-            align-items: center;
-        
-            gap: 15px;
-        }
-        
-        
-        #idButton {
-            padding: 11px 18px;
-        
-            background-color: #545454;
-        
-            color: #ffffff;
-        
-            border: 4px solid #000000;
-        
-            border-radius: 8px;
-        
-            font-weight: bold;
-        
-            cursor: pointer;
-        }
-        
-        
-        #idButton:hover {
-            background-color: #212121;
-        }
-        
-        
-        .idRevealed {
-            background-color: #ffffff;
-            color: #000000;
-        }
-        
-        
-        /* ========================================
-           PROFILE BUTTON
-           ======================================== */
-        
-        #profileButton {
-        
-            width: 48px;
-            height: 48px;
-        
-            padding: 5px;
-        
-            background-color: #545454;
-        
-            border: 4px solid #000000;
-        
-            border-radius: 50%;
-        
-            cursor: pointer;
-        
-            display: flex;
-        
-            align-items: center;
-            justify-content: center;
-        
-            overflow: hidden;
-        }
-        
-        
-        #profileButton:hover {
-            background-color: #212121;
-        }
-        
-        
-        #profileButton img {
-        
-            width: 36px;
-            height: 36px;
-        
             object-fit: contain;
-        
-            display: block;
         }
 
 
+        /* ========================================
+           MUTE
+           ======================================== */
 
-     /* IMAGE UPLOAD LOADING MESSGE */
-        
-        .imageLoadingMessage {
-            align-self: flex-end;
-        
+        #muteButton {
+
+            position: absolute;
+
+            left: 705px;
+            top: 430px;
+
+            width: 45px;
+            height: 42px;
+
+            padding: 5px;
+
             background-color: #444444;
-        
+
+            border: 2px solid #666666;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+        }
+
+
+        #muteButton img {
+
+            width: 25px;
+            height: 25px;
+        }
+
+
+        /* ========================================
+           HIDDEN FILE INPUT
+           ======================================== */
+
+        #imageInput {
+
+            display: none;
+        }
+
+
+        /* ========================================
+           IMAGE LOADING
+           ======================================== */
+
+        .imageLoadingMessage {
+
+            align-self: flex-end;
+
+            background-color: #444444;
+
             border-radius: 12px;
-        
+
             padding: 0;
-        
+
             display: flex;
-        
+
             align-items: center;
-        
             justify-content: center;
-        
+
             overflow: hidden;
-        
+
             position: relative;
         }
-        
-        
-        /* LOADING SPINNER */
-        
+
+
         .imageLoadingSpinner {
-        
+
             width: 32px;
-        
+
             height: 32px;
-        
+
             border: 4px solid #777777;
-        
+
             border-top: 4px solid #ffffff;
-        
+
             border-radius: 50%;
-        
+
             animation: imageLoadingSpin 0.8s linear infinite;
         }
-        
-        
+
+
         @keyframes imageLoadingSpin {
-        
+
             from {
                 transform: rotate(0deg);
             }
-        
+
             to {
                 transform: rotate(360deg);
             }
-        
+
         }
-        
-        
+
+
         /* ========================================
-           ERROR POPUP
+           UPLOAD ERROR
            ======================================== */
-        
+
         .uploadError {
-        
+
             position: fixed;
-        
+
             left: 50%;
-        
+
             bottom: 30px;
-        
+
             transform: translateX(-50%);
-        
+
             background-color: #444444;
-        
+
             color: #ffffff;
-        
+
             border: 2px solid #666666;
-        
+
             border-radius: 8px;
-        
+
             padding: 12px 20px;
-        
+
             font-size: 14px;
-        
+
             font-weight: bold;
-        
+
             z-index: 9999;
-        
+
             opacity: 1;
-        
+
             transition: opacity 0.3s ease;
         }
-        
-        
+
+
         .uploadError.hide {
-        
+
             opacity: 0;
-        
         }
 
 
+        /* ========================================
+           GENERATED ROOM AREA
+           ======================================== */
 
-        
+        #generatedRoom {
+
+            position: absolute;
+
+            left: 35px;
+            top: 20px;
+
+            width: 220px;
+
+            display: none;
+        }
+
+
+        #generatedRoom.visible {
+
+            display: block;
+        }
+
+
+        #codeBox {
+
+            width: 100%;
+
+            padding: 10px;
+
+            background-color: #222222;
+
+            border: 2px solid #555555;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            letter-spacing: 3px;
+
+            color: #BEFF8F;
+        }
+
+
+        #copyCodeButton,
+        #generateButton {
+
+            width: 100%;
+
+            padding: 8px;
+
+            margin-top: 5px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        #copyCodeButton {
+
+            background-color: #444444;
+
+            color: #ffffff;
+
+            border: 2px solid #666666;
+        }
+
+
+        #generateButton {
+
+            background-color: #BEFF8F;
+
+            color: #000000;
+
+            border: 2px solid #000000;
+        }
+
 
     </style>
 
@@ -793,231 +1039,612 @@
 <body>
 
 
-    <main id="main">
-
-        <div id="container">
+<main id="main">
 
 
-            <!-- ========================================
-                 TITLE
-                 ======================================== -->
+    <!-- ========================================
+         LOGO
+         ======================================== -->
+
+    <img
+        id="logo"
+        src="logo.png"
+        alt="Messagr"
+    >
+
+
+    <!-- ========================================
+         TITLE
+         ======================================== -->
+
+    <h1 id="title">
+        Messagr
+    </h1>
+
+
+    <!-- ========================================
+         TOP BUTTONS
+         ======================================== -->
+
+    <div id="topButtons">
+
+
+        <button id="dmButton">
+            Direct<br>Messages
+        </button>
+
+
+        <button id="friendsButton">
 
             <img
-                id="logo"
-                src="logo.png"
-                alt="Private Messenger Logo"
+                src="friends-icon.png"
+                alt="Friends"
             >
 
-
-            <h1 id="title">
-                Messagr
-            </h1>
+        </button>
 
 
-            <p id="subtitle">
-                Private messaging for cautious users
-            </p>
+        <button id="idButton">
+            Your ID
+        </button>
 
 
+        <button id="profileButton">
+
+            <img
+                src="profile-icon.png"
+                alt="Profile"
+            >
+
+        </button>
 
 
-            <!-- ========================================
-                 GENERATED CODE
-                 ======================================== -->
+    </div>
 
-            <div id="codeBox">
-                ----
+
+    <!-- ========================================
+         DIRECT MESSAGE POPUP
+         ======================================== -->
+
+    <div id="dmArea">
+
+        <div class="dmTitle">
+            Direct Messages
+        </div>
+
+        <div
+            id="dmList"
+            class="dmEmpty"
+        >
+            No friends yet.
+        </div>
+
+    </div>
+
+
+    <!-- ========================================
+         JOIN ROOM
+         ======================================== -->
+
+    <section id="joinSection">
+
+
+        <button id="joinButton">
+            JOIN ROOM
+        </button>
+
+
+        <input
+            id="codeInput"
+            type="text"
+            placeholder="Room Code"
+            maxlength="9"
+            autocomplete="off"
+        >
+
+
+        <div id="status"></div>
+
+
+    </section>
+
+
+    <!-- ========================================
+         SAVED ROOMS
+         ======================================== -->
+
+    <section id="savedRooms">
+
+        <div class="savedRoomsTitle">
+            Saved Rooms
+        </div>
+
+
+        <div id="savedRoomList">
+
+            <div class="noRooms">
+                No saved rooms yet.
             </div>
 
+        </div>
 
-            <button id="copyCodeButton">
-                COPY ROOM CODE
-            </button>
-
-
-            <button id="generateButton">
-                GENERATE MESSAGE CODE
-            </button>
+    </section>
 
 
-            <!-- ========================================
-                 ID BUTTON
-                 ======================================== -->
+    <!-- ========================================
+         CHAT
+         ======================================== -->
 
-            <div id="topButtons">
-
-                <button id="idButton">
-                    Your ID
-                </button>
-            
-                <button id="profileButton">
-                    <img
-                        src="profile-icon.png"
-                        alt="Profile"
-                    >
-                </button>
-            
-            </div>
+    <section id="chat">
 
 
-            <!-- ========================================
-                 MUTE BUTTON
-                 ======================================== -->
-
-            <button id="muteButton">
-
-                <img
-                    id="muteIcon"
-                    src="unmute.png"
-                    alt="Mute"
-                >
-
-            </button>
+        <div id="messages"></div>
 
 
-            <!-- ========================================
-                 DIVIDER
-                 ======================================== -->
+        <div id="messageRow">
 
-            <div id="divider"></div>
-
-
-            <!-- ========================================
-                 JOIN
-                 ======================================== -->
 
             <input
-                id="codeInput"
+                id="messageInput"
                 type="text"
-                placeholder="Enter Message Code"
-                maxlength="9"
+                placeholder="Type a message..."
                 autocomplete="off"
             >
 
 
-            <button id="joinButton">
-                JOIN
-            </button>
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/png, image/jpeg, image/gif, image/webp"
+                hidden
+            >
 
 
-            <div id="status"></div>
+            <div class="messageControls">
 
 
-            <!-- ========================================
-                 CHAT
-                 ======================================== -->
+                <button id="imageButton">
 
-            <div id="chat">
-
-                <div id="messages"></div>
-
-
-                <!-- MESSAGE ROW -->
-
-                <div id="messageRow">
-
-                    <input
-                        id="messageInput"
-                        type="text"
-                        placeholder="Type a message..."
-                        autocomplete="off"
+                    <img
+                        src="image.png"
+                        alt="Upload Image"
                     >
 
+                </button>
 
-                    <!-- HIDDEN IMAGE FILE PICKER -->
 
-                    <input
-                        type="file"
-                        id="imageInput"
-                        accept="image/png, image/jpeg, image/gif, image/webp"
-                        hidden
+                <button id="sendButton">
+
+                    <img
+                        src="send.png"
+                        alt="Send Message"
                     >
 
+                </button>
 
-                    <div class="messageControls">
-
-                        <button id="imageButton">
-                            <img src="image.png" alt="Upload Image">
-                        </button>
-
-
-                        <button id="sendButton">
-                            <img src="send.png" alt="Send Message">
-                        </button>
-
-                    </div>
-
-                </div>
 
             </div>
 
 
         </div>
 
-    </main>
+
+    </section>
 
 
     <!-- ========================================
-         SOCKET.IO
+         MUTE
          ======================================== -->
 
-    <script src="/socket.io/socket.io.js"></script>
+    <button id="muteButton">
+
+        <img
+            id="muteIcon"
+            src="unmute.png"
+            alt="Mute"
+        >
+
+    </button>
 
 
     <!-- ========================================
-         MESSAGR ID
+         GENERATED ROOM
          ======================================== -->
 
-    <script>
-
-        const messagrID =
-            localStorage.getItem("messagrID");
+    <section id="generatedRoom">
 
 
-        const idButton =
-            document.getElementById("idButton");
+        <div id="codeBox">
+            ----
+        </div>
 
 
-        idButton.addEventListener(
-            "click",
-            () => {
-
-                idButton.classList.toggle(
-                    "idRevealed"
-                );
+        <button id="copyCodeButton">
+            COPY ROOM CODE
+        </button>
 
 
-                if (
-                    idButton.classList.contains(
-                        "idRevealed"
-                    )
-                ) {
+        <button id="generateButton">
+            GENERATE ROOM CODE
+        </button>
 
-                    idButton.textContent =
-                        messagrID;
 
-                } else {
+    </section>
 
-                    idButton.textContent =
-                        "Your ID";
 
-                }
+</main>
 
-            }
+
+<!-- ========================================
+     SOCKET.IO
+     ======================================== -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+
+<!-- ========================================
+     YOUR ID
+     ======================================== -->
+
+<script>
+
+const messagrID =
+    localStorage.getItem("messagrID");
+
+
+const idButton =
+    document.getElementById("idButton");
+
+
+idButton.addEventListener(
+    "click",
+    () => {
+
+        idButton.classList.toggle(
+            "idRevealed"
         );
 
-    </script>
+
+        if (
+            idButton.classList.contains(
+                "idRevealed"
+            )
+        ) {
+
+            idButton.textContent =
+                messagrID || "No ID";
+
+        } else {
+
+            idButton.textContent =
+                "Your ID";
+
+        }
+
+    }
+);
 
 
-    <!-- ========================================
-         MAIN JAVASCRIPT
-         ======================================== -->
-
-    <script src="script.js"></script>
+</script>
 
 
-    <script src="/socket.io/socket.io.js"></script>
+<!-- ========================================
+     DIRECT MESSAGES
+     ======================================== -->
+
+<script>
+
+const dmButton =
+    document.getElementById("dmButton");
+
+
+const dmArea =
+    document.getElementById("dmArea");
+
+
+dmButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        dmArea.classList.toggle("open");
+
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !dmArea.contains(event.target) &&
+            event.target !== dmButton
+        ) {
+
+            dmArea.classList.remove("open");
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+<!-- ========================================
+     SAVED ROOMS
+     ======================================== -->
+
+<script>
+
+const savedRoomList =
+    document.getElementById("savedRoomList");
+
+
+function getSavedRooms() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem("messagrRooms") || "[]"
+        );
+
+    } catch {
+
+        return [];
+
+    }
+
+}
+
+
+function saveRooms(rooms) {
+
+    localStorage.setItem(
+        "messagrRooms",
+        JSON.stringify(rooms)
+    );
+
+}
+
+
+function renderSavedRooms() {
+
+    const rooms =
+        getSavedRooms();
+
+
+    savedRoomList.innerHTML =
+        "";
+
+
+    if (
+        rooms.length === 0
+    ) {
+
+        savedRoomList.innerHTML =
+            '<div class="noRooms">No saved rooms yet.</div>';
+
+        return;
+
+    }
+
+
+    rooms.forEach(
+        function(room, index) {
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "savedRoom";
+
+
+            const join =
+                document.createElement("button");
+
+            join.className =
+                "savedRoomJoin";
+
+
+            const name =
+                document.createElement("span");
+
+            name.className =
+                "savedRoomName";
+
+            name.textContent =
+                room.name || "Unnamed Room";
+
+
+            const code =
+                document.createElement("span");
+
+            code.className =
+                "savedRoomCode";
+
+            code.textContent =
+                room.code;
+
+
+            join.appendChild(name);
+
+            join.appendChild(code);
+
+
+            join.addEventListener(
+                "click",
+                function() {
+
+                    document.getElementById(
+                        "codeInput"
+                    ).value = room.code;
+
+                    document.getElementById(
+                        "joinButton"
+                    ).click();
+
+                }
+            );
+
+
+            const edit =
+                document.createElement("button");
+
+            edit.className =
+                "editRoomButton";
+
+
+            const editImage =
+                document.createElement("img");
+
+            editImage.src =
+                "edit.png";
+
+            editImage.alt =
+                "Edit";
+
+
+            edit.appendChild(
+                editImage
+            );
+
+
+            edit.addEventListener(
+                "click",
+                function(event) {
+
+                    event.stopPropagation();
+
+
+                    const newName =
+                        prompt(
+                            "Enter a new name for this room:",
+                            room.name
+                        );
+
+
+                    if (
+                        newName === null
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    room.name =
+                        newName.trim() ||
+                        "Unnamed Room";
+
+
+                    rooms[index] =
+                        room;
+
+
+                    saveRooms(rooms);
+
+                    renderSavedRooms();
+
+                }
+            );
+
+
+            row.appendChild(join);
+
+            row.appendChild(edit);
+
+
+            savedRoomList.appendChild(row);
+
+        }
+    );
+
+}
+
+
+renderSavedRooms();
+
+
+/* ========================================
+   SAVE A ROOM WHEN JOINING
+   ======================================== */
+
+const joinButton =
+    document.getElementById("joinButton");
+
+
+joinButton.addEventListener(
+    "click",
+    function() {
+
+        const code =
+            document.getElementById(
+                "codeInput"
+            ).value.trim().toUpperCase();
+
+
+        if (
+            !code
+        ) {
+
+            return;
+
+        }
+
+
+        let rooms =
+            getSavedRooms();
+
+
+        const existing =
+            rooms.find(
+                room =>
+                    room.code === code
+            );
+
+
+        if (
+            !existing
+        ) {
+
+            rooms.unshift(
+                {
+                    code: code,
+                    name: "Room " + code
+                }
+            );
+
+        }
+
+
+        /* Maximum of 25 rooms */
+
+        rooms =
+            rooms.slice(0, 25);
+
+
+        saveRooms(rooms);
+
+        renderSavedRooms();
+
+    }
+);
+
+
+</script>
+
+
+<!-- ========================================
+     MAIN JAVASCRIPT
+     ======================================== -->
+
+<script src="script.js"></script>
 
 
 </body>
+
 </html>
