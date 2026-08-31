@@ -2175,63 +2175,41 @@ async function registerNotificationSystem(
 
 function sendMessage() {
 
-    if (
-        imageUploadInProgress
-    ) {
-
+    if (imageUploadInProgress) {
         return;
-
     }
-
 
     if (!messageInput) {
-
         return;
-
     }
-
 
     const text =
         messageInput.value.trim();
 
-
-    if (
-        text.length === 0
-    ) {
-
+    if (text.length === 0) {
         return;
-
     }
 
-
-    if (
-        !socket.connected
-    ) {
+    if (!socket.connected) {
 
         if (status) {
-
             status.textContent =
                 "Not connected to server.";
-
         }
 
         return;
-        audio.play(messageSentSound);
-
     }
-
 
     socket.emit(
         "sendMessage",
         text
     );
 
+    messageSentSound.currentTime = 0;
+    messageSentSound.play().catch(function() {});
 
-    messageInput.value =
-        "";
-
+    messageInput.value = "";
 }
-
 
 if (sendButton) {
 
