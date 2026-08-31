@@ -195,6 +195,78 @@ if (muteButton) {
 }
 
 
+
+/* ========================================
+   SAVE CHAT BUTTON
+   ======================================== */
+
+const saveChatButton =
+    document.getElementById("saveChatButton");
+
+
+if (saveChatButton) {
+
+    saveChatButton.addEventListener(
+        "click",
+        function() {
+
+            if (!socket.connected) {
+
+                return;
+
+            }
+
+
+            const code =
+                codeInput.value
+                    .trim()
+                    .toUpperCase();
+
+
+            if (!code) {
+
+                return;
+
+            }
+
+
+            const savedChats =
+                JSON.parse(
+                    localStorage.getItem(
+                        "messagrSavedChats"
+                    ) || "[]"
+                );
+
+
+            const alreadySaved =
+                savedChats.includes(code);
+
+
+            if (!alreadySaved) {
+
+                savedChats.push(code);
+
+                localStorage.setItem(
+                    "messagrSavedChats",
+                    JSON.stringify(savedChats)
+                );
+
+
+                saveChatButton.textContent =
+                    "Delete Chat";
+
+                saveChatButton.classList.add(
+                    "delete"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
 /* ========================================
    PROFILE BUTTON
    ======================================== */
