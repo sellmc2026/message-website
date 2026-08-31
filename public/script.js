@@ -107,6 +107,56 @@ const profileButton =
     document.getElementById("profileButton");
 
 
+/*
+   NEW GENERATE ROOM BUTTON
+
+   This expects the HTML button to have:
+
+   id="generateRoomButton"
+
+   If it does not exist yet, the script
+   will create it automatically.
+*/
+
+let generateRoomButton =
+    document.getElementById(
+        "generateRoomButton"
+    );
+
+
+/* ========================================
+   CREATE GENERATE BUTTON IF NEEDED
+   ======================================== */
+
+if (
+    !generateRoomButton &&
+    codeInput
+) {
+
+    generateRoomButton =
+        document.createElement("button");
+
+
+    generateRoomButton.id =
+        "generateRoomButton";
+
+
+    generateRoomButton.textContent =
+        "Generate";
+
+
+    /*
+       Put the button inside the same
+       parent as the room code input.
+    */
+
+    codeInput.parentElement.appendChild(
+        generateRoomButton
+    );
+
+}
+
+
 /* ========================================
    SAVED USERNAME
    ======================================== */
@@ -141,28 +191,32 @@ const audio =
     new Audio("chatSound.mp3");
 
 
-muteButton.addEventListener(
-    "click",
-    function() {
+if (muteButton) {
 
-        muted =
-            !muted;
+    muteButton.addEventListener(
+        "click",
+        function() {
+
+            muted =
+                !muted;
 
 
-        if (muted) {
+            if (muted) {
 
-            muteIcon.src =
-                "mute.png";
+                muteIcon.src =
+                    "mute.png";
 
-        } else {
+            } else {
 
-            muteIcon.src =
-                "unmute.png";
+                muteIcon.src =
+                    "unmute.png";
+
+            }
 
         }
+    );
 
-    }
-);
+}
 
 
 /* ========================================
@@ -185,7 +239,7 @@ if (profileButton) {
 
 
 /* ========================================
-   GENERATE MESSAGE CODE
+   ROOM CODE GENERATOR
    ======================================== */
 
 function generateCode() {
@@ -223,82 +277,321 @@ function generateCode() {
 }
 
 
-generateButton.addEventListener(
-    "click",
-    function() {
+/* ========================================
+   ROOM CODE VALIDATION
+   ======================================== */
 
-        const code =
-            generateCode();
+/*
+   A valid Messagr room code is:
+
+   XXXX-XXXX
+
+   Where each X is one of:
+
+   A-Z
+   2-9
+
+   The letters I and O are excluded,
+   just like generated room codes.
+*/
+
+function isValidRoomCode(code) {
+
+    return /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(
+        code
+    );
+
+}
 
 
-        codeBox.textContent =
-            code;
+/* ========================================
+   UPDATE JOIN BUTTON
+   ======================================== */
 
+function updateJoinButton() {
 
-        codeInput.value =
-            code;
+    if (!joinButton) {
 
-
-        status.textContent =
-            "Code generated.";
+        return;
 
     }
-);
+
+
+    const code =
+        codeInput.value
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        isValidRoomCode(code)
+    ) {
+
+        /*
+           VALID CODE
+
+           Blue button
+        */
+
+        joinButton.style.backgroundColor =
+            "#4DA6FF";
+
+        joinButton.style.borderColor =
+            "#000000";
+
+        joinButton.style.color =
+            "#000000";
+
+        joinButton.dataset.valid =
+            "true";
+
+    } else {
+
+        /*
+           INVALID / EMPTY CODE
+
+           Original green button
+        */
+
+        joinButton.style.backgroundColor =
+            "#BEFF8F";
+
+        joinButton.style.borderColor =
+            "#000000";
+
+        joinButton.style.color =
+            "#000000";
+
+        joinButton.dataset.valid =
+            "false";
+
+    }
+
+}
+
+
+/* ========================================
+   FORMAT ROOM CODE WHILE TYPING
+   ======================================== */
+
+if (codeInput) {
+
+    codeInput.addEventListener(
+        "input",
+        function() {
+
+            let value =
+                codeInput.value
+                    .toUpperCase()
+                    .replace(
+                        /[^A-HJ-NP-Z2-9]/g,
+                        ""
+                    );
+
+
+            /*
+               Maximum of 8 actual
+               room-code characters.
+            */
+
+            value =
+                value.substring(
+                    0,
+                    8
+                );
+
+
+            /*
+               Automatically add the dash
+               after four characters.
+            */
+
+            if (
+                value.length > 4
+            ) {
+
+                value =
+                    value.substring(0, 4)
+                    + "-"
+                    + value.substring(4);
+
+            }
+
+
+            codeInput.value =
+                value;
+
+
+            updateJoinButton();
+
+
+            /*
+               Clear old status text while
+               the user is typing.
+            */
+
+            if (
+                status &&
+                value.length > 0
+            ) {
+
+                if (
+                    isValidRoomCode(value)
+                ) {
+
+                    status.textContent =
+                        "Valid room code.";
+
+                } else {
+
+                    status.textContent =
+                        "Enter a valid room code.";
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ========================================
+   GENERATE NEW ROOM BUTTON
+   ======================================== */
+
+if (generateRoomButton) {
+
+    generateRoomButton.addEventListener(
+        "click",
+        function() {
+
+            const code =
+                generateCode();
+
+
+            codeInput.value =
+                code;
+
+
+            updateJoinButton();
+
+
+            if (status) {
+
+                status.textContent =
+                    "New room code generated.";
+
+            }
+
+
+            codeInput.focus();
+
+        }
+    );
+
+}
+
+
+/* ========================================
+   INITIAL ROOM CODE STATE
+   ======================================== */
+
+updateJoinButton();
+
+
+/* ========================================
+   OLD GENERATE BUTTON
+   ======================================== */
+
+if (generateButton) {
+
+    generateButton.addEventListener(
+        "click",
+        function() {
+
+            const code =
+                generateCode();
+
+
+            codeBox.textContent =
+                code;
+
+
+            codeInput.value =
+                code;
+
+
+            updateJoinButton();
+
+
+            status.textContent =
+                "Code generated.";
+
+        }
+    );
+
+}
 
 
 /* ========================================
    COPY MESSAGE CODE
    ======================================== */
 
-copyCodeButton.addEventListener(
-    "click",
-    async function() {
+if (copyCodeButton) {
 
-        const code =
-            codeBox.textContent;
+    copyCodeButton.addEventListener(
+        "click",
+        async function() {
+
+            const code =
+                codeBox.textContent;
 
 
-        if (
-            code === "----"
-        ) {
+            if (
+                code === "----"
+            ) {
 
-            return;
+                return;
+
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    code
+                );
+
+
+                copyCodeButton.textContent =
+                    "COPIED!";
+
+
+                setTimeout(
+                    function() {
+
+                        copyCodeButton.textContent =
+                            "COPY ROOM CODE";
+
+                    },
+                    1000
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Could not copy code:",
+                    error
+                );
+
+            }
 
         }
+    );
 
-
-        try {
-
-            await navigator.clipboard.writeText(
-                code
-            );
-
-
-            copyCodeButton.textContent =
-                "COPIED!";
-
-
-            setTimeout(
-                function() {
-
-                    copyCodeButton.textContent =
-                        "COPY ROOM CODE";
-
-                },
-                1000
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Could not copy code:",
-                error
-            );
-
-        }
-
-    }
-);
+}
 
 
 /* ========================================
@@ -317,6 +610,10 @@ joinButton.addEventListener(
                 .trim()
                 .toUpperCase();
 
+
+        /* ========================================
+           CHECK USERNAME
+           ======================================== */
 
         if (
             username.length === 0
@@ -342,19 +639,45 @@ joinButton.addEventListener(
         }
 
 
+        /* ========================================
+           CHECK ROOM CODE
+           ======================================== */
+
         if (
             code.length === 0
         ) {
 
             status.textContent =
-                "Enter a Message Code.";
+                "Enter a room code.";
 
             codeInput.focus();
+
+            updateJoinButton();
 
             return;
 
         }
 
+
+        if (
+            !isValidRoomCode(code)
+        ) {
+
+            status.textContent =
+                "Invalid room code.";
+
+            codeInput.focus();
+
+            updateJoinButton();
+
+            return;
+
+        }
+
+
+        /* ========================================
+           JOINING
+           ======================================== */
 
         status.textContent =
             "Joining " + code + "...";
