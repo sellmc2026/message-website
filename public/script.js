@@ -1,5 +1,6 @@
 const socket = io();
 
+
 /* ========================================
    LOCAL MESSAGR DATABASE
    ======================================== */
@@ -39,6 +40,7 @@ databaseRequest.onsuccess =
         messagrDB =
             event.target.result;
 
+
         console.log(
             "Messagr local database ready."
         );
@@ -64,44 +66,58 @@ databaseRequest.onerror =
 const codeBox =
     document.getElementById("codeBox");
 
+
 const copyCodeButton =
     document.getElementById("copyCodeButton");
+
 
 const generateButton =
     document.getElementById("generateButton");
 
+
 const codeInput =
     document.getElementById("codeInput");
+
 
 const joinButton =
     document.getElementById("joinButton");
 
+
 const status =
     document.getElementById("status");
+
 
 const chat =
     document.getElementById("chat");
 
+
 const messageInput =
     document.getElementById("messageInput");
+
 
 const sendButton =
     document.getElementById("sendButton");
 
+
 const messages =
     document.getElementById("messages");
+
 
 const muteButton =
     document.getElementById("muteButton");
 
+
 const muteIcon =
     document.getElementById("muteIcon");
+
 
 const imageInput =
     document.getElementById("imageInput");
 
+
 const imageButton =
     document.getElementById("imageButton");
+
 
 const mainProfileButton =
     document.getElementById("profileButton");
@@ -122,8 +138,10 @@ const savedUsername =
 let imageUploadInProgress =
     false;
 
+
 let imageUploadTimeout =
     null;
+
 
 let currentImageLoadingMessage =
     null;
@@ -188,12 +206,12 @@ if (mainProfileButton) {
 }
 
 
-
+/* ========================================
+   ROOM CODE
+   ======================================== */
 
 const roomCodeCharacters =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-
 
 
 function isValidRoomCode(code) {
@@ -203,8 +221,6 @@ function isValidRoomCode(code) {
     );
 
 }
-
-
 
 
 function generateCode() {
@@ -239,7 +255,9 @@ function generateCode() {
 }
 
 
-
+/* ========================================
+   UPDATE JOIN BUTTON
+   ======================================== */
 
 function updateJoinButton() {
 
@@ -253,8 +271,6 @@ function updateJoinButton() {
         isValidRoomCode(code)
     ) {
 
-       
-
         joinButton.style.backgroundColor =
             "#4DA6FF";
 
@@ -262,10 +278,6 @@ function updateJoinButton() {
             "#000000";
 
     } else {
-
-        /*
-           Empty/invalid = original green
-        */
 
         joinButton.style.backgroundColor =
             "#BEFF8F";
@@ -278,166 +290,49 @@ function updateJoinButton() {
 }
 
 
+/* ========================================
+   GENERATE NEW ROOM
+   ======================================== */
 
+if (generateButton) {
 
-
-let roomGenerateButton =
-    document.getElementById(
-        "roomGenerateButton"
-    );
-
-
-if (
-    !roomGenerateButton
-) {
-
-    roomGenerateButton =
-        document.createElement("button");
-
-
-    roomGenerateButton.id =
-        "roomGenerateButton";
-
-
-    roomGenerateButton.type =
-        "button";
-
-
-    roomGenerateButton.textContent =
-        "Generate";
-
-
-    document.body.appendChild(
-        roomGenerateButton
-    );
-
-
-    /*
-       Position it over the right side
-       of the room-code input.
-    */
-
-    roomGenerateButton.style.position =
-        "absolute";
-
-
-    roomGenerateButton.style.left =
-        "222px";
-
-
-    roomGenerateButton.style.top =
-        "163px";
-
-
-    roomGenerateButton.style.width =
-        "72px";
-
-
-    roomGenerateButton.style.height =
-        "32px";
-
-
-    roomGenerateButton.style.padding =
-        "0";
-
-
-    roomGenerateButton.style.backgroundColor =
-        "#4DA6FF";
-
-
-    roomGenerateButton.style.color =
-        "#ffffff";
-
-
-    roomGenerateButton.style.border =
-        "2px solid #000000";
-
-
-    roomGenerateButton.style.borderRadius =
-        "7px";
-
-
-    roomGenerateButton.style.fontSize =
-        "11px";
-
-
-    roomGenerateButton.style.fontWeight =
-        "bold";
-
-
-    roomGenerateButton.style.cursor =
-        "pointer";
-
-
-    roomGenerateButton.style.zIndex =
-        "10";
-
-
-    roomGenerateButton.addEventListener(
-        "mouseenter",
+    generateButton.addEventListener(
+        "click",
         function() {
 
-            roomGenerateButton.style.backgroundColor =
-                "#268FFF";
-
-        }
-    );
+            const code =
+                generateCode();
 
 
-    roomGenerateButton.addEventListener(
-        "mouseleave",
-        function() {
+            codeInput.value =
+                code;
 
-            roomGenerateButton.style.backgroundColor =
-                "#4DA6FF";
+
+            if (codeBox) {
+
+                codeBox.textContent =
+                    code;
+
+            }
+
+
+            updateJoinButton();
+
+
+            if (status) {
+
+                status.textContent =
+                    "New room code generated.";
+
+            }
+
+
+            codeInput.focus();
 
         }
     );
 
 }
-
-
-/* ========================================
-   GENERATE NEW ROOM
-   ======================================== */
-
-roomGenerateButton.addEventListener(
-    "click",
-    function() {
-
-        const code =
-            generateCode();
-
-
-        codeInput.value =
-            code;
-
-
-        /*
-           Keep the old codeBox updated too
-           in case another part of the page
-           still uses it.
-        */
-
-        if (codeBox) {
-
-            codeBox.textContent =
-                code;
-
-        }
-
-
-        updateJoinButton();
-
-
-        status.textContent =
-            "New room code generated.";
-
-
-        codeInput.focus();
-
-    }
-);
 
 
 /* ========================================
@@ -512,49 +407,6 @@ codeInput.addEventListener(
 
     }
 );
-
-
-/* ========================================
-   GENERATE BUTTON COMPATIBILITY
-   ======================================== */
-
-/*
-   If the old hidden generateButton exists,
-   keep it functional too.
-*/
-
-if (generateButton) {
-
-    generateButton.addEventListener(
-        "click",
-        function() {
-
-            const code =
-                generateCode();
-
-
-            if (codeBox) {
-
-                codeBox.textContent =
-                    code;
-
-            }
-
-
-            codeInput.value =
-                code;
-
-
-            updateJoinButton();
-
-
-            status.textContent =
-                "New room code generated.";
-
-        }
-    );
-
-}
 
 
 /* ========================================
@@ -633,9 +485,11 @@ joinButton.addEventListener(
     function() {
 
         const username =
-            (localStorage.getItem(
-                "messagrUsername"
-            ) || "").trim();
+            (
+                localStorage.getItem(
+                    "messagrUsername"
+                ) || ""
+            ).trim();
 
 
         const code =
@@ -717,16 +571,6 @@ joinButton.addEventListener(
             username
         );
 
-
-        /*
-           The server decides whether this room
-           already exists.
-
-           If it doesn't exist, the server should
-           create it.
-
-           If it does exist, we join it.
-        */
 
         socket.emit(
             "joinRoom",
@@ -949,7 +793,8 @@ async function registerNotificationSystem(
                             }
                         )
                     }
-                );
+                }
+            );
 
 
         if (
@@ -1210,8 +1055,10 @@ imageInput.addEventListener(
         messageInput.disabled =
             true;
 
+
         sendButton.disabled =
             true;
+
 
         imageButton.disabled =
             true;
@@ -1231,12 +1078,14 @@ imageInput.addEventListener(
                 let width =
                     preview.naturalWidth;
 
+
                 let height =
                     preview.naturalHeight;
 
 
                 const maxWidth =
                     250;
+
 
                 const maxHeight =
                     250;
@@ -1249,8 +1098,10 @@ imageInput.addEventListener(
                     const ratio =
                         maxWidth / width;
 
+
                     width =
                         maxWidth;
+
 
                     height =
                         height * ratio;
@@ -1265,8 +1116,10 @@ imageInput.addEventListener(
                     const ratio =
                         maxHeight / height;
 
+
                     height =
                         maxHeight;
+
 
                     width =
                         width * ratio;
@@ -1404,8 +1257,10 @@ imageInput.addEventListener(
                             messageInput.disabled =
                                 false;
 
+
                             sendButton.disabled =
                                 false;
+
 
                             imageButton.disabled =
                                 false;
@@ -1492,8 +1347,10 @@ imageInput.addEventListener(
                         messageInput.disabled =
                             false;
 
+
                         sendButton.disabled =
                             false;
+
 
                         imageButton.disabled =
                             false;
@@ -1525,8 +1382,10 @@ imageInput.addEventListener(
                 messageInput.disabled =
                     false;
 
+
                 sendButton.disabled =
                     false;
+
 
                 imageButton.disabled =
                     false;
@@ -1730,8 +1589,10 @@ socket.on(
             messageInput.disabled =
                 false;
 
+
             sendButton.disabled =
                 false;
+
 
             imageButton.disabled =
                 false;
@@ -1957,8 +1818,10 @@ socket.on(
             messageInput.disabled =
                 false;
 
+
             sendButton.disabled =
                 false;
+
 
             imageButton.disabled =
                 false;
