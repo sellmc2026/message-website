@@ -275,11 +275,11 @@ joinButton.addEventListener(
 
 
         if (
-            username.length > 5
+            username.length > 8
         ) {
 
             status.textContent =
-                "Username must be 5 characters or less.";
+                "Username must be 8 characters or less.";
 
             return;
 
