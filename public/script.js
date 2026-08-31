@@ -5,7 +5,7 @@ const socket = io();
    LOCAL MESSAGR DATABASE
    ======================================== */
 
-let messagrDB;
+let messagrDB = null;
 
 const databaseRequest =
     indexedDB.open("MessagrDB", 1);
@@ -147,7 +147,9 @@ let currentRoomCode =
    ======================================== */
 
 const savedUsername =
-    localStorage.getItem("messagrUsername");
+    localStorage.getItem(
+        "messagrUsername"
+    );
 
 
 /* ========================================
@@ -215,43 +217,149 @@ if (muteButton) {
 
 
 /* ========================================
-   SAVED ROOMS
+   DATABASE HELPERS
    ======================================== */
 
-function getSavedRooms() {
+function getRoomFromDatabase(
+    roomCode
+) {
 
-    try {
+    return new Promise(
+        function(resolve, reject) {
 
-        return JSON.parse(
-            localStorage.getItem(
-                "messagrSavedChats"
-            ) || "[]"
-        );
+            if (!messagrDB) {
 
-    } catch (error) {
+                resolve(null);
 
-        console.error(
-            "Could not load saved rooms:",
-            error
-        );
+                return;
+
+            }
 
 
-        return [];
+            const transaction =
+                messagrDB.transaction(
+                    ["rooms"],
+                    "readonly"
+                );
 
-    }
+
+            const store =
+                transaction.objectStore(
+                    "rooms"
+                );
+
+
+            const request =
+                store.get(roomCode);
+
+
+            request.onsuccess =
+                function() {
+
+                    resolve(
+                        request.result || null
+                    );
+
+                };
+
+
+            request.onerror =
+                function() {
+
+                    reject(
+                        request.error
+                    );
+
+                };
+
+        }
+    );
+
+}
+
+
+function saveRoomToDatabase(
+    room
+) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            if (!messagrDB) {
+
+                resolve();
+
+                return;
+
+            }
+
+
+            const transaction =
+                messagrDB.transaction(
+                    ["rooms"],
+                    "readwrite"
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    "rooms"
+                );
+
+
+            const request =
+                store.put(room);
+
+
+            request.onsuccess =
+                function() {
+
+                    resolve();
+
+                };
+
+
+            request.onerror =
+                function() {
+
+                    reject(
+                        request.error
+                    );
+
+                };
+
+        }
+    );
 
 }
 
 
 /* ========================================
-   SAVE ROOM LIST
+   GET SAVED ROOM CODES
    ======================================== */
 
-function saveRoomList(roomList) {
+function getSavedRoomCodes() {
+
+    return JSON.parse(
+        localStorage.getItem(
+            "messagrSavedChats"
+        ) || "[]"
+    );
+
+}
+
+
+/* ========================================
+   SET SAVED ROOM CODES
+   ======================================== */
+
+function setSavedRoomCodes(
+    rooms
+) {
 
     localStorage.setItem(
         "messagrSavedChats",
-        JSON.stringify(roomList)
+        JSON.stringify(rooms)
     );
 
 }
@@ -261,31 +369,34 @@ function saveRoomList(roomList) {
    CHECK IF ROOM IS SAVED
    ======================================== */
 
-function isRoomSaved(code) {
+function isRoomSaved(
+    roomCode
+) {
 
-    const saved =
-        getSavedRooms();
-
-
-    return saved.includes(code);
+    return getSavedRoomCodes()
+        .includes(roomCode);
 
 }
 
 
 /* ========================================
-   UPDATE SAVE BUTTON
+   UPDATE SAVE CHAT BUTTON
    ======================================== */
 
 function updateSaveChatButton() {
 
-    if (!saveChatButton) {
+    if (
+        !saveChatButton
+    ) {
 
         return;
 
     }
 
 
-    if (!currentRoomCode) {
+    if (
+        !currentRoomCode
+    ) {
 
         saveChatButton.style.display =
             "none";
@@ -314,7 +425,7 @@ function updateSaveChatButton() {
     } else {
 
         saveChatButton.textContent =
-            "SAVE CHAT";
+            "Save Chat";
 
 
         saveChatButton.classList.remove(
@@ -327,54 +438,68 @@ function updateSaveChatButton() {
 
 
 /* ========================================
-   SAVE / DELETE CHAT
+   SAVE CHAT BUTTON
    ======================================== */
 
 if (saveChatButton) {
 
     saveChatButton.addEventListener(
         "click",
-        function() {
+        async function() {
 
-            if (!currentRoomCode) {
+            if (
+                !currentRoomCode
+            ) {
 
                 return;
 
             }
 
 
-            let saved =
-                getSavedRooms();
+            const roomCode =
+                currentRoomCode;
+
+
+            const savedRoomsList =
+                getSavedRoomCodes();
 
 
             /* ========================================
-               DELETE SAVED ROOM
+               DELETE SAVED CHAT
                ======================================== */
 
             if (
-                saved.includes(currentRoomCode)
+                savedRoomsList.includes(
+                    roomCode
+                )
             ) {
 
-                saved =
-                    saved.filter(
-                        function(room) {
+                const newRooms =
+                    savedRoomsList.filter(
+                        function(code) {
 
-                            return (
-                                room !==
-                                currentRoomCode
-                            );
+                            return code !== roomCode;
 
                         }
                     );
 
 
-                saveRoomList(saved);
+                setSavedRoomCodes(
+                    newRooms
+                );
 
 
                 updateSaveChatButton();
 
-
                 loadSavedRooms();
+
+
+                if (status) {
+
+                    status.textContent =
+                        "Chat removed from saved rooms.";
+
+                }
 
 
                 return;
@@ -383,23 +508,516 @@ if (saveChatButton) {
 
 
             /* ========================================
-               SAVE ROOM
+               SAVE CHAT
                ======================================== */
 
-            saved.push(
-                currentRoomCode
+            savedRoomsList.push(
+                roomCode
             );
 
 
-            saveRoomList(saved);
+            setSavedRoomCodes(
+                savedRoomsList
+            );
+
+
+            /* ========================================
+               MAKE SURE CURRENT CHAT IS SAVED
+               ======================================== */
+
+            await saveCurrentRoom();
 
 
             updateSaveChatButton();
 
-
             loadSavedRooms();
 
+
+            if (status) {
+
+                status.textContent =
+                    "Chat saved.";
+
+            }
+
         }
+    );
+
+}
+
+
+/* ========================================
+   SAVE CURRENT ROOM
+   ======================================== */
+
+async function saveCurrentRoom() {
+
+    if (
+        !currentRoomCode
+    ) {
+
+        return;
+
+    }
+
+
+    const roomCode =
+        currentRoomCode;
+
+
+    const room =
+        await getRoomFromDatabase(
+            roomCode
+        );
+
+
+    const roomData = {
+
+        roomCode:
+            roomCode,
+
+        messages:
+            room && Array.isArray(room.messages)
+                ? room.messages
+                : [],
+
+        updatedAt:
+            Date.now()
+
+    };
+
+
+    await saveRoomToDatabase(
+        roomData
+    );
+
+}
+
+
+/* ========================================
+   SAVE MESSAGE TO CURRENT ROOM
+   ======================================== */
+
+async function saveMessageToCurrentRoom(
+    messageData
+) {
+
+    if (
+        !currentRoomCode
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        let room =
+            await getRoomFromDatabase(
+                currentRoomCode
+            );
+
+
+        if (!room) {
+
+            room = {
+
+                roomCode:
+                    currentRoomCode,
+
+                messages:
+                    [],
+
+                updatedAt:
+                    Date.now()
+
+            };
+
+        }
+
+
+        if (
+            !Array.isArray(
+                room.messages
+            )
+        ) {
+
+            room.messages =
+                [];
+
+        }
+
+
+        room.messages.push(
+            messageData
+        );
+
+
+        room.updatedAt =
+            Date.now();
+
+
+        await saveRoomToDatabase(
+            room
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not save message:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   CREATE MESSAGE ELEMENT
+   ======================================== */
+
+function createTextMessageElement(
+    data
+) {
+
+    const message =
+        document.createElement("div");
+
+
+    message.classList.add(
+        "message"
+    );
+
+
+    if (
+        data.mine
+    ) {
+
+        message.classList.add(
+            "messageMine"
+        );
+
+
+        message.textContent =
+            "[" +
+            data.text +
+            "]";
+
+    } else {
+
+        message.classList.add(
+            "messageOther"
+        );
+
+
+        message.textContent =
+            "[" +
+            data.username +
+            ": " +
+            data.text +
+            "]";
+
+    }
+
+
+    return message;
+
+}
+
+
+/* ========================================
+   CREATE IMAGE MESSAGE ELEMENT
+   ======================================== */
+
+function createImageMessageElement(
+    data
+) {
+
+    const message =
+        document.createElement("div");
+
+
+    message.classList.add(
+        "message"
+    );
+
+
+    if (
+        data.mine
+    ) {
+
+        message.classList.add(
+            "messageMine"
+        );
+
+    } else {
+
+        message.classList.add(
+            "messageOther"
+        );
+
+    }
+
+
+    const image =
+        document.createElement("img");
+
+
+    image.src =
+        data.image;
+
+
+    image.alt =
+        "Image sent by " +
+        (data.username || "user");
+
+
+    image.style.maxWidth =
+        "250px";
+
+
+    image.style.maxHeight =
+        "250px";
+
+
+    image.style.width =
+        "auto";
+
+
+    image.style.height =
+        "auto";
+
+
+    image.style.borderRadius =
+        "8px";
+
+
+    image.style.display =
+        "block";
+
+
+    image.style.objectFit =
+        "contain";
+
+
+    message.appendChild(
+        image
+    );
+
+
+    return message;
+
+}
+
+
+/* ========================================
+   CREATE SYSTEM MESSAGE
+   ======================================== */
+
+function createSystemMessageElement(
+    text
+) {
+
+    const message =
+        document.createElement("div");
+
+
+    message.classList.add(
+        "systemMessage"
+    );
+
+
+    message.textContent =
+        text;
+
+
+    return message;
+
+}
+
+
+/* ========================================
+   LOAD ROOM CHAT
+   ======================================== */
+
+async function loadRoomChat(
+    roomCode
+) {
+
+    if (
+        !messages
+    ) {
+
+        return;
+
+    }
+
+
+    /* ========================================
+       CLEAR OLD CHAT FIRST
+       ======================================== */
+
+    messages.innerHTML =
+        "";
+
+
+    try {
+
+        const room =
+            await getRoomFromDatabase(
+                roomCode
+            );
+
+
+        if (
+            !room ||
+            !Array.isArray(
+                room.messages
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        room.messages.forEach(
+            function(data) {
+
+                let element =
+                    null;
+
+
+                if (
+                    data.type === "image"
+                ) {
+
+                    element =
+                        createImageMessageElement(
+                            data
+                        );
+
+                } else if (
+                    data.type === "system"
+                ) {
+
+                    element =
+                        createSystemMessageElement(
+                            data.text
+                        );
+
+                } else {
+
+                    element =
+                        createTextMessageElement(
+                            data
+                        );
+
+                }
+
+
+                if (element) {
+
+                    messages.appendChild(
+                        element
+                    );
+
+                }
+
+            }
+        );
+
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+
+    } catch (error) {
+
+        console.error(
+            "Could not load room chat:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   SWITCH TO ROOM
+   ======================================== */
+
+async function switchToRoom(
+    roomCode
+) {
+
+    const newRoomCode =
+        roomCode
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        !isValidRoomCode(
+            newRoomCode
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    /* ========================================
+       SET CURRENT ROOM
+       ======================================== */
+
+    currentRoomCode =
+        newRoomCode;
+
+
+    /* ========================================
+       CLEAR CHAT IMMEDIATELY
+       ======================================== */
+
+    if (messages) {
+
+        messages.innerHTML =
+            "";
+
+    }
+
+
+    /* ========================================
+       UPDATE INPUT
+       ======================================== */
+
+    if (codeInput) {
+
+        codeInput.value =
+            newRoomCode;
+
+    }
+
+
+    /* ========================================
+       UPDATE BUTTON
+       ======================================== */
+
+    updateJoinButton();
+
+    updateSaveChatButton();
+
+
+    /* ========================================
+       LOAD SAVED CHAT
+       ======================================== */
+
+    await loadRoomChat(
+        newRoomCode
     );
 
 }
@@ -409,25 +1027,27 @@ if (saveChatButton) {
    LOAD SAVED ROOMS
    ======================================== */
 
-function loadSavedRooms() {
+async function loadSavedRooms() {
 
-    if (!savedRooms) {
+    if (
+        !savedRooms
+    ) {
 
         return;
 
     }
+
+
+    const roomCodes =
+        getSavedRoomCodes();
 
 
     savedRooms.innerHTML =
         "";
 
 
-    const rooms =
-        getSavedRooms();
-
-
     if (
-        rooms.length === 0
+        roomCodes.length === 0
     ) {
 
         return;
@@ -435,196 +1055,289 @@ function loadSavedRooms() {
     }
 
 
-    rooms.forEach(
-        function(code) {
+    for (
+        const roomCode of roomCodes
+    ) {
 
-            createSavedRoomElement(
-                code
+        const room =
+            await getRoomFromDatabase(
+                roomCode
             );
 
-        }
-    );
+
+        const savedRoom =
+            document.createElement("div");
+
+
+        savedRoom.classList.add(
+            "savedRoom"
+        );
+
+
+        const roomButton =
+            document.createElement("button");
+
+
+        roomButton.classList.add(
+            "savedRoomButton"
+        );
+
+
+        roomButton.textContent =
+            roomCode;
+
+
+        roomButton.addEventListener(
+            "click",
+            function() {
+
+                joinSavedRoom(
+                    roomCode
+                );
+
+            }
+        );
+
+
+        const editButton =
+            document.createElement("button");
+
+
+        editButton.classList.add(
+            "editRoomButton"
+        );
+
+
+        const editImage =
+            document.createElement("img");
+
+
+        editImage.src =
+            "edit.png";
+
+
+        editImage.alt =
+            "Edit";
+
+
+        editButton.appendChild(
+            editImage
+        );
+
+
+        editButton.addEventListener(
+            "click",
+            function(event) {
+
+                event.stopPropagation();
+
+
+                const newName =
+                    prompt(
+                        "Enter a name for this saved chat:",
+                        room?.name || roomCode
+                    );
+
+
+                if (
+                    newName === null
+                ) {
+
+                    return;
+
+                }
+
+
+                const trimmedName =
+                    newName.trim();
+
+
+                if (
+                    trimmedName.length === 0
+                ) {
+
+                    return;
+
+                }
+
+
+                renameSavedRoom(
+                    roomCode,
+                    trimmedName
+                );
+
+            }
+        );
+
+
+        savedRoom.appendChild(
+            roomButton
+        );
+
+
+        savedRoom.appendChild(
+            editButton
+        );
+
+
+        savedRooms.appendChild(
+            savedRoom
+        );
+
+    }
 
 }
 
 
 /* ========================================
-   CREATE SAVED ROOM ELEMENT
+   RENAME SAVED ROOM
    ======================================== */
 
-function createSavedRoomElement(code) {
+async function renameSavedRoom(
+    roomCode,
+    name
+) {
 
-    if (!savedRooms) {
+    try {
+
+        let room =
+            await getRoomFromDatabase(
+                roomCode
+            );
+
+
+        if (!room) {
+
+            room = {
+
+                roomCode:
+                    roomCode,
+
+                messages:
+                    [],
+
+                updatedAt:
+                    Date.now()
+
+            };
+
+        }
+
+
+        room.name =
+            name;
+
+
+        room.updatedAt =
+            Date.now();
+
+
+        await saveRoomToDatabase(
+            room
+        );
+
+
+        loadSavedRooms();
+
+
+    } catch (error) {
+
+        console.error(
+            "Could not rename saved room:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   JOIN SAVED ROOM
+   ======================================== */
+
+function joinSavedRoom(
+    roomCode
+) {
+
+    if (
+        !socket.connected
+    ) {
+
+        status.textContent =
+            "Connecting to server...";
+
+
+        socket.connect();
+
 
         return;
 
     }
 
 
-    const room =
-        document.createElement("div");
-
-
-    room.className =
-        "savedRoom";
-
-
-    const roomButton =
-        document.createElement("button");
-
-
-    roomButton.className =
-        "savedRoomButton";
-
-
-    roomButton.textContent =
-        code;
-
-
-    roomButton.addEventListener(
-        "click",
-        function() {
-
-            if (codeInput) {
-
-                codeInput.value =
-                    code;
-
-            }
-
-
-            updateJoinButton();
-
-
-            joinRoom(code);
-
-        }
-    );
-
-
-    const editButton =
-        document.createElement("button");
-
-
-    editButton.className =
-        "editRoomButton";
-
-
-    const editIcon =
-        document.createElement("img");
-
-
-    editIcon.src =
-        "edit.png";
-
-
-    editIcon.alt =
-        "Edit";
-
-
-    editButton.appendChild(
-        editIcon
-    );
-
-
-    editButton.addEventListener(
-        "click",
-        function(event) {
-
-            event.stopPropagation();
-
-
-            const newName =
-                prompt(
-                    "Enter a name for this room:",
-                    code
-                );
-
-
-            if (
-                newName === null
-            ) {
-
-                return;
-
-            }
-
-
-            const trimmedName =
-                newName.trim();
-
-
-            if (
-                trimmedName.length === 0
-            ) {
-
-                return;
-
-            }
-
-
-            /*
-             * For now the room's actual
-             * code remains the same.
-             *
-             * The display name is stored
-             * separately.
-             */
-
-            const roomNames =
-                JSON.parse(
-                    localStorage.getItem(
-                        "messagrRoomNames"
-                    ) || "{}"
-                );
-
-
-            roomNames[code] =
-                trimmedName;
-
-
-            localStorage.setItem(
-                "messagrRoomNames",
-                JSON.stringify(roomNames)
-            );
-
-
-            loadSavedRooms();
-
-        }
-    );
-
-
-    const roomNames =
-        JSON.parse(
+    const username =
+        (
             localStorage.getItem(
-                "messagrRoomNames"
-            ) || "{}"
-        );
+                "messagrUsername"
+            ) || ""
+        ).trim();
 
 
     if (
-        roomNames[code]
+        username.length === 0
     ) {
 
-        roomButton.textContent =
-            roomNames[code];
+        status.textContent =
+            "Please set a username first.";
+
+        return;
 
     }
 
 
-    room.appendChild(
-        roomButton
+    if (
+        username.length > 8
+    ) {
+
+        status.textContent =
+            "Username must be 8 characters or less.";
+
+        return;
+
+    }
+
+
+    /* ========================================
+       LOAD LOCAL CHAT BEFORE JOINING
+       ======================================== */
+
+    switchToRoom(
+        roomCode
     );
 
 
-    room.appendChild(
-        editButton
+    status.textContent =
+        "Joining " +
+        roomCode +
+        "...";
+
+
+    localStorage.setItem(
+        "messagrUsername",
+        username
     );
 
 
-    savedRooms.appendChild(
-        room
+    socket.emit(
+        "joinRoom",
+        {
+            code:
+                roomCode,
+
+            username:
+                username
+        }
     );
 
 }
@@ -657,7 +1370,9 @@ const roomCodeCharacters =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 
-function isValidRoomCode(code) {
+function isValidRoomCode(
+    code
+) {
 
     return /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(
         code
@@ -865,6 +1580,15 @@ if (codeInput) {
 
             updateJoinButton();
 
+
+            if (
+                isValidRoomCode(value)
+            ) {
+
+                updateSaveChatButton();
+
+            }
+
         }
     );
 
@@ -946,259 +1670,30 @@ if (copyCodeButton) {
 
 
 /* ========================================
-   JOIN ROOM FUNCTION
-   ======================================== */
-
-function joinRoom(code) {
-
-    const username =
-        (
-            localStorage.getItem(
-                "messagrUsername"
-            ) || ""
-        ).trim();
-
-
-    /* ========================================
-       CHECK USERNAME
-       ======================================== */
-
-    if (
-        username.length === 0
-    ) {
-
-        if (status) {
-
-            status.textContent =
-                "Please set a username on the welcome page first.";
-
-        }
-
-        return;
-
-    }
-
-
-    if (
-        username.length > 8
-    ) {
-
-        if (status) {
-
-            status.textContent =
-                "Username must be 8 characters or less.";
-
-        }
-
-        return;
-
-    }
-
-
-    /* ========================================
-       CHECK ROOM CODE
-       ======================================== */
-
-    code =
-        code
-            .trim()
-            .toUpperCase();
-
-
-    if (
-        !isValidRoomCode(code)
-    ) {
-
-        if (status) {
-
-            status.textContent =
-                "Please enter a valid room code.";
-
-        }
-
-        if (codeInput) {
-
-            codeInput.focus();
-
-        }
-
-
-        updateJoinButton();
-
-
-        return;
-
-    }
-
-
-    /* ========================================
-       CHECK SOCKET
-       ======================================== */
-
-    if (
-        !socket.connected
-    ) {
-
-        if (status) {
-
-            status.textContent =
-                "Connecting to server...";
-
-        }
-
-
-        socket.connect();
-
-
-        return;
-
-    }
-
-
-    /* ========================================
-       CLEAR OLD CHAT
-       ======================================== */
-
-    /*
-     * THIS IS THE IMPORTANT FIX.
-     *
-     * Before joining another room, completely
-     * remove the messages from the previous room.
-     */
-
-    if (messages) {
-
-        messages.innerHTML =
-            "";
-
-    }
-
-
-    /* ========================================
-       CLEAR IMAGE UPLOAD STATE
-       ======================================== */
-
-    if (
-        imageUploadTimeout
-    ) {
-
-        clearTimeout(
-            imageUploadTimeout
-        );
-
-        imageUploadTimeout =
-            null;
-
-    }
-
-
-    imageUploadInProgress =
-        false;
-
-
-    currentImageLoadingMessage =
-        null;
-
-
-    if (messageInput) {
-
-        messageInput.disabled =
-            false;
-
-    }
-
-
-    if (sendButton) {
-
-        sendButton.disabled =
-            false;
-
-    }
-
-
-    if (imageButton) {
-
-        imageButton.disabled =
-            false;
-
-    }
-
-
-    /* ========================================
-       UPDATE CURRENT ROOM
-       ======================================== */
-
-    currentRoomCode =
-        code;
-
-
-    updateSaveChatButton();
-
-
-    /* ========================================
-       SAVE USERNAME
-       ======================================== */
-
-    localStorage.setItem(
-        "messagrUsername",
-        username
-    );
-
-
-    /* ========================================
-       UPDATE INPUT
-       ======================================== */
-
-    if (codeInput) {
-
-        codeInput.value =
-            code;
-
-    }
-
-
-    updateJoinButton();
-
-
-    /* ========================================
-       SHOW STATUS
-       ======================================== */
-
-    if (status) {
-
-        status.textContent =
-            "Joining " + code + "...";
-
-    }
-
-
-    /* ========================================
-       JOIN SERVER ROOM
-       ======================================== */
-
-    socket.emit(
-        "joinRoom",
-        {
-            code:
-                code,
-
-            username:
-                username
-        }
-    );
-
-}
-
-
-/* ========================================
-   JOIN ROOM BUTTON
+   JOIN ROOM
    ======================================== */
 
 if (joinButton) {
 
     joinButton.addEventListener(
         "click",
-        function() {
+        async function() {
+
+            /* ========================================
+               GET USERNAME
+               ======================================== */
+
+            const username =
+                (
+                    localStorage.getItem(
+                        "messagrUsername"
+                    ) || ""
+                ).trim();
+
+
+            /* ========================================
+               GET ROOM CODE
+               ======================================== */
 
             const code =
                 codeInput.value
@@ -1206,8 +1701,115 @@ if (joinButton) {
                     .toUpperCase();
 
 
-            joinRoom(
+            /* ========================================
+               CHECK USERNAME
+               ======================================== */
+
+            if (
+                username.length === 0
+            ) {
+
+                status.textContent =
+                    "Please set a username on the welcome page first.";
+
+                return;
+
+            }
+
+
+            if (
+                username.length > 8
+            ) {
+
+                status.textContent =
+                    "Username must be 8 characters or less.";
+
+                return;
+
+            }
+
+
+            /* ========================================
+               CHECK ROOM CODE
+               ======================================== */
+
+            if (
+                !isValidRoomCode(code)
+            ) {
+
+                status.textContent =
+                    "Please enter a valid room code.";
+
+                codeInput.focus();
+
+                updateJoinButton();
+
+                return;
+
+            }
+
+
+            /* ========================================
+               CHECK SOCKET CONNECTION
+               ======================================== */
+
+            if (
+                !socket.connected
+            ) {
+
+                status.textContent =
+                    "Connecting to server...";
+
+
+                socket.connect();
+
+                return;
+
+            }
+
+
+            /* ========================================
+               SWITCH LOCAL CHAT
+               ======================================== */
+
+            await switchToRoom(
                 code
+            );
+
+
+            /* ========================================
+               SHOW JOINING STATUS
+               ======================================== */
+
+            status.textContent =
+                "Joining " +
+                code +
+                "...";
+
+
+            /* ========================================
+               SAVE USERNAME
+               ======================================== */
+
+            localStorage.setItem(
+                "messagrUsername",
+                username
+            );
+
+
+            /* ========================================
+               JOIN ROOM
+               ======================================== */
+
+            socket.emit(
+                "joinRoom",
+                {
+                    code:
+                        code,
+
+                    username:
+                        username
+                }
             );
 
         }
@@ -1241,28 +1843,15 @@ socket.on(
 
 
         /* ========================================
-           CLEAR CHAT AGAIN
+           UPDATE ROOM CODE
            ======================================== */
 
-        /*
-         * This protects against old messages
-         * remaining if the server takes a moment
-         * to finish joining the room.
-         */
+        if (codeInput) {
 
-        if (messages) {
-
-            messages.innerHTML =
-                "";
+            codeInput.value =
+                currentRoomCode;
 
         }
-
-
-        /* ========================================
-           UPDATE SAVE BUTTON
-           ======================================== */
-
-        updateSaveChatButton();
 
 
         /* ========================================
@@ -1288,6 +1877,22 @@ socket.on(
                 "flex";
 
         }
+
+
+        /* ========================================
+           LOAD THIS ROOM'S SAVED CHAT
+           ======================================== */
+
+        await loadRoomChat(
+            currentRoomCode
+        );
+
+
+        /* ========================================
+           UPDATE SAVE BUTTON
+           ======================================== */
+
+        updateSaveChatButton();
 
 
         /* ========================================
@@ -1612,13 +2217,6 @@ function sendMessage() {
     }
 
 
-    if (!currentRoomCode) {
-
-        return;
-
-    }
-
-
     socket.emit(
         "sendMessage",
         text
@@ -1769,15 +2367,6 @@ if (imageInput) {
 
 
             if (
-                !currentRoomCode
-            ) {
-
-                return;
-
-            }
-
-
-            if (
                 imageUploadInProgress
             ) {
 
@@ -1874,9 +2463,7 @@ if (imageInput) {
 
 
                     const loadingMessage =
-                        document.createElement(
-                            "div"
-                        );
+                        document.createElement("div");
 
 
                     loadingMessage.classList.add(
@@ -1915,9 +2502,7 @@ if (imageInput) {
 
 
                     const spinner =
-                        document.createElement(
-                            "div"
-                        );
+                        document.createElement("div");
 
 
                     spinner.classList.add(
@@ -2233,73 +2818,45 @@ function showUploadError() {
 
 socket.on(
     "receiveMessage",
-    function(data) {
+    async function(data) {
 
-        /*
-         * Ignore messages if we aren't
-         * currently inside a room.
-         */
-
-        if (!currentRoomCode) {
+        if (
+            !currentRoomCode
+        ) {
 
             return;
 
         }
 
 
+        const isMine =
+            data.sender === socket.id;
+
+
+        const messageData = {
+
+            type:
+                "text",
+
+            text:
+                data.text,
+
+            username:
+                data.username || "user",
+
+            mine:
+                isMine,
+
+            timestamp:
+                Date.now()
+
+        };
+
+
         const message =
-            document.createElement("div");
-
-
-        message.classList.add(
-            "message"
-        );
-
-
-        if (
-            data.sender === socket.id
-        ) {
-
-            message.classList.add(
-                "messageMine"
+            createTextMessageElement(
+                messageData
             );
-
-
-            message.textContent =
-                "[" +
-                data.text +
-                "]";
-
-        } else {
-
-            message.classList.add(
-                "messageOther"
-            );
-
-
-            message.textContent =
-                "[" +
-                data.username +
-                ": " +
-                data.text +
-                "]";
-
-
-            if (
-                !muted
-            ) {
-
-                audio.currentTime =
-                    0;
-
-
-                audio.play().catch(
-                    function() {}
-                );
-
-            }
-
-        }
 
 
         if (messages) {
@@ -2314,6 +2871,31 @@ socket.on(
 
         }
 
+
+        /* ========================================
+           SAVE TO THIS ROOM ONLY
+           ======================================== */
+
+        await saveMessageToCurrentRoom(
+            messageData
+        );
+
+
+        if (
+            !isMine &&
+            !muted
+        ) {
+
+            audio.currentTime =
+                0;
+
+
+            audio.play().catch(
+                function() {}
+            );
+
+        }
+
     }
 );
 
@@ -2324,9 +2906,11 @@ socket.on(
 
 socket.on(
     "receiveImage",
-    function(data) {
+    async function(data) {
 
         if (
+            !data ||
+            !data.image ||
             !currentRoomCode
         ) {
 
@@ -2335,18 +2919,12 @@ socket.on(
         }
 
 
-        if (
-            !data ||
-            !data.image
-        ) {
-
-            return;
-
-        }
+        const isMine =
+            data.sender === socket.id;
 
 
         if (
-            data.sender === socket.id
+            isMine
         ) {
 
             if (
@@ -2405,76 +2983,30 @@ socket.on(
         }
 
 
+        const imageData = {
+
+            type:
+                "image",
+
+            image:
+                data.image,
+
+            username:
+                data.username || "user",
+
+            mine:
+                isMine,
+
+            timestamp:
+                Date.now()
+
+        };
+
+
         const message =
-            document.createElement("div");
-
-
-        message.classList.add(
-            "message"
-        );
-
-
-        if (
-            data.sender === socket.id
-        ) {
-
-            message.classList.add(
-                "messageMine"
+            createImageMessageElement(
+                imageData
             );
-
-        } else {
-
-            message.classList.add(
-                "messageOther"
-            );
-
-        }
-
-
-        const image =
-            document.createElement("img");
-
-
-        image.src =
-            data.image;
-
-
-        image.alt =
-            "Image sent by " +
-            (data.username || "user");
-
-
-        image.style.maxWidth =
-            "250px";
-
-
-        image.style.maxHeight =
-            "250px";
-
-
-        image.style.width =
-            "auto";
-
-
-        image.style.height =
-            "auto";
-
-
-        image.style.borderRadius =
-            "8px";
-
-
-        image.style.display =
-            "block";
-
-
-        image.style.objectFit =
-            "contain";
-
-
-        message.appendChild(
-            image
-        );
 
 
         if (messages) {
@@ -2490,8 +3022,17 @@ socket.on(
         }
 
 
+        /* ========================================
+           SAVE IMAGE TO THIS ROOM ONLY
+           ======================================== */
+
+        await saveMessageToCurrentRoom(
+            imageData
+        );
+
+
         if (
-            data.sender !== socket.id &&
+            !isMine &&
             !muted
         ) {
 
@@ -2515,27 +3056,26 @@ socket.on(
 
 socket.on(
     "userJoined",
-    function(username) {
+    async function(username) {
 
-        if (!currentRoomCode) {
+        if (
+            !currentRoomCode
+        ) {
 
             return;
 
         }
 
 
-        const message =
-            document.createElement("div");
-
-
-        message.classList.add(
-            "systemMessage"
-        );
-
-
-        message.textContent =
+        const text =
             username +
             " joined the room.";
+
+
+        const message =
+            createSystemMessageElement(
+                text
+            );
 
 
         if (messages) {
@@ -2549,6 +3089,21 @@ socket.on(
                 messages.scrollHeight;
 
         }
+
+
+        await saveMessageToCurrentRoom(
+            {
+                type:
+                    "system",
+
+                text:
+                    text,
+
+                timestamp:
+                    Date.now()
+
+            }
+        );
 
     }
 );
