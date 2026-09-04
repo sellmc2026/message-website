@@ -681,28 +681,7 @@ async function saveMessageToCurrentRoom(
    CREATE MESSAGE ELEMENT
    ======================================== */
 
-function createTextMessageElement(
-    data
-) {
-
-    const container =
-        document.createElement("div");
-
-    container.classList.add(
-        "messageContainer"
-    );
-
-    const time =
-        document.createElement("div");
-
-    time.classList.add(
-        "messageTime"
-    );
-
-    time.textContent =
-        new Date(
-            data.timestamp
-        ).toLocaleString();
+function createTextMessageElement(data) {
 
     const message =
         document.createElement("div");
@@ -711,43 +690,64 @@ function createTextMessageElement(
         "message"
     );
 
-    if (
-        data.mine
-    ) {
+    if (data.mine) {
 
         message.classList.add(
             "messageMine"
         );
-
-        message.textContent =
-            "[" +
-            data.text +
-            "]";
 
     } else {
 
         message.classList.add(
             "messageOther"
         );
+    }
 
-        message.textContent =
+
+    const messageInfo =
+        document.createElement("div");
+
+    messageInfo.classList.add(
+        "messageInfo"
+    );
+
+    messageInfo.textContent =
+        new Date(
+            data.timestamp
+        ).toLocaleString();
+
+
+    const text =
+        document.createElement("div");
+
+    if (data.mine) {
+
+        text.textContent =
+            "[" +
+            data.text +
+            "]";
+
+    } else {
+
+        text.textContent =
             "[" +
             data.username +
             ": " +
             data.text +
             "]";
-
     }
 
-    container.appendChild(
-        time
+
+    message.appendChild(
+        messageInfo
     );
 
-    container.appendChild(
-        message
+    message.appendChild(
+        text
     );
 
-    return container;
+
+    return message;
 }
 
 
