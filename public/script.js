@@ -685,14 +685,31 @@ function createTextMessageElement(
     data
 ) {
 
-    const message =
+    const container =
         document.createElement("div");
 
+    container.classList.add(
+        "messageContainer"
+    );
+
+    const time =
+        document.createElement("div");
+
+    time.classList.add(
+        "messageTime"
+    );
+
+    time.textContent =
+        new Date(
+            data.timestamp
+        ).toLocaleString();
+
+    const message =
+        document.createElement("div");
 
     message.classList.add(
         "message"
     );
-
 
     if (
         data.mine
@@ -701,7 +718,6 @@ function createTextMessageElement(
         message.classList.add(
             "messageMine"
         );
-
 
         message.textContent =
             "[" +
@@ -714,7 +730,6 @@ function createTextMessageElement(
             "messageOther"
         );
 
-
         message.textContent =
             "[" +
             data.username +
@@ -724,9 +739,15 @@ function createTextMessageElement(
 
     }
 
+    container.appendChild(
+        time
+    );
 
-    return message;
+    container.appendChild(
+        message
+    );
 
+    return container;
 }
 
 
@@ -738,14 +759,48 @@ function createImageMessageElement(
     data
 ) {
 
-    const message =
+    const container =
         document.createElement("div");
 
+    container.classList.add(
+        "messageContainer"
+    );
+
+    const messageInfo =
+        document.createElement("div");
+
+    messageInfo.classList.add(
+        "messageInfo"
+    );
+
+    const username =
+        document.createElement("strong");
+
+    username.textContent =
+        data.username || "user";
+
+    const time =
+        document.createElement("span");
+
+    time.textContent =
+        new Date(
+            data.timestamp
+        ).toLocaleString();
+
+    messageInfo.appendChild(
+        username
+    );
+
+    messageInfo.appendChild(
+        time
+    );
+
+    const message =
+        document.createElement("div");
 
     message.classList.add(
         "message"
     );
-
 
     if (
         data.mine
@@ -763,55 +818,53 @@ function createImageMessageElement(
 
     }
 
-
     const image =
         document.createElement("img");
-
 
     image.src =
         data.image;
 
-
     image.alt =
         "Image sent by " +
-        (data.username || "user");
-
+        (
+            data.username ||
+            "user"
+        );
 
     image.style.maxWidth =
         "250px";
 
-
     image.style.maxHeight =
         "250px";
-
 
     image.style.width =
         "auto";
 
-
     image.style.height =
         "auto";
-
 
     image.style.borderRadius =
         "8px";
 
-
     image.style.display =
         "block";
 
-
     image.style.objectFit =
         "contain";
-
 
     message.appendChild(
         image
     );
 
+    container.appendChild(
+        messageInfo
+    );
 
-    return message;
+    container.appendChild(
+        message
+    );
 
+    return container;
 }
 
 
