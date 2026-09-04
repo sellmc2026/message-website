@@ -2200,26 +2200,36 @@ function sendMessage() {
         return;
     }
 
-    socket.emit(
-        "sendMessage",
-        text
-    );
+    const isImageUrl =
+        /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(text);
+
+    if (isImageUrl) {
+
+        socket.emit(
+            "sendImage",
+            {
+                image: text,
+                type: "image/url"
+            }
+        );
+
+    } else {
+
+        socket.emit(
+            "sendMessage",
+            text
+        );
+
+    }
 
     messageSentSound.currentTime = 0;
-    messageSentSound.play().catch(function() {});
+
+    messageSentSound
+        .play()
+        .catch(function() {});
 
     messageInput.value = "";
 }
-
-if (sendButton) {
-
-    sendButton.addEventListener(
-        "click",
-        sendMessage
-    );
-
-}
-
 
 /* ========================================
    ENTER TO SEND
