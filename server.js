@@ -782,21 +782,30 @@ io.on(
                 }
 
 
-                /* ========================================
-                   ONLY ALLOW IMAGES
-                   ======================================== */
-
-                if (
-                    typeof data.type !==
-                        "string" ||
-                    !data.type.startsWith(
-                        "image/"
-                    )
-                ) {
-
-                    return;
-
-                }
+                /*
+                  ONLY ALLOW IMAGE TYPES OR IMAGE URLS
+               */
+               
+               if (
+                   typeof data.type !== "string"
+               ) {
+                   return;
+               }
+               
+               const isImageType =
+                   data.type.startsWith("image/");
+               
+               const isImageUrl =
+                   data.type === "image/url" &&
+                   typeof data.image === "string" &&
+                   /^https?:\/\/.+/i.test(data.image);
+               
+               if (
+                   !isImageType &&
+                   !isImageUrl
+               ) {
+                   return;
+               }
 
 
                 /* ========================================
